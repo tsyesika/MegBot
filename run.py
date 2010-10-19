@@ -18,6 +18,7 @@ class Bot():
 		self.settings = settings
 		self.plugins = {}
 		self.previous_messages = []
+		self.channels = {}
 		if settings["ipv6"]:
 			if config.debug_mode:
 				print "[DEBUG] IPV6 on %s" % settings["name"]
@@ -35,10 +36,13 @@ class Bot():
 			ready = "%s\r\n" % message
 		else:
 			ready = message
-		self.sock.sendall(message)
+		self.sock.sendall(ready)
 	def privmsg(self, person, message):
 		"""privmesgs a person/channel"""
 		self.raw("PRIVMSG %s :%s" % (person, message))
+	def notice(self, person, message):
+		"""notices a person/channel"""
+		self.raw("NOTICE %s :%s" % (person, message))
 	def find_info(self, line):
 		"""Gets info from raw string"""
 		info = {}
@@ -52,6 +56,8 @@ class Bot():
 		except:info["vhost"] = "Unknown"
 		try:info["mode"] = line.split()[1]
 		except:info["mode"] = "Unknown"
+		try:info["channel"] = line.split()[2]
+		except:info["channel"] = "Unknown"
 		try:info["cmd"] = line.split()[3][2:]
 		except:info["cmd"] = "Unknown"
 		try:info["trig"] = line.split()[3][1]
@@ -66,7 +72,10 @@ class Bot():
 		info = self.find_info(line)
 		if "on_" + call in dir(self):
 			#Is in core
-			exec("self.on_%s(%s, %s)" % (call, self, info))
+			try:
+				getattr(self, "on_" + call)(info)
+			except:
+				traceback.print_exc()
 		for plugin in self.plugins.keys():
 			if "on_%s" % call in self.plugins[plugin].keys:
 				exec("self.plugins[plugin].on_%s(%s, %s)" % (call, self, info))
@@ -76,56 +85,60 @@ class Bot():
 			print "[DEBUG] %s:%s (%s, %s)" % (self.settings["address"], self.settings["port"], type(self.settings["address"]), type(self.settings["port"]))
 		self.sock.connect((self.settings["address"], self.settings["port"]))
 		print "---> Connecting to %s" % self.settings["name"]
-		print "NICK %s" % self.settings["nick"]
-		print "USER 8 * %s :%s" % (self.settings["ident"], self.settings["realname"])
 		self.raw("NICK %s" % self.settings["nick"])
-		self.raw("USER 8 * %s :%s" % (self.settings["ident"], self.settings["realname"]))
+		self.raw("USER %s * %s :%s" % (self.settings["nick"], self.settings["ident"], self.settings["realname"]))
 		self.connected = True
 	def fireup(self):
 		while not self.connected:
 			pass
-		while True:
-			data = self.sock.recv(2048)
-			for line in data.split("\r\n"):
-				if line:
-					print line
-					self.previous_messages.append(line)
-					self.on_call("DRECV", line)
-					if line.split()[0][1:] == "PING":
-						self.raw("PONG %s" % line.split()[1:], False)
-						self.on_call("PING", line)
-					elif line.lower().startswith("error :closing link"):
-						if config.debug_mode:
-							print "[DEBUG] disconnected from network."
-						print "---> Restarting"
-						self.sock.close()
-						restart(self.name)
-					elif len(line.split()) != 1:
-						self.on_call(line.split()[1], line)
-						if line.split()[1] == "PRIVMSG":
-							#If a privmsg has been recived
-							info = self.find_info()
-							if info["cmd"] == "VERSION\x01":
-								#CTCP version 
-								self.on_call("VERSION")
-								self.notice(self.info["nick"], "\x01MegBot 0.06 Developer Preview (unstable)\x01")
-							elif info["cmd"] == "TIME\x01":
-								self.notice(self.info["nick"], "\x01%s\x01" % time.strftime("%A %d %b %Y, %H:%M:%S %Z"))
-								self.on_call("TIME")
-							elif info["cmd"] == "CLIENTINFO":
-								self.notice(self.info["nick"], "\x01MegBot 0.06 Developer Preview (unstable)\x01")
-							elif info["cmd"] == "PING\x01":
-								self.notice(self.info["nick"], "\x01%s\x01" % ())
-							elif info["cmd"] == "SOURCE\x01":
-								self.notice(self.info["nick"], "\x01http://megworld.co.uk/\x01")
-								self.on_call("SOURCE")
-							elif info["trig"] == self.settings["trigger"] and info["cmd"] in self.plugins.keys():
-								try:
-									self.plugins[info["cmd"]].main(self, info)
-								except:
-									if config.debug_mode:
-										print "[DEBUG] with plugin %s" % (info["cmd"])
-										traceback.print_exc()
+		while self.connected:
+			try:
+				data = self.sock.recv(2048)
+				for line in data.split("\r\n"):
+					if line:
+						print "[%s] %s" % (self.settings['name'], line)
+						self.previous_messages.append(line)
+						self.on_call("DRECV", line)
+						if line.split()[0] == "PING":
+							self.raw("PONG %s" % line.split()[1])
+							self.on_call("PING", line)
+						elif line.lower().startswith("error :closing link"):
+							self.connected = False
+							if config.debug_mode:
+								print "[DEBUG] disconnected from network."
+							print "---> Restarting"
+							self.sock.close()
+							restart(self.name)
+						elif len(line.split()) != 1:
+							self.on_call(line.split()[1], line)
+							if line.split()[1] == "PRIVMSG":
+								#If a privmsg has been recived
+								info = self.find_info(line)
+								if info["cmd"] == "VERSION\x01":
+									#CTCP version 
+									self.on_call("VERSION", line)
+									self.notice(info["nick"], "\x01MegBot 0.06 Developer Preview (unstable)\x01")
+								elif info["cmd"] == "TIME\x01":
+									self.notice(info["nick"], "\x01%s\x01" % time.strftime("%A %d %b %Y, %H:%M:%S %Z"))
+									self.on_call("TIME", line)
+								elif info["cmd"] == "CLIENTINFO\x01":
+									self.notice(info["nick"], "\x01MegBot 0.06 Developer Preview (unstable)\x01")
+								elif info["cmd"] == "PING\x01":
+									self.notice(info["nick"], "\x01%s\x01" % ())
+								elif info["cmd"] == "SOURCE\x01":
+									self.notice(info["nick"], "\x01http://megworld.co.uk/\x01")
+									self.on_call("SOURCE", line)
+								print info["cmd"]
+								elif info["trig"] == self.settings["trigger"] and info["cmd"] in self.channels[info["channel"]]["plugins"]:
+									print "\n\n I WIN \n\n"
+									try:
+										self.plugins[info["cmd"]].main(self, info)
+									except:
+										if config.debug_mode:
+											print "[DEBUG] with plugin %s" % (info["cmd"])
+											traceback.print_exc()
+			except:
+				traceback.print_exc()
 	def on_376(self, info):
 		"""Applies modes & execute commands on connect & joins channels"""
 		if self.settings["modes"]:
@@ -143,6 +156,11 @@ class Bot():
 			join_msg = ""
 			passwds = []
 			for channel in config.channels[self.settings["name"]].keys():
+				self.channels[channel] = {}
+				if config.channels[self.settings["name"]][channel]["plugins"]:
+					self.channels[channel]["plugins"] = config.channels[self.settings["name"]][channel]["plugins"]
+				else:
+					self.channels[channel]["plugins"] = self.plugins.keys()
 				if config.channels[self.settings["name"]][channel]["password"]:
 					join_msg = join_msg + channel + ","
 					passwds.append(config.channels[self.settings["name"]][channel]["password"])
@@ -183,7 +201,7 @@ if "__main__" == __name__:
 	print "---> Inital bot online"
 	try:
 		while True:
-			pass
+			time.sleep(5)
 	except KeyboardInterrupt:
 		print "\n---> Sending Exit to bots"
 		for connection in connections.keys():
