@@ -1,4 +1,4 @@
-import socket, traceback, sys
+import socket, sys
 
 from thread import start_new_thread
 from sys import exit
@@ -7,21 +7,32 @@ from imp import load_source
 from glob import glob
 
 class Bot(object):
-	def __init__(self, settings, hooker, plugins):
+	def __init__(self, settings, hooker, plugins, config):
 		"""Initalises bot"""
+		self.config = config
 		self.settings = settings
 		self.running = False
+		self.channels = {}
 		self.core = plugins
+		self.plugins = {}
+		self.hooker = hooker
 		self.sock = socket.socket()
-		coreplugins["connect"].main(self)
+		self.core["connect"].main(self)
+		self.core["pluginloader"].main(self)
 		self.run()
 	def run(self):
 		while not self.running:
 			sleep(.5)
-		#sleep(2)
 		while True:
 			data = self.sock.recv(2048)
-			print data
+			for line in data.split("\r\n"):
+				if line:
+					if len(line.split()) > 1 and "on_" + line.split()[1] in dir(self.hooker):
+						eval("self.hooker.on_%s" % line.split()[1])(self, line)
+					if len(line.split()) > 3 and len(line.split()[3]) > 1 and line.split()[3][1] == self.config.trigger:
+						if line.split()[3][2:] in self.plugins.keys():
+							self.plugins[line.split()[3][2:]].main(self, line)
+						
 
 if __name__ == "__main__":
 	config = load_source("config", "config.py")
@@ -30,7 +41,7 @@ if __name__ == "__main__":
 		coreplugins[c.replace("core/", "").replace(".py", "")] = load_source(c.replace("core/", "").replace(".py", ""), c)
 	bots = {}
 	for network in config.networks.keys():
-		bots[network] = start_new_thread(Bot, (config.networks[network], coreplugins["hooker"].Hooker(), coreplugins))
+		bots[network] = start_new_thread(Bot, (config.networks[network], coreplugins["hooker"].Hooker(), coreplugins, config))
 	try:
 		while True:
 			sleep(5)
