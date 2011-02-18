@@ -1,4 +1,4 @@
-import urllib2, re, urllib, traceback
+import urllib2, re, traceback
 
 def main(connection, line):
 	if len(line.split()) <= 3:
