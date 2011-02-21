@@ -1,4 +1,4 @@
-import socket, sys
+import socket, sys, traceback
 
 from thread import start_new_thread
 from sys import exit
@@ -26,13 +26,21 @@ class Bot(object):
 		while True:
 			data = self.sock.recv(2048)
 			for line in data.split("\r\n"):
-				if line:
-					if len(line.split()) > 1 and "on_" + line.split()[1] in dir(self.hooker):
-						eval("self.hooker.on_%s" % line.split()[1])(self, line)
+			 	if line:
+					print "[IN] %s" % line.split()
+					if line.split()[0] == "PING":
+						self.core["raw"].main(self, "PONG %s" % line.split()[1])	
+					if len(line.split()) > 1:
+						try:
+							self.hooker.hook(self, line.split()[1], line)
+						except:
+							traceback.print_exc()
 					if len(line.split()) > 3 and len(line.split()[3]) > 1 and line.split()[3][1] == self.config.trigger:
 						if line.split()[3][2:] in self.plugins.keys():
-							self.plugins[line.split()[3][2:]].main(self, line)
-						
+							try:
+								self.plugins[line.split()[3][2:]].main(self, line)
+							except:
+								traceback.print_exc()
 
 if __name__ == "__main__":
 	config = load_source("config", "config.py")
