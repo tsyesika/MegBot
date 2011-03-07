@@ -2,13 +2,34 @@ from imp import load_source
 import os, traceback
 
 class Hooker(object):
+	"""Deals with the MegBot hooks system"""
+	__hooks = {}
+
+	def __init__(self):
+		#register our own hooks (maybe there should be a user plugin?)
+		self.register_hook('on_376', self.on_376)
+		self.register_hook('on_353', self.on_353)
+		self.register_hook('on_MODE', self.on_MODE)
+
 	def hook(self, bot, act, line):
 		"""Hooks plugins, etc..."""
-		if ("on_%s" % act) in dir(self):
-			eval("self.on_%s(bot, line)" % act)
-		for plugin in bot.plugins.keys():
-			if ("on_%s" % act) in dir(bot.plugins[plugin]):
-				eval("bot.plugins[plugin].on_%s(bot, line)" % act)
+		if hook not in self.__hooks.keys():
+			return
+		act = 'on_'+act
+		for callback in self.__hooks[act]:
+			callback(bot, line)
+
+	def register_hook(self, hook, callback):
+		"""registers a new callback"""
+		if hook not in self.__hooks[hook]:
+			self.__hooks[hook] = set()
+		self.__hooks[hook].add(callback) 
+
+	def unregister_hook(self, hook, callback):
+		"""unregisters an existing callback"""
+		if hook in self.__hooks.keys():
+			self.__hooks[hook].remove(callback)
+
 	def on_376(self, bot, message):
 		"""End of MOTD"""
 		for channel in bot.settings["channels"]:
