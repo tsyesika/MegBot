@@ -14,6 +14,10 @@ def main(connection, line):
 	google = urllib2.urlopen("http://www.google.com/ig/api?weather=%s" % "+".join(line.split()[4:]).replace(",", ""))
 	source = google.read()
 	try:
+		name = re.findall("><city data=\"(.+?)\"/>", source)[0]
+	except:
+		name = " ".join(line.split()[4:])
+	try:
 		current = re.findall("<current_conditions><condition data=\"(.+?)\"/<temp_f", source)[0]
 	except:
 		current = "N/A"
@@ -46,7 +50,7 @@ def main(connection, line):
 	for d in range(len(wind[0])):
 		wd.append(wind_direction[wind[0][d]])
 	wd = " ".join(wd)
-	connection.core["privmsg"].main(connection, line.split()[2], "%s: [Weather for %s]: \002Temp:\017 %s°C/%s°F/%s°K  \002Humidity:\017 %s%%  \002Wind Direction:\017 %s" % (line.split()[0][1:].split("!")[0], " ".join(line.split()[4:]), temp_c, temp_f, temp_k, humidity, wd))
+	connection.core["privmsg"].main(connection, line.split()[2], "%s: [Weather for %s]: \002Temp:\017 %s°C/%s°F/%s°K  \002Humidity:\017 %s%%  \002Wind Direction:\017 %s" % (line.split()[0][1:].split("!")[0], name, temp_c, temp_f, temp_k, humidity, wd))
 	
 def initalisation(connection):
 	pass
