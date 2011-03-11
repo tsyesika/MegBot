@@ -13,15 +13,15 @@ class Hooker(object):
 
 	def hook(self, bot, act, line):
 		"""Hooks plugins, etc..."""
-		if hook not in self.__hooks.keys():
-			return
 		act = 'on_'+act
+		if act not in self.__hooks.keys():
+			return
 		for callback in self.__hooks[act]:
 			callback(bot, line)
 
 	def register_hook(self, hook, callback):
 		"""registers a new callback"""
-		if hook not in self.__hooks[hook]:
+		if hook not in self.__hooks.keys():
 			self.__hooks[hook] = set()
 		self.__hooks[hook].add(callback) 
 
