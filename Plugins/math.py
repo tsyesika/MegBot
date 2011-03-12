@@ -1,10 +1,12 @@
+from __future__ import division
 from math import *
 from fractions import gcd
-import random
+import random, traceback
 
 def lcm(a,b):
     return a*b/gcd(a,b)
-
+def round(a):
+	return int(a + 0.5)
 def main(connection, line):
 	random.seed()
 	if len(line.split()) <= 3:
@@ -29,8 +31,15 @@ def main(connection, line):
 		connection.core["privmsg"].main(connection, line.split()[2], "Math Error: Zero Division Error.")
 		return
 	except:
-		connection.core["privmsg"].main(connecition, line.split()[2], "Math Error: ?")
+		connection.core["privmsg"].main(connection, line.split()[2], "Math Error: ?")
+		traceback.print_exc()
 		return
+		
+	##
+	# Andreas work below
+	##
+	if a % 1 == 0:
+		a = int(a)
 	connection.core["privmsg"].main(connection, line.split()[2], "Answer: %s" % a)
 		
 		
