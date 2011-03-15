@@ -27,6 +27,10 @@ class Bot(object):
 			data = self.sock.recv(2048)
 			for line in data.split("\r\n"):
 			 	if line:
+					try:
+						self.core["executor"].clear(self)
+					except:
+						pass
 					print "[IN] %s" % line.split()
 					if line.split()[0] == "PING":
 						self.core["raw"].main(self, "PONG %s" % line.split()[1])	
@@ -38,7 +42,7 @@ class Bot(object):
 					if len(line.split()) > 3 and len(line.split()[3]) > 1 and line.split()[3][1] == self.config.trigger:
 						if line.split()[3][2:] in self.plugins.keys():
 							try:
-								self.plugins[line.split()[3][2:]].main(self, line)
+								self.core["executor"].executor(self, line, line.split()[3][2:])
 							except:
 								traceback.print_exc()
 
