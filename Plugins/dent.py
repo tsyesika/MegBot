@@ -1,4 +1,5 @@
-import re, urllib2, traceback
+import re, urllib2
+
 def main(connection, line):
 	if len(line.split()) <= 4:
 		line = line + " " + line.split()[0].split("!")[0][1:]
@@ -8,13 +9,14 @@ def main(connection, line):
 		last = re.findall("<p class=\"entry-content\">(.+?)</p>", data)[0]
 		name = re.findall("<title>(.+?) ", data)[0]
 		time = re.findall(">about (.+?) ago</abbr>", data)[0]
-		#checks for url's 
+		identification = re.findall("<li class=\"hentry notice\" id=\"notice-(.+?)\">", data)[0]
+		
+		#checks for url's
+		last = re.sub("<span class=\"vcard\">.*?<span class=\"fn nickname\">(.+?)</span></a></span>", "\g<1>", last)
 		last = re.sub("<a href=\"(.+?)\".*?>.*?<\/a>", "\g<1>", last)
 		last = re.sub("<span class=\"(.+?)\".*?>.*?<\/span>", "", last)
-		if last.startswith("@:"):
-			last = last[2:]
-		connection.core["privmsg"].main(connection, line.split()[2], "\002[%s]\017 %s - \002Aprox: %s\017" % (name, last, time))
+		last = last.replace("&quot;", "\"")
+		connection.core["privmsg"].main(connection, line.split()[2], "\002[%s]\017 %s - \002Aprox: %s\017 - http://www.identi.ca/notice/%s" % (name, last, time, identification))
 	except:
-		traceback.print_exc()
 		connection.core["privmsg"].main(connection, line.split()[2], "An error has occured")
 		
