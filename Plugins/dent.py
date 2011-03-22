@@ -11,6 +11,8 @@ def main(connection, line):
 		#checks for url's 
 		last = re.sub("<a href=\"(.+?)\".*?>.*?<\/a>", "\g<1>", last)
 		last = re.sub("<span class=\"(.+?)\".*?>.*?<\/span>", "", last)
+		if last.startswith("@:"):
+			last = last[2:]
 		connection.core["privmsg"].main(connection, line.split()[2], "\002[%s]\017 %s - \002Aprox: %s\017" % (name, last, time))
 	except:
 		traceback.print_exc()
