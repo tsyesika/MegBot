@@ -9,8 +9,8 @@ def main(connection, line):
 	google = urllib2.urlopen(google)
 	source = google.read()
 	try:
-		time = re.findall("><tr><td style=\"font-size:medium\"><b>(.+?)</b>", source)[0]
-		connection.core["privmsg"].main(connection, line.split()[2], "Time: %s" % time)
+		time = re.findall("><td style=\"font-size:medium\"><b>(.+?)</b> (.+?) - <b>Time</b> in <b>(.+?)</b>", source)[0]
+		connection.core["privmsg"].main(connection, line.split()[2], "Time: %s - %s - %s" % time)
 	except:
 		connection.core["privmsg"].main(connection, line.split()[2], "Sorry, couldn't retrive time.")
 		
