@@ -1,3 +1,20 @@
+##
+#This file is part of MegBot.
+#
+#   MegBot is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+#
+#   MegBot is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with MegBot.  If not, see <http://www.gnu.org/licenses/>.
+##
+
 import imp, os, urllib2, shutil
 
 def main(connection, line):
@@ -21,7 +38,9 @@ def main(connection, line):
 		except:
 			connection.core["privmsg"].main(connection, line.split()[2], "Failed to retrive plugin or load.")
 	if os.path.isfile(connection.config.paths["plugin"] + line.split()[4] + ".py"):
-		connection.plugins[line.split()[4]] = imp.load_source(line.split()[4], connection.config.paths["plugin"] + cyline.split()[4] + ".py")
+		if "unloader"  in dir(connection.plugins[line.split()[4]]):
+			connection.plugins[line.split()[4]].unloader(connection)
+		connection.plugins[line.split()[4]] = imp.load_source(line.split()[4], connection.config.paths["plugin"] + line.split()[4] + ".py")
 	else:
 		connection.core["privmsg"].main(connection, line.split()[2], "Can't find plugin.")
 		return

@@ -1,3 +1,20 @@
+##
+#This file is part of MegBot.
+#
+#   MegBot is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+#
+#   MegBot is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with MegBot.  If not, see <http://www.gnu.org/licenses/>.
+##
+
 import socket, sys, traceback
 
 from thread import start_new_thread
@@ -39,7 +56,7 @@ class Bot(object):
 							self.hooker.hook(self, line.split()[1], line)
 						except:
 							traceback.print_exc()
-					if len(line.split()) > 3 and len(line.split()[3]) > 1 and line.split()[3][1] == self.config.trigger:
+					if len(line.split()) > 3 and len(line.split()[3]) > 1 and line.split()[3][1] == self.settings["trigger"]:
 						if line.split()[3][2:] in self.plugins.keys():
 							try:
 								self.core["executor"].executor(self, line, line.split()[3][2:])
@@ -49,8 +66,8 @@ class Bot(object):
 if __name__ == "__main__":
 	config = load_source("config", "config.py")
 	coreplugins = {}
-	for c in glob("core/*.py"):
-		coreplugins[c.replace("core/", "").replace(".py", "")] = load_source(c.replace("core/", "").replace(".py", ""), c)
+	for c in glob("Core/*.py"):
+		coreplugins[c.replace("Core/", "").replace(".py", "")] = load_source(c.replace("Core/", "").replace(".py", ""), c)
 	bots = {}
 	for network in config.networks.keys():
 		bots[network] = start_new_thread(Bot, (config.networks[network], coreplugins["hooker"].Hooker(), coreplugins, config))
