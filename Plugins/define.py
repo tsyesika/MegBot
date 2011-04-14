@@ -26,7 +26,8 @@ def main(connection, line):
 	google = urllib2.urlopen(google)
 	source = google.read()
 	try:
-		definition = re.findall("<td valign=top class=s>(.+?)<br><span class=a>", source)[0].replace("&quot;", "\"")
+		definition = re.findall("<span class=f>Noun: </span>(.+?)</div><div>", source)[0].replace("&quot;", "\"")
+		
 		definition = "%s: \002%s\017 - %s" % (line.split()[0][1:].split("!")[0], " ".join(line.split()[4:]), definition)
 	except:
 		definition = "Sorry, can't find a definiton"
