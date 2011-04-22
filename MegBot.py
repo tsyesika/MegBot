@@ -70,7 +70,10 @@ if __name__ == "__main__":
 		coreplugins[c.replace("Core/", "").replace(".py", "")] = load_source(c.replace("Core/", "").replace(".py", ""), c)
 	bots = {}
 	for network in config.networks.keys():
-		bots[network] = start_new_thread(Bot, (config.networks[network], coreplugins["hooker"].Hooker(), coreplugins, config))
+		if "active" in config.networks[network].keys() and config.networks[network]["active"]:
+			bots[network] = start_new_thread(Bot, (config.networks[network], coreplugins["hooker"].Hooker(), coreplugins, config))
+		elif not "active" in config.networks[network].keys():
+			bots[network] = start_new_thread(Bot, (config.networks[network], coreplugins["hooker"].Hooker(), coreplugins, config))
 	try:
 		while True:
 			sleep(5)
