@@ -1,0 +1,33 @@
+=== MegBot 0.06 - Unreleased ===
+
+NB: This readme will be subject to change throughout this releases development
+
+== Main features ==
+
+- Multinetwork support
+- SSL Support
+- IPV6 Support
+- New Hook system (not fully implemented yet)
+- Core plugins
+- Rewrite to most plugins
+
+== Todo before 0.06 release ==
+
+- Add laod/reload/unload to core plugins
+- Write librarys for plugin developers (utils for them)
+- SSL certificate options
+- Fix define plugin 
+- Fix when bot is disconnected
+- Add more global and/or local to network options such as triggers
+- Configuration Generator
+- Better config support (e.g. accept support for older megbot configs, supybot, rbot, eggdrop, inspircd, etc..)
+
+== Using ==
+
+- Make sure you have python 2.6+ installed (could work on lower, won't work on 3.x)
+- edit config (to your network)
+- Run `python MegBot.py` 
+
+NB: if you would like to run it and close the terminal look into htop or screen
+
+ 
