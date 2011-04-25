@@ -2,7 +2,6 @@
 # will change before 0.06 is released
 ##
 
-trigger = "!"
 
 networks = {
 	"MegNet":{
@@ -13,6 +12,7 @@ networks = {
 		"realname":"MegBot",
 		"ipv6":False,
 		"ssl":False,
+		"trigger":"",
 		"NSPassword":"nickservpass",
 		"commands":[],
 		"modes":["b"],
@@ -24,12 +24,14 @@ networks = {
 		"nick":"",
 		"ident":"",
 		"realname":"",
+		"trigger":"",
 		"ipv6":False,
 		"ssl":False,
 		"NSPassword":"pass",
 		"commands":[],
 		"modes":["b"],
-		"channels":[]
+		"channels":[],
+		"active":False #optional (if set to false will disable this network from connecting.)
 	}
 }
 
