@@ -21,6 +21,7 @@ NB: This readme will be subject to change throughout this releases development
 - Add more global and/or local to network options such as triggers
 - Configuration Generator
 - Better config support (e.g. accept support for older megbot configs, supybot, rbot, eggdrop, inspircd, etc..)
+- Add support for common pastebins on the load command
 
 == Using ==
 
