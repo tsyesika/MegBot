@@ -38,7 +38,7 @@ def main(connection, line):
 	ln = log1p
 	lg = lambda x:log(x, 2)
 	log = lambda x:log(x, 10)
-	rand = random.randint
+	rand = random.randint(0, 100)
 	##
 	# End of constants
 	##
