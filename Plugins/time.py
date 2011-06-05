@@ -15,21 +15,33 @@
 #   along with MegBot.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-import re, urllib2
+import re, urllib2, shelve
 
 def main(connection, line):
-	if len(line.split()) <= 3:
-		connection.core["privmsg"].main(connection, line.split()[2], "Please enter a location")
-		return
-	google = urllib2.Request("http://www.google.com/search?q=time+%s" % line.split()[4].replace(" ", "%20"))
-	google.add_header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_6; en-us) AppleWebKit/533.19.4 (KHTML, like Gecko) Version/5.0.3")
-	google = urllib2.urlopen(google)
-	source = google.read()
-	try:
-		time = re.findall("><td style=\"font-size:medium\"><b>(.+?)</b> (.+?) - <b>Time</b> in <b>(.+?)</b>", source)[0]
-		connection.core["privmsg"].main(connection, line.split()[2], "Time: %s - %s - %s" % time)
-	except:
-		connection.core["privmsg"].main(connection, line.split()[2], "Sorry, couldn't retrive time.")
+	#Checks to see if timezone is set :P
+	userzones = shelve.open("TimeData")
+	sline = line.split()
+	if len(sline) <= 4:
+		if sline[0].split("!")[0][1:] in userzones.keys():
+			sline.append(userzones[sline[0].split("!")[0][1:]])
+		else:
+			connection.core["privmsg"].main(connection, sline[2], "Please enter a location")
+			return
+	if "-set" in sline:
+		userzones[sline[0].split("!")[0][1:]] = sline[sline.index("-set")+1]
+		connection.core["privmsg"].main(connection, sline[2], "Location set ^_^")
+	else:
+		google = urllib2.Request("http://www.google.com/search?q=time+%s" % sline[4].replace(" ", "%20"))
+		google.add_header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_6; en-us) AppleWebKit/533.19.4 (KHTML, like Gecko) Version/5.0.3")
+		google = urllib2.urlopen(google)
+		source = google.read()
+		try:
+			time = re.findall("><td style=\"font-size:medium\"><b>(.+?)</b> (.+?) - <b>Time</b> in <b>(.+?)</b>", source)[0]
+			connection.core["privmsg"].main(connection, sline[2], "Time: %s - %s - %s" % time)
+		except:
+			connection.core["privmsg"].main(connection, sline[2], "Sorry, couldn't retrive time.")
+	userzones.sync()
+	userzones.close()
 		
 def initalisation(connection):
 	pass
