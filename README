@@ -22,7 +22,8 @@ NB: This readme will be subject to change throughout this releases development
 - Configuration Generator
 - Better config support (e.g. accept support for older megbot configs, supybot, rbot, eggdrop, inspircd, etc..)
 - Add support for common pastebins on the load command
-
+- identica group support
+- utility to allow arguments (grouped plugins)
 == Using ==
 
 - Make sure you have python 2.6+ installed (could work on lower, won't work on 3.x)
