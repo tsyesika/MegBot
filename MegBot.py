@@ -41,7 +41,7 @@ class Bot(object):
 		while not self.running:
 			sleep(.5)
 		while True:
-			data = self.core["pasers"].main(connection)
+			data = self.core["paser"].main(connection)
 			for line in data.split("\r\n"):
 			 	if line:
 					print "[IN] %s" % line.split()
