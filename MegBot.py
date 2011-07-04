@@ -41,10 +41,14 @@ class Bot(object):
 		while not self.running:
 			sleep(.5)
 		while True:
-			data = self.core["parser"].main(self)
+			data = self.sock.recv(2048)
 			for line in data.split("\r\n"):
 			 	if line:
-					print "[IN] %s" % line.split()					
+					try:
+						self.core["executor"].clear(self)
+					except:
+						pass
+					print "[IN] %s" % line.split()
 					if line.split()[0] == "PING":
 						self.core["raw"].main(self, "PONG %s" % line.split()[1])	
 					if len(line.split()) > 1:
