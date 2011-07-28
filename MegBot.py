@@ -41,7 +41,8 @@ class Bot(object):
 		while not self.running:
 			sleep(.5)
 		while True:
-			data = self.core["parser"].main(self)
+			data = self.core["parser"].main(self, [])
+			print data
 			for line in data.split("\r\n"):
 			 	if line:
 					print "[IN] %s" % line.split()
@@ -58,6 +59,7 @@ class Bot(object):
 								self.core["executor"].executor(self, line, line.split()[3][2:])
 							except:
 								traceback.print_exc()
+								print self.times
 
 if __name__ == "__main__":
 	config = load_source("config", "config.py")
