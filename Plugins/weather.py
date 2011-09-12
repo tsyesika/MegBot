@@ -17,7 +17,7 @@
 #   along with MegBot.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-import urllib2, re, traceback
+import urllib2, re, time
 
 wind_direction = {
 	"S":"South",
@@ -25,11 +25,14 @@ wind_direction = {
 	"W":"West",
 	"E":"East"
 }
-def main(connection, line):
+def main(connection, line, url=None, tag=""):
 	if len(line.split()) <= 3:
 		connection.core["privmsg"].main(connection, line.split()[2], "Please supply a place you'd like the weather for.")
 		return
-	google = urllib2.urlopen("http://www.google.com/ig/api?weather=%s" % "+".join(line.split()[4:]).replace(",", ""))
+	if not url:
+		google = urllib2.urlopen("http://www.google.com/ig/api?weather=%s" % "+".join(line.split()[4:]).replace(",", ""))
+	else:
+		google = urllib2.urlopen(url)
 	source = google.read()
 	try:
 		name = re.findall("><city data=\"(.+?)\"/>", source)[0]
@@ -63,15 +66,23 @@ def main(connection, line):
 		wind = (wind[0], wind[1], int(wind[1]) * 1.609344)
 	except:
 		wind = (wind[0], wind[1], "N/A")
-		traceback.print_exc()
 	wd = []
 	for d in range(len(wind[0])):
 		wd.append(wind_direction[wind[0][d]])
 	wd = " ".join(wd)
 	if temp_c == "N/A" and temp_f == "N/A" and temp_k == "N/A" and humidity == "N/A":
-		connection.core["privmsg"].main(connection, line.split()[2], "%s: Couldn't get data for %s" % (line.split()[0][1:].split("!")[0], name))
+		#Checks to see if spelt wrong..
+		lu = urllib2.urlopen("http://google.com/m/?q=weather+%s" % "+".join(line.split()[4:]).replace(",", ""))
+		lu = lu.read()
+		if lu.find("<br/> Showing results for  <a href=")!=-1:
+			print 1
+			cname = re.findall("<br/>  <br/> Showing results for  <a href=\"(.+?)\">(.+?) </a>. Search inste", lu)[0][1].replace(" ", "+")
+			main(connection, line, "http://www.google.com/ig/api?weather=%s" % cname, "(Corrected to %s from %s)" % (" ".join(cname.split("+")[1:]), " ".join(line.split()[4:])))
+			return
+		else:
+			connection.core["privmsg"].main(connection, line.split()[2], "%s: Couldn't get data for %s" % (line.split()[0][1:].split("!")[0], name))
 	else:
-		connection.core["privmsg"].main(connection, line.split()[2], "%s: [Weather for %s]: \002Temp:\017 %s°C/%s°F/%s°K  \002Humidity:\017 %s%%  \002Wind Direction:\017 %s" % (line.split()[0][1:].split("!")[0], name, temp_c, temp_f, temp_k, humidity, wd))
+		connection.core["privmsg"].main(connection, line.split()[2], "%s: [Weather for %s]: \002Temp:\017 %s°C/%s°F/%s°K  \002Humidity:\017 %s%%  \002Wind Direction:\017 %s %s" % (line.split()[0][1:].split("!")[0], name, temp_c, temp_f, temp_k, humidity, wd, tag))
 	
 def initalisation(connection):
 	pass
