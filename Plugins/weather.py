@@ -68,7 +68,10 @@ def main(connection, line):
 	for d in range(len(wind[0])):
 		wd.append(wind_direction[wind[0][d]])
 	wd = " ".join(wd)
-	connection.core["privmsg"].main(connection, line.split()[2], "%s: [Weather for %s]: \002Temp:\017 %s°C/%s°F/%s°K  \002Humidity:\017 %s%%  \002Wind Direction:\017 %s" % (line.split()[0][1:].split("!")[0], name, temp_c, temp_f, temp_k, humidity, wd))
+	if temp_c == "N/A" and temp_f == "N/A" and temp_k == "N/A" and humidity == "N/A":
+		connection.core["privmsg"].main(connection, line.split()[2], "%s: Couldn't get data for %s" % (line.split()[0][1:].split("!")[0], name))
+	else:
+		connection.core["privmsg"].main(connection, line.split()[2], "%s: [Weather for %s]: \002Temp:\017 %s°C/%s°F/%s°K  \002Humidity:\017 %s%%  \002Wind Direction:\017 %s" % (line.split()[0][1:].split("!")[0], name, temp_c, temp_f, temp_k, humidity, wd))
 	
 def initalisation(connection):
 	pass
