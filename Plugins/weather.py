@@ -17,13 +17,17 @@
 #   along with MegBot.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-import urllib2, re, time
+import urllib2, re, time, traceback
 
 wind_direction = {
 	"S":"South",
 	"N":"North",
 	"W":"West",
-	"E":"East"
+	"E":"East",
+	"NW":"North West",
+	"SW":"South West",
+	"NE":"North East",
+	"SE":"South East"
 }
 def main(connection, line, url=None, tag=""):
 	if len(line.split()) <= 3:
@@ -59,17 +63,14 @@ def main(connection, line, url=None, tag=""):
 	except:
 		humidity = "N/A"
 	try:
-		wind = re.findall("<wind_condition data=\"Wind: (.+?) at (.+?) mph\"/>", source)[0].replace(" ", "")
+		wind = re.findall("<wind_condition data=\"Wind: (.+?) at (.+?) mph\"/>", source)[0]
 	except:
 		wind = "N/A"
 	try:
-		wind = (wind[0], wind[1], int(wind[1]) * 1.609344)
+		print "DEBUG: %s" % wind[0]
+		wind = (wind_direction[wind[0]], wind[1], int(int(wind[1]) * 1.609344))
 	except:
-		wind = (wind[0], wind[1], "N/A")
-	wd = []
-	for d in range(len(wind[0])):
-		wd.append(wind_direction[wind[0][d]])
-	wd = " ".join(wd)
+		wind = ("N/A", "N/A", "N/A")
 	if temp_c == "N/A" and temp_f == "N/A" and temp_k == "N/A" and humidity == "N/A":
 		#Checks to see if spelt wrong..
 		lu = urllib2.urlopen("http://google.com/m/?q=weather+%s" % "+".join(line.split()[4:]).replace(",", ""))
@@ -82,7 +83,7 @@ def main(connection, line, url=None, tag=""):
 		else:
 			connection.core["privmsg"].main(connection, line.split()[2], "%s: Couldn't get data for %s" % (line.split()[0][1:].split("!")[0], name))
 	else:
-		connection.core["privmsg"].main(connection, line.split()[2], "%s: [Weather for %s]: \002Temp:\017 %s°C/%s°F/%s°K  \002Humidity:\017 %s%%  \002Wind Direction:\017 %s %s" % (line.split()[0][1:].split("!")[0], name, temp_c, temp_f, temp_k, humidity, wd, tag))
+		connection.core["privmsg"].main(connection, line.split()[2], "%s: [Weather for %s]: \002Temp:\017 %s°C/%s°F/%s°K  \002Humidity:\017 %s%%  \002Wind Direction:\017 %s  \002Wind Speed:\017 %smph/%skph %s" % (line.split()[0][1:].split("!")[0], name, temp_c, temp_f, temp_k, humidity, wind[0], wind[1], wind[2], tag))
 	
 def initalisation(connection):
 	pass
