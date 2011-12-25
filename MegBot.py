@@ -15,8 +15,7 @@
 #   along with MegBot.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-import socket, sys, traceback
-
+import socket, sys, traceback, os
 from thread import start_new_thread
 from sys import exit
 from time import sleep, ctime
@@ -39,15 +38,13 @@ class Bot(object):
 		self.run()
 	def run(self):
 		while not self.running:
-			sleep(.5)
+			sleep(.1)
 		while True:
 			data = self.core["parser"].main(self, [])
 			print data
 			for line in data.split("\r\n"):
 			 	if line:
-					print "[IN] %s" % line.split()
-					if line.split()[0] == "PING":
-						self.core["raw"].main(self, "PONG %s" % line.split()[1])	
+					self.core["ping"].main(self, line.split())
 					if len(line.split()) > 1:
 						try:
 							self.hooker.hook(self, line.split()[1], line)
@@ -58,15 +55,19 @@ class Bot(object):
 							try:
 								self.core["executor"].executor(self, line, line.split()[3][2:])
 							except:
-								traceback.print_exc()
+								traceback.print_exc() # Debug lines
 								print self.times
 
 if __name__ == "__main__":
 	config = load_source("config", "config.py")
 	coreplugins = {}
 	for c in glob("Core/*.py"):
-		coreplugins[c.replace("Core/", "").replace(".py", "")] = load_source(c.replace("Core/", "").replace(".py", ""), c)
+		if os.name == "nt":
+			coreplugins[c.replace("Core\\", "").replace(".py", "")] = load_source(c.replace("Core\\", "").replace(".py", ""), c)
+		else:
+			coreplugins[c.replace("Core/", "").replace(".py", "")] = load_source(c.replace("Core/", "").replace(".py", ""), c)
 	bots = {}
+	print coreplugins.keys()
 	for network in config.networks.keys():
 		if "active" in config.networks[network].keys() and config.networks[network]["active"]:
 			bots[network] = start_new_thread(Bot, (config.networks[network], coreplugins["hooker"].Hooker(), coreplugins, config))
