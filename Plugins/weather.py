@@ -30,6 +30,7 @@ wind_direction = {
 	"SE":"South East"
 }
 def main(connection, line, url=None, tag=""):
+	# to do - use a proper parsing technique (regex = baddd)
 	if len(line.split()) <= 3:
 		connection.core["privmsg"].main(connection, line.split()[2], "Please supply a place you'd like the weather for.")
 		return
@@ -67,7 +68,6 @@ def main(connection, line, url=None, tag=""):
 	except:
 		wind = "N/A"
 	try:
-		print "DEBUG: %s" % wind[0]
 		wind = (wind_direction[wind[0]], wind[1], int(int(wind[1]) * 1.609344))
 	except:
 		wind = ("N/A", "N/A", "N/A")
@@ -83,7 +83,7 @@ def main(connection, line, url=None, tag=""):
 		else:
 			connection.core["privmsg"].main(connection, line.split()[2], "%s: Couldn't get data for %s" % (line.split()[0][1:].split("!")[0], name))
 	else:
-		connection.core["privmsg"].main(connection, line.split()[2], "%s: [Weather for %s]: \002Temp:\017 %s°C/%s°F/%s°K  \002Humidity:\017 %s%%  \002Wind Direction:\017 %s  \002Wind Speed:\017 %smph/%skph %s" % (line.split()[0][1:].split("!")[0], name, temp_c, temp_f, temp_k, humidity, wind[0], wind[1], wind[2], tag))
+		connection.core["privmsg"].main(connection, line.split()[2], "%s: [Weather for %s]: \002Temp:\017 %s°C/%s°F/%sK  \002Humidity:\017 %s%%  \002Wind Direction:\017 %s  \002Wind Speed:\017 %smph/%skph %s" % (line.split()[0][1:].split("!")[0], name, temp_c, temp_f, temp_k, humidity, wind[0], wind[1], wind[2], tag))
 	
 def initalisation(connection):
 	pass
