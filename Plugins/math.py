@@ -35,7 +35,7 @@ def main(connection, line):
 	google = urllib2.urlopen(google)
 	source = google.read()
 	print source
-	a = re.findall("<div class=\"wansgk\"><span class=\"sifhoi\">(.+?)</span> </div> <div>", source)
+	a = re.findall("<span class=\"sifhoi\">(.+?)</span> </div>", source)
 	try:
 		connection.core["privmsg"].main(connection, line.split()[2], "%s" % a[0])
 	except:
