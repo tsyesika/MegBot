@@ -27,17 +27,16 @@ def fixurl(url):
 
 def main(connection, line):
 	if len(line.split()) <= 3:
-		connection.core["privmsg"].main(connection, line.split()[2], "Plese enter mathamatical expression.")
+		Channel.send("Plese enter mathamatical expression.")
 		return
 	exp = " ".join(line.split()[4:])
 	google = urllib2.Request("http://google.com/m?q=%s" % fixurl(exp))
 	google.add_header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_6; en-us) AppleWebKit/533.19.4 (KHTML, like Gecko) Version/5.0.3")
 	google = urllib2.urlopen(google)
 	source = google.read()
-	print source
-	a = re.findall("<span class=\"sifhoi\">(.+?)</span> </div>", source)
+	a = re.findall("<span class=\"sifhoi\">(.+?)</span> </div>", source).replace("&nbsp;", ",")
 	try:
-		connection.core["privmsg"].main(connection, line.split()[2], "%s" % a[0])
+		Channel.send("%s" % a[0])
 	except:
 		connection.core["privmsg"].main(connection, line.split()[2], "Math Error: ?")
 		

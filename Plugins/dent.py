@@ -18,7 +18,6 @@
 import json, urllib2, traceback
 
 def main(connection, line):
-	print "being called here"
 	if len(line.split()) <= 4:
 		line = line + " " + line.split()[0].split("!")[0][1:]
 	try:
@@ -31,10 +30,10 @@ def main(connection, line):
 			cid = data[0]["id"]
 			status = data[0]["text"]
 			time = data[0]["created_at"]
-			connection.core["privmsg"].main(connection, line.split()[2], "\002[%s]\017 %s - \002Aprox: %s\017 - http://www.identi.ca/notice/%s" % (name, status, time, cid))
+			Channel.send("\002[%s]\017 %s - \002Aprox: %s\017 - http://www.identi.ca/notice/%s" % (name, status, time, cid))
 		else:
-			connection.core["privmsg"].main(connection, line.split()[2], "Sorry, they haven't posted on identi.ca")
+			Channel.send("Sorry, they haven't posted on identi.ca")
 	except:
 		traceback.print_exc()
-		connection.core["privmsg"].main(connection, line.split()[2], "An error has occured")
+		Channel.send("An error has occured")
 		

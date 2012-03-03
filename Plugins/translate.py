@@ -26,7 +26,7 @@ default_language = "en"
 
 def main(connection, line):
 	if len(line.split()) <= 3:
-		connection.core["privmsg"].main(connection, line.split()[2], "Please supply lang|lang <text to translate> or languages")
+		Channel.send("Please supply lang|lang <text to translate> or languages")
 		return
 	if line.split()[4] == "languages":
 		pass
@@ -50,10 +50,6 @@ def main(connection, line):
 			source = google.read()
 			langtran = re.findall("lass=\"s1\">(.+?)</a>.*>&gt;</a><a href=\"http://translate.google.com/m.*\" class=\"s1\">(.+?)</a></div><br><div dir=\"ltr\" class=\"t0\">", source)[0]
 			result = re.findall("=\"ltr\" class=\"t0\">(.+?)</div>", source)[0]
-			connection.core["privmsg"].main(connection, line.split()[2], "%s: \002[%s to %s]\017 %s" % (line.split()[0][1:].split("!")[0], langtran[0], langtran[1], result))
+			Channel.send("%s: \002[%s to %s]\017 %s" % (line.split()[0][1:].split("!")[0], langtran[0], langtran[1], result))
 		except:
 			traceback.print_exc()
-
-def initalisation(connection):
-	pass
-	

@@ -19,7 +19,7 @@ import urllib2, re, traceback
 
 def main(connection, line):
 	if len(line.split()) <= 3:
-		connection.core["privmsg"].main(connection, line.split()[2], "Please supply the word you want to be defined.")
+		Channel.send("Please supply the word you want to be defined.")
 		return
 	google = urllib2.Request("http://www.urbandictionary.com/define.php?term=%s" % "+".join(line.split()[4:]))
 	google.add_header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_6; en-us) AppleWebKit/533.19.4 (KHTML, like Gecko) Version/5.0.3")
@@ -33,4 +33,4 @@ def main(connection, line):
 	except:
 		definition = "Sorry, can't find a definiton"
 		traceback.print_exc()
-	connection.core["privmsg"].main(connection, line.split()[2], definition)
+	Channel.send(definition)

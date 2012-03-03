@@ -32,7 +32,7 @@ wind_direction = {
 def main(connection, line, url=None, tag=""):
 	# to do - use a proper parsing technique (regex = baddd)
 	if len(line.split()) <= 3:
-		connection.core["privmsg"].main(connection, line.split()[2], "Please supply a place you'd like the weather for.")
+		Channel.send("Please supply a place you'd like the weather for.")
 		return
 	if not url:
 		google = urllib2.urlopen("http://www.google.com/ig/api?weather=%s" % "+".join(line.split()[4:]).replace(",", ""))
@@ -81,9 +81,6 @@ def main(connection, line, url=None, tag=""):
 			main(connection, line, "http://www.google.com/ig/api?weather=%s" % cname, "(Corrected to %s from %s)" % (" ".join(cname.split("+")[1:]), " ".join(line.split()[4:])))
 			return
 		else:
-			connection.core["privmsg"].main(connection, line.split()[2], "%s: Couldn't get data for %s" % (line.split()[0][1:].split("!")[0], name))
+			Channel.send("%s: Couldn't get data for %s" % (line.split()[0][1:].split("!")[0], name))
 	else:
-		connection.core["privmsg"].main(connection, line.split()[2], "%s: [Weather for %s]: \002Temp:\017 %s°C/%s°F/%sK  \002Humidity:\017 %s%%  \002Wind Direction:\017 %s  \002Wind Speed:\017 %smph/%skph %s" % (line.split()[0][1:].split("!")[0], name, temp_c, temp_f, temp_k, humidity, wind[0], wind[1], wind[2], tag))
-	
-def initalisation(connection):
-	pass
+		Channel.send("%s: [Weather for %s]: \002Temp:\017 %s°C/%s°F/%sK  \002Humidity:\017 %s%%  \002Wind Direction:\017 %s  \002Wind Speed:\017 %smph/%skph %s" % (line.split()[0][1:].split("!")[0], name, temp_c, temp_f, temp_k, humidity, wind[0], wind[1], wind[2], tag))
