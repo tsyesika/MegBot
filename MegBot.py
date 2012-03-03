@@ -30,6 +30,8 @@ class Bot(object):
 		self.running = False
 		self.channels = {}
 		self.core = plugins
+		if "lloader" in self.core.keys():
+			self.libraries = self.core["lloader"].main(self)
 		self.plugins = {}
 		self.hooker = hooker
 		self.sock = socket.socket()

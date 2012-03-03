@@ -16,6 +16,8 @@ class Hooker(object):
 		if act not in self.__hooks.keys():
 			return
 		for callback in self.__hooks[act]:
+			if line.split()[0] == "#":
+				callback.Channel = bot.channels[line.split()[1]]
 			callback(bot, line)
 
 	def register_hook(self, hook, callback):

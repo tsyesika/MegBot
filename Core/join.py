@@ -14,7 +14,11 @@
 #   You should have received a copy of the GNU General Public License
 #   along with MegBot.  If not, see <http://www.gnu.org/licenses/>.
 ##
+import time
 
 def main(connection, channel):
 	""" Joins channel specified """
+	if connection.libraries:
+		connection.channels[channel] = connection.libraries["IRCObjects"].L_Channel(connection, channel)
+		connection.channels[channel].__setuphooks__(connection)
 	connection.core["raw"].main(connection, "JOIN %s" % channel)
