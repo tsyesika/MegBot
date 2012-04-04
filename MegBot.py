@@ -64,10 +64,9 @@ if __name__ == "__main__":
 	config = load_source("config", "config.py")
 	coreplugins = {}
 	for c in glob("Core/*.py"):
-		if os.name == "nt":
-			coreplugins[c.replace("Core\\", "").replace(".py", "")] = load_source(c.replace("Core\\", "").replace(".py", ""), c)
-		else:
-			coreplugins[c.replace("Core/", "").replace(".py", "")] = load_source(c.replace("Core/", "").replace(".py", ""), c)
+		# Thanks to webpigeon (https://github.com/xray7224/MegBot/issues/3)
+		name = os.path.splitext(os.path.basename(c))[0]
+		coreplugins[name] = load_source(name, c)
 	bots = {}
 	for network in config.networks.keys():
 		if not "active" in config.networks[network].keys() or config.networks[network]["active"]:
