@@ -28,7 +28,7 @@ def main(connection, line):
 			Channel.send("Please enter a location")
 			return
 	if "-set" in sline:
-		userzones[sline[0].split("!")[0][1:]] = sline[sline.index("-set")+1:]
+		userzones[sline[0].split("!")[0][1:]] = " ".join(sline[sline.index("-set")+1:])
 		Channel.send("Location set ^_^")
 	else:
 		google = urllib2.Request("http://www.google.com/search?q=time+%s" % sline[4].replace(" ", "%20"))
