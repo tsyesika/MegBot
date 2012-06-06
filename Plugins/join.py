@@ -17,6 +17,9 @@
 
 def main(connection, line):
 	if len(line.split()) <= 3:
+		# Being called by bot.
+		return 
+	if "Channel" in dir():
 		Channel.send("Please specify a channel to join.")
 		return
 	connection.core["raw"].main(connection, "JOIN %s" % line.split()[4])

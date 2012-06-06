@@ -31,7 +31,7 @@ def main(connection, line):
 			newplugin.write(plugin.read())
 			newplugin.close()
 			shutil.move("temp", connection.config.paths["plugin"] + pluginname)
-			connection.plugins[pluginname.replace(".py", "")] = imp.load_source(pluginname.replace(".py", ""), connection.config.paths["plugin"] + pluginname)
+			connection.core["pluginload"].main(connection, plugin)
 			Channel.send("Plugin has been retrived & loaded.")
 			return
 		except:
