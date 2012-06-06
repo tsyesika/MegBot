@@ -30,23 +30,26 @@ class Bot(object):
 		self.running = False
 		self.channels = {}
 		self.core = plugins
-		if "lloader" in self.core.keys():
-			self.libraries = self.core["lloader"].main(self)
-		self.plugins = {}
 		self.hooker = hooker
+		if "Corelloader" in self.core.keys():
+			self.libraries = self.core["Corelloader"].main(self)
+		self.server = self.libraries["IRCObjects"].L_Server(self)
+		self.server.__setuphooks__(self)
+		self.plugins = {}
 		self.sock = socket.socket()
-		self.core["connect"].main(self)
-		self.core["pluginloader"].main(self)
+		self.core["Coreconnect"].main(self)
+		self.core["Corepluginloader"].main(self)
+		#print self.core
 		self.run()
 	def run(self):
 		while not self.running:
 			sleep(.1)
 		while True:
-			data = self.core["parser"].main(self, [])
+			data = self.core["Coreparser"].main(self, [])
 			print data
 			for line in data.split("\r\n"):
 			 	if line:
-					self.core["ping"].main(self, line.split())
+					self.core["Coreping"].main(self, line.split())
 					if len(line.split()) > 1:
 						try:
 							self.hooker.hook(self, line.split()[1], line)
@@ -55,7 +58,7 @@ class Bot(object):
 					if len(line.split()) > 3 and len(line.split()[3]) > 1 and line.split()[3][1] == self.settings["trigger"]:
 						if line.split()[3][2:] in self.plugins.keys():
 							try:
-								self.core["executor"].executor(self, line, line.split()[3][2:])
+								self.core["Coreexecutor"].executor(self, line, line.split()[3][2:])
 							except:
 								traceback.print_exc() # Debug lines
 								print self.times
@@ -65,12 +68,12 @@ if __name__ == "__main__":
 	coreplugins = {}
 	for c in glob("Core/*.py"):
 		# Thanks to webpigeon (https://github.com/xray7224/MegBot/issues/3)
-		name = os.path.splitext(os.path.basename(c))[0]
+		name = "Core%s" % os.path.splitext(os.path.basename(c))[0]
 		coreplugins[name] = load_source(name, c)
 	bots = {}
 	for network in config.networks.keys():
 		if not "active" in config.networks[network].keys() or config.networks[network]["active"]:
-			bots[network] = start_new_thread(Bot, (config.networks[network], coreplugins["hooker"].Hooker(), coreplugins, config))
+			bots[network] = start_new_thread(Bot, (config.networks[network], coreplugins["Corehooker"].Hooker(), coreplugins, config))
 	try:
 		while True:
 			sleep(5)

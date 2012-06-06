@@ -5,7 +5,7 @@
 class Standard():
 	""" Never instantiate """
 	def __setuphooks__(self, connection):
-		if "hooker" in connection.core.keys():
+		if "Corehooker" in connection.core.keys():
 			# Woot, we got ability to have hooks
 			for anm in dir(self):
 				if anm.startswith("on_"):
@@ -34,7 +34,7 @@ class L_Channel(Standard):
 		self.recently_sent = []
 		self.recently_recved = []
 	def send(self, message):
-		self.connection.core["privmsg"].main(self.connection, self.name, message)
+		self.connection.core["Coreprivmsg"].main(self.connection, self.name, message)
 		self.recently_sent.append(message)
 		if len(self.recently_sent) <= 5:
 			self.recently_sent.pop(0)
@@ -42,6 +42,24 @@ class L_Channel(Standard):
 		nick = message.split()[0][1:].split("!")[0]
 		self.nicks.append(nick)
 		self.normals.append(nick)
+	def set_topic(self, topic):
+		self.topic = topic
+		self.connection.server.raw("TOPIC %s :%s" % (self.name, topic))
+	def voice(self, nick):
+		if self.connection.server:
+			self.connection.server.raw("MODE %s +v %s" % (self.name, nick))
+	def devoice(self, nick):
+		if self.connection.server:
+			self.connection.server.raw("MODE %s -v %s" % (self.name, nick))
+	def op(self, nick):
+		if self.connection.server:
+			self.connection.server.raw("MODE %s +o %s" % (self.name, nick))
+	def deop(self, nick):
+		if self.connection.server:
+			self.connection.server.raw("MODE %s -o %s" % (self.name, nick))
+	def set_mode(self, mode):
+		if self.connection.server:
+			self.connection.server.raw("MODE %s %s" % (self.name, mode))
 	def on_MODE(self, connection, message):
 		mode = message.split()[3]
 		if len(message.split()) > 4:
@@ -114,6 +132,67 @@ class L_Channel(Standard):
 		message = " ".join(message[message.index(self.name)+1:])[1:]
 		self.topic = message
 		
-		
-
-	
+class L_Server(Standard):
+	def __init__(self, connection):
+		self.connection = connection
+		self.channels = self.connection.channels
+		self.users = 0
+		self.servers = 0
+		self.channels = 0
+		self.ops = 0
+		self.motd = []
+		self.nick = connection.settings["nick"]
+	def on_JOIN(self, connection, message):
+		self.channels = self.connection.channels
+	def send(self, nick, message=None):
+		if not message:
+			# Assumes it's a raw message
+			self.connection.core["Coreraw"].main(connection, nick)
+		else:
+			self.connecton.core["Coreprivmsg"].main(conneciton, nick, message)
+	def join(self, channel):
+		self.connection.core["Corejoin"].main(connection, channel)
+	def part(self, channel):
+		self.connection.core["Corepart"].main(connection, channel)
+	def on_266(self, connection, message):
+		number = message.split()[-3]
+		try:
+			self.users = int(number)
+		except:
+			pass
+	def on_251(self, connection, message):
+		number = message.split()[-2]
+		try:
+			self.servers = int(number)
+		except:
+			pass
+	def on_254(self, connection, message):
+		number = message.split()[-3]
+		try:
+			self.channels = int(number)
+		except:
+			pass
+	def on_252(self, connection, message):
+		number = message.split()[-3]
+		try:
+			self.ops = int(number)
+		except:
+			pass
+	def on_372(self, connection, message):
+		self.motd.append(" ".join(message.split()[4:]))
+		if self.motd[-1][-2:] == "\r\n":
+			self.motd[-1] = self.motd[:-2]
+	def nick(self, nick):
+		# sets nickname
+		self.connection.core["Coreraw"].main(connection, "NICK %s" % nick)
+		self.connection.hooker.hook(self, "nick", nick)
+	def on_NICK(self, connection, nick):
+		self.nick = nick
+	def mode(self, user, mode=None):
+		if not mode:
+			# Assumes user to be mode and it to be set on self
+			mode = user
+			user = self.nick
+		self.raw("MODE %s %s" % (user, mode))
+	def oper(self, user, password):
+		self.raw("OPER %s %s" % (user, password))

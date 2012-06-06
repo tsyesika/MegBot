@@ -21,4 +21,4 @@ def main(connection, channel):
 	if connection.libraries:
 		connection.channels[channel] = connection.libraries["IRCObjects"].L_Channel(connection, channel)
 		connection.channels[channel].__setuphooks__(connection)
-	connection.core["raw"].main(connection, "JOIN %s" % channel)
+	connection.core["Coreraw"].main(connection, "JOIN %s" % channel)

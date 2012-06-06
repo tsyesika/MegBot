@@ -4,8 +4,8 @@ def main(connection):
 		import ssl # Moved here as ssl is excluded on some python installs distributed with some linuxs 
 		connection.sock = ssl.wrap_socket(connection.sock)
 	connection.sock.connect((connection.settings["address"], connection.settings["port"]))
-	connection.core["raw"].main(connection, "NICK %s" % connection.settings["nick"])
-	connection.core["raw"].main(connection, "USER 8 * %s :%s" % (connection.settings["ident"], connection.settings["realname"]))
+	connection.core["Coreraw"].main(connection, "NICK %s" % connection.settings["nick"])
+	connection.core["Coreraw"].main(connection, "USER 8 * %s :%s" % (connection.settings["ident"], connection.settings["realname"]))
 	connection.running = True
 	return
 def initalise():
