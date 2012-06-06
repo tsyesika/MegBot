@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ##
 #This file is part of MegBot.
 #
@@ -21,17 +22,28 @@ def main(connection, line):
 	if len(line.split()) <= 3:
 		connection.core["privmsg"].main(connection, line.split()[2], "Please supply the word you want to be defined.")
 		return
-	google = urllib2.Request("http://www.google.com/search?q=define+%s" % "+".join(line.split()[4:]))
+	st = "+".join(line.split()[4:])
+	google = urllib2.Request("http://www.google.com/m?q=define+%s" % st)
 	google.add_header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_6; en-us) AppleWebKit/533.19.4 (KHTML, like Gecko) Version/5.0.3")
 	google = urllib2.urlopen(google)
 	source = google.read()
-	try:
-		definition = re.findall("<span class=f>Noun: </span>(.+?)</div><div>", source)[0].replace("&quot;", "\"")
-		
-		definition = "%s: \002%s\017 - %s" % (line.split()[0][1:].split("!")[0], " ".join(line.split()[4:]), definition)
-	except:
-		definition = "Sorry, can't find a definiton"
-	connection.core["privmsg"].main(connection, line.split()[2], definition)
+	pron = re.findall("<span class=\"t5vw2s\">(.+?)</span>", source)[0]
+	if pron.replace("·", "").lower() == st.lower():
+		correction = None
+	else:
+		correction = pron.replace("·�", "")
+	chks = re.findall("<br/><span class=\"ut3asb\">(.+?):</span><span class=\"hxh2cq\">(.+?)</span>", source)
+	if not chks:
+		chks = re.findall("<span class=\"cg2aoo\">(.+?)\</span> <br/><span class=\"hxh2cq\">1. (.+?)</span>", source)
+	if not chks:
+		Channel.send("Sorry can't find definition for %s" % st)
+		return 
+	message = ""
+	for x in chks:
+		message += "| \002%s\017 - %s " % tuple(x)
+	if correction:
+		message += " (Corrected from: %s)" % st
+	Channel.send("[%s] %s" % (pron, message[2:]))
 
 def initalisation(connection):
 	pass
