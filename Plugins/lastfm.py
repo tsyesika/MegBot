@@ -22,8 +22,11 @@ def main(connection, line):
 		user = line.split()[0].split("!")[0][1:]
 	else:
 		user = line.split()[4]
-	lastfm = urllib2.urlopen("http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=%s&api_key=b25b959554ed76058ac220b7b2e0a026&format=json" % user)
-	data = lastfm.read()
-	data = json.loads(data)
-	song = data[u'recenttracks'][u'track'][0]
-	Channel.send("%s is listening to: %s - %s" % (user, song[u'name'].encode('utf-8'), song[u'artist'][u'#text'].encode('utf-8')))
+	try:
+		lastfm = urllib2.urlopen("http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=%s&api_key=b25b959554ed76058ac220b7b2e0a026&format=json" % user)
+		data = lastfm.read()
+		data = json.loads(data)
+		song = data[u'recenttracks'][u'track'][0]
+		Channel.send("%s is/was listening to: %s - %s" % (user, song[u'name'].encode('utf-8'), song[u'artist'][u'#text'].encode('utf-8')))
+	except:
+		Channel.send("Sorry there was an error, check your username?")
