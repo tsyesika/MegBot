@@ -23,46 +23,54 @@ from imp import load_source
 from glob import glob
 
 class Bot(object):
-	def __init__(self, settings, hooker, plugins, config):
+	def __init__(self, name, settings, hooker, plugins, config, run=True):
 		"""Initalises bot"""
+		self.name = name
 		self.config = config
 		self.settings = settings
 		self.running = False
 		self.channels = {}
 		self.core = plugins
 		self.hooker = hooker
-		if "Corelloader" in self.core.keys():
-			self.libraries = self.core["Corelloader"].main(self)
-		self.server = self.libraries["IRCObjects"].L_Server(self)
-		self.server.__setuphooks__(self)
-		self.plugins = {}
 		self.sock = socket.socket()
 		self.core["Coreconnect"].main(self)
-		self.core["Corepluginloader"].main(self)
-		#print self.core
-		self.run()
+		if run:
+			self.plugins = {}
+			if "Corelloader" in self.core.keys() and run:
+				self.libraries = self.core["Corelloader"].main(self)
+			self.server = self.libraries["IRCObjects"].L_Server(self)
+			self.server.__setuphooks__(self)
+			self.core["Corepluginloader"].main(self)
+			self.run()
 	def run(self):
-		while not self.running:
-			sleep(.1)
 		while True:
-			data = self.core["Coreparser"].main(self, [])
-			print data
-			for line in data.split("\r\n"):
-			 	if line:
-					self.core["Coreping"].main(self, line.split())
-					if len(line.split()) > 1:
-						try:
-							self.hooker.hook(self, line.split()[1], line)
-						except:
-							traceback.print_exc()
-					if len(line.split()) > 3 and len(line.split()[3]) > 1 and line.split()[3][1] == self.settings["trigger"]:
-						if line.split()[3][2:] in self.plugins.keys():
+			while not self.running:
+				sleep(.1)
+			while self.running:
+				try:	
+					data = self.core["Coreparser"].main(self, [])
+				except:
+					self.running = False
+				for line in data.split("\r\n"):
+				 	if line:
+				 		print "[IN] %s" % line	
+						self.core["Coreping"].main(self, line.split())
+						if len(line.split()) > 1:
 							try:
-								self.core["Coreexecutor"].executor(self, line, line.split()[3][2:])
+								self.hooker.hook(self, line.split()[1], line)
 							except:
-								traceback.print_exc() # Debug lines
-								print self.times
-
+								traceback.print_exc()
+						if len(line.split()) > 3 and len(line.split()[3]) > 1 and line.split()[3][1] == self.settings["trigger"]:
+							if line.split()[3][2:] in self.plugins.keys():
+								try:
+									self.core["Coreexecutor"].executor(self, line, line.split()[3][2:])
+								except:
+									traceback.print_exc() # Debug lines
+			try:
+				self.sock.close()
+			except:
+				pass
+			self.__init__(self.name, self.settings, self.hooker, self.core, self.config, False) 
 if __name__ == "__main__":
 	config = load_source("config", "config.py")
 	coreplugins = {}
@@ -73,10 +81,11 @@ if __name__ == "__main__":
 	bots = {}
 	for network in config.networks.keys():
 		if not "active" in config.networks[network].keys() or config.networks[network]["active"]:
-			bots[network] = start_new_thread(Bot, (config.networks[network], coreplugins["Corehooker"].Hooker(), coreplugins, config))
+			bots[network] = start_new_thread(Bot, (network, config.networks[network], coreplugins["Corehooker"].Hooker(), coreplugins, config))
 	try:
 		while True:
-			sleep(5)
+			sleep(2)
+					
 	except KeyboardInterrupt:
 		print "Ctrl-C been hit, run for your lives !"
 		exit()
