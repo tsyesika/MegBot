@@ -48,7 +48,7 @@ def main(connection, line):
 			source = google.read()
 			langtran = re.findall("lass=\"s1\">(.+?)</a>.*>&gt;</a><a href=\"http://translate.google.com/m.*\" class=\"s1\">(.+?)</a></div><br><div dir=\"ltr\" class=\"t0\">", source)[0]
 			result = re.findall("=\"ltr\" class=\"t0\">(.+?)</div>", source)[0]
-			Channel.send("%s: \002[%s to %s]\017 %s" % (line.split()[0][1:].split("!")[0], langtran[0], langtran[1], result))
+			Channel.send(Helper.StripHTML("%s: \002[%s to %s]\017 %s" % (line.split()[0][1:].split("!")[0], langtran[0], langtran[1], result)))
 		except:
 			traceback.print_exc()
 
