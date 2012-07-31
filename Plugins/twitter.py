@@ -35,4 +35,5 @@ def main(connection, line):
 	except:
 		traceback.print_exc()
 		Channel.send("An error has occured")
-		
+
+help = "Tries to find the last tweet by specified user, if no one specified tries to use your nickname"

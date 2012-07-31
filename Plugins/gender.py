@@ -37,3 +37,4 @@ def main(connection, line):
 	else:
 		Channel.send("Sorry we don't know %s, please check later for it" % name)
 
+help = "Uses MegWorld's API to try and work out the gender from a given real name"

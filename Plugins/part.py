@@ -20,4 +20,6 @@ def main(connection, line):
 		connection.core["raw"].main(connection, "PART %s" % line.split()[2])
 		return
 	connection.core["raw"].main(connection, "PART %s" % line.split()[4])
-	Channel.send("Parted.")
+	Channel.send("Parted from %s." % line.split()[4])
+
+help = "Parts from a specified channel"

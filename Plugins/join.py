@@ -23,4 +23,6 @@ def main(connection, line):
 		Channel.send("Please specify a channel to join.")
 		return
 	connection.core["raw"].main(connection, "JOIN %s" % line.split()[4])
-	Channel.send("Joined.")
+	Channel.send("%s joined." % line.split()[4])
+
+help = "Tries to join the specified channel."

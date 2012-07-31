@@ -36,4 +36,5 @@ def main(connection, line):
 	except:
 		traceback.print_exc()
 		Channel.send("An error has occured")
-		
+
+help = "Gets the last dent from a specific user (or tries your nickname if non is given) from identi.ca"

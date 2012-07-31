@@ -41,4 +41,6 @@ def main(connection, line):
 		except:
 			Channel.send("Sorry, couldn't retrive time.")
 	userzones.sync()
-	userzones.close()	
+	userzones.close()
+
+help = "Uses google to look up the time, if no time is specified it will check to see if any time is save with it. Use -set <location> to set a location"

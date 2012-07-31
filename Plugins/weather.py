@@ -84,3 +84,5 @@ def main(connection, line, url=None, tag=""):
 			Channel.send("%s: Couldn't get data for %s" % (line.split()[0][1:].split("!")[0], name))
 	else:
 		Channel.send("%s: [Weather for %s]: \002Temp:\017 %s°C/%s°F/%sK  \002Humidity:\017 %s%%  \002Wind Direction:\017 %s  \002Wind Speed:\017 %smph/%skph %s" % (line.split()[0][1:].split("!")[0], name, temp_c, temp_f, temp_k, humidity, wind[0], wind[1], wind[2], tag))
+
+help = "Uses google to try and look up a weather from a specified place."

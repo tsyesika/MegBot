@@ -30,3 +30,5 @@ def main(connection, line):
 		Channel.send("%s is/was listening to: %s - %s" % (user, song[u'name'].encode('utf-8'), song[u'artist'][u'#text'].encode('utf-8')))
 	except:
 		Channel.send("Sorry there was an error, check your username?")
+
+help = "Gets the last scrobbled song from a specified user (if no one was specifies it tries your nick) from last.fm"

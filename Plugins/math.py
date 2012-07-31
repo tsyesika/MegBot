@@ -171,4 +171,4 @@ def main(connection, line):
 	except:
 		connection.core["privmsg"].main(connection, line.split()[2], "Math Error: ?")
 		
-		
+help = "Uses google to do calculations or conversions"

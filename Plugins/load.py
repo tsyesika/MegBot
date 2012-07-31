@@ -37,13 +37,18 @@ def main(connection, line):
 		except:
 			Channel.send("Failed to retrive plugin or load.")
 	if os.path.isfile(connection.config.paths["plugin"] + line.split()[4] + ".py"):
-		if "unloader"  in dir(connection.plugins[line.split()[4]]):
+		e = True
+		if not line.split()[4] in connection.plugins.keys():
+			e = False
+		if not e and "unloader" in dir(connection.plugins[line.split()[4]]):
 			connection.plugins[line.split()[4]].unloader(connection)
 		connection.plugins[line.split()[4]] = imp.load_source(line.split()[4], connection.config.paths["plugin"] + line.split()[4] + ".py")
 	else:
 		Channel.send("Can't find plugin.")
 		return
-	if line.split()[4] in connection.plugins.keys():
+	if e:
 		Channel.send("Plugin has been reloaded.")
 	else:
 		Channel.send("Plugin has been loaded.")
+
+help = "Loads or reloads a plugin (can take a URL)"

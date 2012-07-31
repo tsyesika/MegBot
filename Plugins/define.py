@@ -47,5 +47,4 @@ def main(connection, line):
 		message += " (Corrected from: %s)" % st
 	Channel.send(Helper.StripHTML("[%s] %s" % (pron, message[2:])))
 
-def initalisation(connection):
-	pass
+help = "Uses google to define a word you specify"

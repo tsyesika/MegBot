@@ -16,6 +16,10 @@
 ##
 
 import random
-random.seed() #makes it a tad better ;)
 def main(connection, line):
-	Channel.send(random.choice(["sure", "yerp", "no", "nope", "I'm not sure", "I'm to tired right now, ask later."]))
+	if len(line.split()) <= 4:
+		Channel.send("You got a question for me?")
+	else:
+		Channel.send(random.choice(["sure", "yerp", "no", "nope", "I'm not sure", "I'm to tired right now, ask later."]))
+
+help = "Randomly chooses an option to a question you ask."

@@ -53,3 +53,5 @@ def main(connection, line):
 			Channel.send("%s: \002[%s to %s]\017 %s" % (line.split()[0][1:].split("!")[0], langtran[0], langtran[1], result))
 		except:
 			traceback.print_exc()
+
+help = "Uses google to try and translate a specified piece of text. <from>|<to> <text>. Leave language pair blank to have auto detect."
