@@ -22,8 +22,6 @@ supported = ["en", "de", "cy", "af", "sq", "ar", "hy", "az", "eu", "be", "bn", "
 			"pl", "pt", "ro", "ru", "sr", "sk", "sl", "es", "sw", "sv", "ta", "te", "th", "tr", "uk", "ur", "vi", "yi"]
 
 # This is the default language if no language is specified (languages which can be default languages arei n supported)
-default_language = "en"
-
 def main(connection, line):
 	if len(line.split()) <= 3:
 		Channel.send("Please supply lang|lang <text to translate> or languages")
@@ -40,7 +38,7 @@ def main(connection, line):
 				langpair = ("auto", line.split()[4])
 				ltranslate = "+".join(line.split()[5:])
 			else:
-				langpair = ("auto", default_language)
+				langpair = ("auto", connection.config.plugin_options["translate"]["default_language"])
 				ltranslate = "+".join(line.split()[4:])
 		try:
 			# Bug detection faulty

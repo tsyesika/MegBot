@@ -6,17 +6,18 @@
 networks = {
 	"MegNet":{
 		"address":"irc.megworld.co.uk",
-		"port":9000,
+		"port":6667,
 		"nick":"",
 		"ident":"",
-		"realname":"MegTest",
+		"realname":"",
 		"ipv6":False,
-		"ssl":True,
+		"ssl":False,
 		"trigger":"",
 		"NSPassword":"",
 		"commands":[],
 		"modes":["b"],
-		"channels":[]
+		"active":False,
+		"channels":["#bots"]
 	},
 	"Freenode":{
 		"address":"irc.freenode.net",
@@ -49,4 +50,10 @@ paths = {
 	"logs":"Logging/",
 	"databases":"Databases/",
 	"libraries":"Libraries/"
+}
+
+plugin_options = {
+	"translate":{
+		"default_language":"en"
+	}
 }
