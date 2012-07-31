@@ -29,7 +29,7 @@ def main(bot, line):
 			else:
 				cout += ", " + x
 		if done:
-			Channel.send("%s: %s" % (nick, cout))
+			Channel.send("%s: %s" % (nick, cout[2:]))
 		else:
 			Channel.send("%s: It seems no plugins are loaded, please speak to the bot admin." % nick)
 	else:
