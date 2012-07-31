@@ -23,7 +23,11 @@ def main(connection, line):
 		return
 	google = urllib2.Request("http://www.urbandictionary.com/define.php?term=%s" % "+".join(line.split()[4:]))
 	google.add_header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_6; en-us) AppleWebKit/533.19.4 (KHTML, like Gecko) Version/5.0.3")
-	google = urllib2.urlopen(google)
+	try:
+		google = urllib2.urlopen(google)
+	except:
+		Channel.send("Cannot access urbandictionary.com")
+		return
 	source = google.read()
 	try:
 		name = re.findall("<td class='word'>\n(.+?)\n</td>", source)[0]
@@ -33,4 +37,4 @@ def main(connection, line):
 	except:
 		definition = "Sorry, can't find a definiton"
 		traceback.print_exc()
-	Channel.send(definition)
+	Channel.send(Helper.StripHTML(definition))
