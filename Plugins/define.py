@@ -40,10 +40,12 @@ def main(connection, line):
 		return 
 	message = ""
 	for x in chks:
+		if x[0][0] == "(":
+			x = (x[0].split("(")[1].split(")")[0], x[1])
 		message += "| \002%s\017 - %s " % tuple(x)
 	if correction:
 		message += " (Corrected from: %s)" % st
-	Channel.send("[%s] %s" % (pron, message[2:]))
+	Channel.send(Helper.StripHTML("[%s] %s" % (pron, message[2:])))
 
 def initalisation(connection):
 	pass

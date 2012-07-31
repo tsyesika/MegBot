@@ -2,6 +2,9 @@
 ##
 # IRC Objects
 ##
+
+import re
+
 class Standard():
 	""" Never instantiate """
 	def __setuphooks__(self, connection):
@@ -10,6 +13,12 @@ class Standard():
 			for anm in dir(self):
 				if anm.startswith("on_"):
 					connection.hooker.register_hook(anm, eval("self.%s" % anm))
+class L_Helper(Standard):
+	def StripHTML(self, message):
+		p = re.compile(r'<.*?>')
+		return p.sub("", message)
+
+
 class L_Channel(Standard):
 	def __init__(self, connection, name):
 		self.connection = connection # Connection of bot, instance.
