@@ -74,7 +74,7 @@ def main(connection, line):
 			cid = data[0]["id"]
 			status = data[0]["text"]
 			time = ConvertTime(data[0]["created_at"])
-			Channel.send("\002[%s]\017 %s - \002Approx: %s ago\017 - http://www.identi.ca/notice/%s" % (name, status, time, cid))
+			Channel.send("\002[%s]\017 %s - \002Approx:\017 %s ago - \002Link:\017http://www.identi.ca/notice/%s" % (name, status, time, cid))
 		else:
 			Channel.send("Sorry, they haven't posted on identi.ca")
 	except:
