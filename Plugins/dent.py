@@ -86,9 +86,9 @@ def main(connection, line):
 			else:
 				Channel.send("Sorry, they haven't posted on identi.ca")
 				return
-	Channel.send("\002[%s]\017 %s - \002Approx:\017 %s ago - \002Link:\017http://www.identi.ca/notice/%s" % (name, status, time, cid))
 	except:
 		traceback.print_exc()
 		Channel.send("An error has occured")
+	Channel.send("\002[%s]\017 %s - \002Approx:\017 %s ago - \002Link:\017http://www.identi.ca/notice/%s" % (name, status, time, cid))
 
 help = "Gets the last dent from a specific user (or tries your nickname if non is given) from identi.ca"
