@@ -68,15 +68,25 @@ def main(connection, line):
 		i = urllib2.urlopen("http://identi.ca/api/statuses/user_timeline.json?screen_name=%s" % line.split()[-1])
 		data = i.read()
 		data = json.loads(data)
-		if data:
+		if data and not ("-g" in line.split() or "-group" in line.split()):
 			# this is from the http://status.net/wiki/Twitter-compatible_API
 			name = data[0]["user"]["screen_name"]
 			cid = data[0]["id"]
 			status = data[0]["text"]
 			time = ConvertTime(data[0]["created_at"])
-			Channel.send("\002[%s]\017 %s - \002Approx:\017 %s ago - \002Link:\017http://www.identi.ca/notice/%s" % (name, status, time, cid))
+			
 		else:
-			Channel.send("Sorry, they haven't posted on identi.ca")
+			i = urllib2.urlopen("http://identi.ca/api/statusnet/groups/timeline/%s.json" % line.split()[-1])
+			data = i.read()
+			data = json.loads(data)
+			if data:
+				name = data[0]["user"]["screen_name"]
+				cid = data[0]["id"]
+				time = ConvertTime(data[0]["created_at"])
+			else:
+				Channel.send("Sorry, they haven't posted on identi.ca")
+				return
+	Channel.send("\002[%s]\017 %s - \002Approx:\017 %s ago - \002Link:\017http://www.identi.ca/notice/%s" % (name, status, time, cid))
 	except:
 		traceback.print_exc()
 		Channel.send("An error has occured")
