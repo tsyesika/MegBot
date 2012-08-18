@@ -82,6 +82,7 @@ def main(connection, line):
 			if data:
 				name = data[0]["user"]["screen_name"]
 				cid = data[0]["id"]
+				status = data[0]["text"]
 				time = ConvertTime(data[0]["created_at"])
 			else:
 				Channel.send("Sorry, they haven't posted on identi.ca")
@@ -91,4 +92,4 @@ def main(connection, line):
 		Channel.send("An error has occured")
 	Channel.send("\002[%s]\017 %s - \002Approx:\017 %s ago - \002Link:\017http://www.identi.ca/notice/%s" % (name, status, time, cid))
 
-help = "Gets the last dent from a specific user (or tries your nickname if non is given) from identi.ca"
+help = "Gets the last dent from a specific user/group (or tries your nickname if non is given) from identi.ca (for group support use -g or -group)"
