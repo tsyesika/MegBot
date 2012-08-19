@@ -21,28 +21,49 @@ def main(connection, line):
 	if len(line.split()) <= 3:
 		Channel.send("Please enter plugin name.")
 		return
-	if line.split()[4].find("/")!=-1:
+	
+	pname = line.split()[-1]
+	
+	if len(line.split()) > 5:
+		if line.split()[4] == "-core" or line.split()[4] == "-c":
+			ppath = connection.config.path["coreplugins"]
+			pbank = connection.core
+			pkey = "Core%s" % pname
+		elif line.split()[4] == "-library" or line.split()[4] == "-l":
+			ppath = connection.config.path["libraries"]
+			pbank = connection.libraries
+			pkey = pname
+		else:	
+			ppath = connection.config.path["plugin"]
+			pbank = connection.plugins 
+			pkey = pname
+	else:
+		ppath = connection.config.path["plugin"]
+		pbank = connection.plugins
+		pkey = pname
+	
+	if pname.find("/")=-1:
 		try:
-			pluginname = line.split()[4].split("/")[-1]
+			pluginname = pname.split("/")[-1]
 			if not pluginname.endswith(".py"):
 				pluginname = pluginname + ".py"
 			newplugin = open("temp", "w")
 			plugin = urllib2.urlopen(line.split()[4])
 			newplugin.write(plugin.read())
 			newplugin.close()
-			shutil.move("temp", connection.config.paths["plugin"] + pluginname)
+			shutil.move("temp", ppath + pluginname)
 			connection.core["pluginload"].main(connection, plugin)
 			Channel.send("Plugin has been retrived & loaded.")
 			return
 		except:
 			Channel.send("Failed to retrive plugin or load.")
-	if os.path.isfile(connection.config.paths["plugin"] + line.split()[4] + ".py"):
+	if os.path.isfile("%s%s.py" % (ppath, pname)):
 		e = True
-		if not line.split()[4] in connection.plugins.keys():
+		if not pkey in pbank.keys():
 			e = False
-		if not e and "unloader" in dir(connection.plugins[line.split()[4]]):
-			connection.plugins[line.split()[4]].unloader(connection)
-		connection.plugins[line.split()[4]] = imp.load_source(line.split()[4], connection.config.paths["plugin"] + line.split()[4] + ".py")
+		if not e and "unloader" in dir(pbank[pkey]):
+			pbank[pkey].unloader(connection)
+		pbank[pkey] = imp.load_source(pkey, pbank + pname + ".py")
 	else:
 		Channel.send("Can't find plugin.")
 		return
