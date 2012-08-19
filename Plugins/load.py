@@ -42,7 +42,7 @@ def main(connection, line):
 		pbank = connection.plugins
 		pkey = pname
 	
-	if pname.find("/")=-1:
+	if pname.find("/")!=-1:
 		try:
 			pluginname = pname.split("/")[-1]
 			if not pluginname.endswith(".py"):
