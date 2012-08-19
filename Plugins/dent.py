@@ -38,7 +38,7 @@ def main(connection, line):
 			if data:
 				name = data[0]["user"]["screen_name"]
 				cid = data[0]["id"]
-				status = data[0]["text"]0
+				status = data[0]["text"]
 				time = Helper.HumanTime(float(data[0]["created_at"]))
 			else:
 				Channel.send("Sorry, they haven't posted on identi.ca")
