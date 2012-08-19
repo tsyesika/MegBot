@@ -31,8 +31,8 @@ def main(connection, line):
 		userzones[sline[0].split("!")[0][1:]] = " ".join(sline[sline.index("-set")+1:])
 		Channel.send("Location set ^_^")
 	else:
-		google = urllib2.Request("http://www.google.com/search?q=time+%s" % sline[4].replace(" ", "%20"))
-		google.add_header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_6; en-us) AppleWebKit/533.19.4 (KHTML, like Gecko) Version/5.0.3")
+		google = urllib2.Request("http://www.google.co.uk/search?q=time+%s" % sline[4].replace(" ", "%20"))
+		google.add_header("User-Agent", "Mozilla/5.0 (compatible; U; Haiku x86; en-GB) AppleWebKit/536.10 (KHTML, like Gecko) Haiku/R1 WebPositive/1.1 Safari/536.10")
 		google = urllib2.urlopen(google)
 		source = google.read()
 		try:
