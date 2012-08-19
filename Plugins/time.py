@@ -30,6 +30,8 @@ def main(connection, line):
 	if "-set" in sline:
 		userzones[sline[0].split("!")[0][1:]] = " ".join(sline[sline.index("-set")+1:])
 		Channel.send("Location set ^_^")
+	elif "Freeman" in sline or "freeman" in sline:
+		Channel.send("Is it really that ... time again? It seems as if you only just arrived.")
 	else:
 		google = urllib2.Request("http://www.google.co.uk/search?q=time+%s" % sline[4].replace(" ", "%20"))
 		google.add_header("User-Agent", "Mozilla/5.0 (compatible; U; Haiku x86; en-GB) AppleWebKit/536.10 (KHTML, like Gecko) Haiku/R1 WebPositive/1.1 Safari/536.10")
