@@ -37,7 +37,8 @@ class L_Helper(Standard):
 			parse = parse.replace("%z", "")
 			t = time.strptime(nt, parse)
 			t = time.mktime(t)
-		
+		else:
+			t = float(t)
 		# Find out time passed from now/f.
 		if f:
 			t = f-t
