@@ -29,7 +29,7 @@ def main(connection, line):
 			name = data[0]["user"]["screen_name"]
 			cid = data[0]["id"]
 			status = data[0]["text"]
-			time = Helper.HumanTime(float(data[0]["created_at"]))
+			time = Helper.HumanTime(str(data[0]["created_at"]), "%a %b %d %H:%M:%S %Y")
 			
 		else:
 			i = urllib2.urlopen("http://identi.ca/api/statusnet/groups/timeline/%s.json" % line.split()[-1])
@@ -39,7 +39,7 @@ def main(connection, line):
 				name = data[0]["user"]["screen_name"]
 				cid = data[0]["id"]
 				status = data[0]["text"]
-				time = Helper.HumanTime(float(data[0]["created_at"]))
+				time = Helper.HumanTime(data[0]["created_at"], "%a %b %d %H:%M:%S %Y")
 			else:
 				Channel.send("Sorry, they haven't posted on identi.ca")
 				return
