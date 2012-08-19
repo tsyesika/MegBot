@@ -3,7 +3,8 @@
 # IRC Objects
 ##
 
-import re
+#import re, time
+import time
 
 class Standard():
 	""" Never instantiate """
@@ -17,7 +18,84 @@ class L_Helper(Standard):
 	def StripHTML(self, message):
 		p = re.compile(r'<.*?>')
 		return p.sub("", message)
-
+	def HumanTime(self, t=time.time(), parse=None, f=None):
+		"""
+		This function will return a string which will give a useful
+		offset for humans ("5 minutes ago", "6 months ago", etc...):
+		
+		t = time (float or string) froom time.time() or formatted (required)
+		parse = a string for formatting e.g. "%a %b %d %H:%M%S %Y" (required if t is a str)
+		f = from an offset, defaults to time.time() (now), must be a float.
+		"""
+		if type(t) == type(str) and parse:
+			# Convert 
+			nt = ""
+			for ele in time.split():
+				if not ele.startswith("+"):
+					nt += " %s" % ele
+			# check to see if parse has been given timezone offset (doesn't work)
+			parse = parse.replace("%z", "")
+			t = time.strptime(nt, parse)
+			t = time.mktime(t)
+		
+		# Find out time passed from now/f.
+		if f:
+			t = f-t
+		else:
+			t = time.time()-t
+		
+		# Work out time passed.
+		if t < 60:
+			return "Less than a minute"
+		elif t < 3600:
+			# a hour
+			m = int(t/60.0 + .5) # .5 to avoid floor rounding.
+			if m <= 1:
+				return "A minute"
+			else:
+				return "%s minutes" % m
+		elif t < 36400:
+			# a day
+			h = int(t/3600.0 + .5)
+			if h <= 1:
+				return "A hour"
+			else:
+				return "%s hours" % h
+		elif t < 604800:
+			# a week
+			d = int(t/36400.0 + .5)
+			if d <= 1:
+				return "A day"
+			else:
+				return "%s days" % d
+		elif t < 2505600:
+			# a month (29 days, lowest except 28)
+			w = int(t/604800.0 + .5)
+			if w <= 1:
+				return "A week"
+			else:
+				return "%s weeks" % w
+		elif t < 25056000:
+			# a year (below a decade)
+			y = int(t/2505600.0 + .5)
+			if y <= 1:
+				return "A year"
+			else:
+				return "%s years" % y
+		elif t < 2505600000:
+			# a decade (decade - century)
+			d = int(t/25056000.0 + .5)
+			if d <= 1:
+				return "A decade"
+			else:
+				return "%s decades" % d
+		else:
+			c = int(t/2505600000.0 + .5)
+			if c <= 1:
+				return "A century"
+			else:
+				return "%s centuries" % c
+		
 
 class L_Channel(Standard):
 	def __init__(self, connection, name):
