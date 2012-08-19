@@ -25,6 +25,11 @@ def main(connection, line):
 	pname = line.split()[-1]
 	
 	if len(line.split()) > 5:
+		if line.split()[4] == "-config" or line.split()[4] == "-C":
+			# re-loading main config.
+			connection.config = imp.load_source("config", "config.py")
+			Channel.send("Config reloaded")
+			return # no need for the rest of the code as it's a static location
 		if line.split()[4] == "-core" or line.split()[4] == "-c":
 			ppath = connection.config.paths["coreplugins"]
 			pbank = connection.core
