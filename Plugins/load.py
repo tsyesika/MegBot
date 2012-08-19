@@ -26,19 +26,19 @@ def main(connection, line):
 	
 	if len(line.split()) > 5:
 		if line.split()[4] == "-core" or line.split()[4] == "-c":
-			ppath = connection.config.path["coreplugins"]
+			ppath = connection.config.paths["coreplugins"]
 			pbank = connection.core
 			pkey = "Core%s" % pname
 		elif line.split()[4] == "-library" or line.split()[4] == "-l":
-			ppath = connection.config.path["libraries"]
+			ppath = connection.config.paths["libraries"]
 			pbank = connection.libraries
 			pkey = pname
 		else:	
-			ppath = connection.config.path["plugin"]
+			ppath = connection.config.paths["plugin"]
 			pbank = connection.plugins 
 			pkey = pname
 	else:
-		ppath = connection.config.path["plugin"]
+		ppath = connection.config.paths["plugin"]
 		pbank = connection.plugins
 		pkey = pname
 	
