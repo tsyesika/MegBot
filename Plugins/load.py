@@ -63,7 +63,7 @@ def main(connection, line):
 			e = False
 		if not e and "unloader" in dir(pbank[pkey]):
 			pbank[pkey].unloader(connection)
-		pbank[pkey] = imp.load_source(pkey, pbank + pname + ".py")
+		pbank[pkey] = imp.load_source(pkey, ppath + pname + ".py")
 	else:
 		Channel.send("Can't find plugin.")
 		return
