@@ -14,6 +14,17 @@ class Standard():
 			for anm in dir(self):
 				if anm.startswith("on_"):
 					connection.hooker.register_hook(anm, eval("self.%s" % anm))
+					
+class Info(Standard):
+	def __init__(self, line):
+		self.nick = line.split()[0].split("!")[0][1:]
+		self.action = line.split()[1]
+		self.raw = line
+		self.channel = line.split()[2]
+		self.plugin_name = line.split()[3][2:]
+		self.trigger = line.split()[3][1]
+		self.args = line.split()[4:]
+
 class L_Helper(Standard):
 	def StripHTML(self, message):
 		p = re.compile(r'<.*?>')
@@ -27,10 +38,10 @@ class L_Helper(Standard):
 		parse = a string for formatting e.g. "%a %b %d %H:%M%S %Y" (required if t is a str)
 		f = from an offset, defaults to time.time() (now), must be a float.
 		"""
-		if type(t) == type(str) and parse:
+		if type(t) == type("") and parse:
 			# Convert 
 			nt = ""
-			for ele in time.split():
+			for ele in t.split():
 				if not ele.startswith("+"):
 					nt += " %s" % ele
 			# check to see if parse has been given timezone offset (doesn't work)
