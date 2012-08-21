@@ -23,23 +23,23 @@ supported = ["en", "de", "cy", "af", "sq", "ar", "hy", "az", "eu", "be", "bn", "
 
 # This is the default language if no language is specified (languages which can be default languages arei n supported)
 def main(connection, line):
-	if len(line.split()) <= 3:
+	if not Info.args:
 		Channel.send("Please supply lang|lang <text to translate> or languages")
 		return
-	if line.split()[4] == "languages":
+	if Info.args[0] == "languages":
 		pass
 	else:
-		if line.split()[4].find("|")!=-1:
+		if Info.args[0].find("|")!=-1:
 			#pipe used
-			langpair = (line.split()[4].split("|")[0], line.split()[4].split("|")[1])
-			ltranslate = "+".join(line.split()[5:])
+			langpair = (Info.args[0].split("|")[0], Info.args[0].split("|")[1])
+			ltranslate = "+".join(Info.args[1:])
 		else:
-			if line.split()[4] in supported:
-				langpair = ("auto", line.split()[4])
-				ltranslate = "+".join(line.split()[5:])
+			if Info.args[0] in supported:
+				langpair = ("auto", Info.args[0])
+				ltranslate = "+".join(Info.args[1:])
 			else:
 				langpair = ("auto", connection.config.plugin_options["translate"]["default_language"])
-				ltranslate = "+".join(line.split()[4:])
+				ltranslate = "+".join(Info.args)
 		try:
 			# Bug detection faulty
 			google = urllib2.Request("http://translate.google.com/m?sl=%s&tl=%s&ie=UTF-8&prev=_m&q=%s" % (langpair[0], langpair[1], ltranslate))
@@ -48,7 +48,7 @@ def main(connection, line):
 			source = google.read()
 			langtran = re.findall("lass=\"s1\">(.+?)</a>.*>&gt;</a><a href=\"http://translate.google.com/m.*\" class=\"s1\">(.+?)</a></div><br><div dir=\"ltr\" class=\"t0\">", source)[0]
 			result = re.findall("=\"ltr\" class=\"t0\">(.+?)</div>", source)[0]
-			Channel.send(Helper.StripHTML("%s: \002[%s to %s]\017 %s" % (line.split()[0][1:].split("!")[0], langtran[0], langtran[1], result)))
+			Channel.send(Helper.StripHTML("%s: \002[%s to %s]\017 %s" % (Info.nick, langtran[0], langtran[1], result)))
 		except:
 			traceback.print_exc()
 

@@ -20,18 +20,14 @@ import re, urllib2, shelve
 def main(connection, line):
 	#Checks to see if timezone is set :P
 	userzones = shelve.open("TimeData")
-	sline = line.split()
-	if len(sline) <= 4:
-		if sline[0].split("!")[0][1:] in userzones.keys():
-			sline.append(userzones[sline[0].split("!")[0][1:]])
+	if len(Info.args) <= 1:
+		if Info.nick in userzones.keys():
+			sline.append(userzones[Info.nick])
 		else:
 			Channel.send("Please enter a location")
 			return
-	if "-set" in sline:
-		userzones[sline[0].split("!")[0][1:]] = " ".join(sline[sline.index("-set")+1:])
-		Channel.send("Location set ^_^")
 	else:
-		google = urllib2.Request("http://www.google.co.uk/search?q=time+%s" % sline[4].replace(" ", "%20"))
+		google = urllib2.Request("http://www.google.co.uk/search?q=time+%s" % Info.args[0].replace(" ", "%20"))
 		google.add_header("User-Agent", "Mozilla/5.0 (compatible; U; Haiku x86; en-GB) AppleWebKit/536.10 (KHTML, like Gecko) Haiku/R1 WebPositive/1.1 Safari/536.10")
 		google = urllib2.urlopen(google)
 		source = google.read()

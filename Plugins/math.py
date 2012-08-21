@@ -131,10 +131,10 @@ def fixurl(url):
 
 def main(connection, line):
 	global currancy_switch, currancies
-	if len(line.split()) <= 3:
+	if not Info.args:
 		Channel.send("Plese enter mathamatical expression.")
 		return
-	exp = " ".join(line.split()[4:])
+	exp = " ".join(Info.args)
 	lexp = exp.lower()
 	# Try and figure out what it is first...
 	# Conversion?
@@ -169,6 +169,6 @@ def main(connection, line):
 	try:
 		Channel.send("%s" % a)
 	except:
-		connection.core["privmsg"].main(connection, line.split()[2], "Math Error: ?")
+		Channel.send("Math Error: ?")
 		
 help = "Uses google to do calculations or conversions"

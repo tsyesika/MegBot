@@ -18,23 +18,23 @@
 import imp, os, urllib2, shutil,time
 
 def main(connection, line):
-	if len(line.split()) <= 3:
+	if not Info.args:
 		Channel.send("Please enter plugin name.")
 		return
 	
-	pname = line.split()[-1]
+	pname = Info.args[-1]
 	
-	if len(line.split()) > 5:
-		if line.split()[4] == "-config" or line.split()[4] == "-C":
+	if len(Info.args) > 1:
+		if Info.args[0] == "-config" or Info.args[0] == "-C":
 			# re-loading main config.
 			connection.config = imp.load_source("config", "config.py")
 			Channel.send("Config reloaded")
 			return # no need for the rest of the code as it's a static location
-		if line.split()[4] == "-core" or line.split()[4] == "-c":
+		if Info.args[0] == "-core" or Info.args[0] == "-c":
 			ppath = connection.config.paths["coreplugins"]
 			pbank = connection.core
 			pkey = "Core%s" % pname
-		elif line.split()[4] == "-library" or line.split()[4] == "-l":
+		elif Info.args[0] == "-library" or Info.args[0] == "-l":
 			ppath = connection.config.paths["libraries"]
 			pbank = connection.libraries
 			pkey = pname
@@ -53,7 +53,7 @@ def main(connection, line):
 			if not pluginname.endswith(".py"):
 				pluginname = pluginname + ".py"
 			newplugin = open("temp", "w")
-			plugin = urllib2.urlopen(line.split()[4])
+			plugin = urllib2.urlopen(Info.args[0])
 			newplugin.write(plugin.read())
 			newplugin.close()
 			shutil.move("temp", ppath + pluginname)

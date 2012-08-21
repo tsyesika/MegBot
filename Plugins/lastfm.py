@@ -18,10 +18,10 @@
 import urllib2, json
 
 def main(connection, line):
-	if len(line.split()) <= 3:
-		user = line.split()[0].split("!")[0][1:]
+	if not Info.args:
+		user = Info.nick
 	else:
-		user = line.split()[4]
+		user = Info.args[0]
 	try:
 		lastfm = urllib2.urlopen("http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=%s&api_key=b25b959554ed76058ac220b7b2e0a026&format=json" % user)
 		data = lastfm.read()

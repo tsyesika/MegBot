@@ -19,10 +19,11 @@ import urllib2
 
 def main(connection, line):
 	# Find name
-	if len(line) <= 3:
+	if not Info.args:
 		Channel.send("Please specify a name.")
 		return
-	name = line.split()[4]
+		
+	name = Info.args[0]
 	
 	definitions = {
 		"F":"female",

@@ -16,13 +16,13 @@
 ##
 
 def main(connection, line):
-	if len(line.split()) <= 3:
+	if not Info.args:
 		# Being called by bot.
 		return 
 	if "Channel" in dir():
 		Channel.send("Please specify a channel to join.")
 		return
-	connection.core["raw"].main(connection, "JOIN %s" % line.split()[4])
+	connection.core["raw"].main(connection, "JOIN %s" % Info.args[0])
 	Channel.send("%s joined." % line.split()[4])
 
 help = "Tries to join the specified channel."

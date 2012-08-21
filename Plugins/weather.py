@@ -31,11 +31,11 @@ wind_direction = {
 }
 def main(connection, line, url=None, tag=""):
 	# to do - use a proper parsing technique (regex = baddd)
-	if len(line.split()) <= 3:
+	if not Info.args:
 		Channel.send("Please supply a place you'd like the weather for.")
 		return
 	if not url:
-		google = urllib2.urlopen("http://www.google.com/ig/api?weather=%s" % "+".join(line.split()[4:]).replace(",", ""))
+		google = urllib2.urlopen("http://www.google.com/ig/api?weather=%s" % "+".join(Info.args).replace(",", ""))
 	else:
 		google = urllib2.urlopen(url)
 	source = google.read()
@@ -73,16 +73,15 @@ def main(connection, line, url=None, tag=""):
 		wind = ("N/A", "N/A", "N/A")
 	if temp_c == "N/A" and temp_f == "N/A" and temp_k == "N/A" and humidity == "N/A":
 		#Checks to see if spelt wrong..
-		lu = urllib2.urlopen("http://google.com/m/?q=weather+%s" % "+".join(line.split()[4:]).replace(",", ""))
+		lu = urllib2.urlopen("http://google.com/m/?q=weather+%s" % "+".join(Info.args).replace(",", ""))
 		lu = lu.read()
 		if lu.find("<br/> Showing results for  <a href=")!=-1:
-			print 1
 			cname = re.findall("<br/>  <br/> Showing results for  <a href=\"(.+?)\">(.+?) </a>. Search inste", lu)[0][1].replace(" ", "+")
-			main(connection, line, "http://www.google.com/ig/api?weather=%s" % cname, "(Corrected to %s from %s)" % (" ".join(cname.split("+")[1:]), " ".join(line.split()[4:])))
+			main(connection, line, "http://www.google.com/ig/api?weather=%s" % cname, "(Corrected to %s from %s)" % (" ".join(cname.split("+")[1:]), " ".join(Info.args[0])))
 			return
 		else:
-			Channel.send("%s: Couldn't get data for %s" % (line.split()[0][1:].split("!")[0], name))
+			Channel.send("%s: Couldn't get data for %s" % (Info.nick, name))
 	else:
-		Channel.send("%s: [Weather for %s]: \002Temp:\017 %s°C/%s°F/%sK  \002Humidity:\017 %s%%  \002Wind Direction:\017 %s  \002Wind Speed:\017 %smph/%skph %s" % (line.split()[0][1:].split("!")[0], name, temp_c, temp_f, temp_k, humidity, wind[0], wind[1], wind[2], tag))
+		Channel.send("%s: [Weather for %s]: \002Temp:\017 %s°C/%s°F/%sK  \002Humidity:\017 %s%%  \002Wind Direction:\017 %s  \002Wind Speed:\017 %smph/%skph %s" % (Info.nick, name, temp_c, temp_f, temp_k, humidity, wind[0], wind[1], wind[2], tag))
 
 help = "Uses google to try and look up a weather from a specified place."

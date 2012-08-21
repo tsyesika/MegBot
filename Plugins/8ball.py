@@ -17,7 +17,7 @@
 
 import random
 def main(connection, line):
-	if len(line.split()) <= 4:
+	if not Info.args:
 		Channel.send("You got a question for me?")
 	else:
 		Channel.send(random.choice(["sure", "yerp", "no", "nope", "I'm not sure", "I'm to tired right now, ask later."]))

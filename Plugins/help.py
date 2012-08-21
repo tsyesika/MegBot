@@ -16,8 +16,7 @@
 ##
 
 def main(bot, line):
-	nick = line.split()[0][1:].split("!")[0]
-	if len(line.split()) <= 4:
+	if Info.args:
 		# Generic list of plugins.
 		cout = ""
 		amount = len(bot.plugins.keys())-1
@@ -29,11 +28,11 @@ def main(bot, line):
 			else:
 				cout += ", " + x
 		if done:
-			Channel.send("%s: %s" % (nick, cout[2:]))
+			Channel.send("%s: %s" % (Info.nick, cout[2:]))
 		else:
-			Channel.send("%s: It seems no plugins are loaded, please speak to the bot admin." % nick)
+			Channel.send("%s: It seems no plugins are loaded, please speak to the bot admin." % Info.nick)
 	else:
-		plugin = line.split()[4]
+		plugin = Info.args[0]
 		if plugin in bot.plugins.keys():
 			if "help" in dir(bot.plugins[plugin]):
 				if type(bot.plugins[plugin].help) == type(range):
@@ -41,10 +40,10 @@ def main(bot, line):
 					bots.plugins[plugin].help(bot, line)
 				elif type(bot.plugins[plugin].help) == type(""):
 					# It's a string
-					Channel.send("%s: %s" % (nick, bot.plugins[plugin].help))
+					Channel.send("%s: %s" % (Info.nick, bot.plugins[plugin].help))
 			else:
-				Channel.send("%s: Can't find any help for %s." % (nick, plugin))
+				Channel.send("%s: Can't find any help for %s." % (Info.nick, plugin))
 		else:
-			Channel.send("%s: Can't find plugin %s." % (nick, plugin))
+			Channel.send("%s: Can't find plugin %s." % (Info.nick, plugin))
 
 help = "Displays a list of plugins or if a plugin is specified tries to get the help for that plugin"

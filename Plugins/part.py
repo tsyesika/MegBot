@@ -16,10 +16,10 @@
 ##
 
 def main(connection, line):
-	if len(line.split()) <= 3:
-		connection.core["raw"].main(connection, "PART %s" % line.split()[2])
+	if not Info.args:
+		connection.core["raw"].main(connection, "PART %s" % Info.channel)
 		return
-	connection.core["raw"].main(connection, "PART %s" % line.split()[4])
-	Channel.send("Parted from %s." % line.split()[4])
+	connection.core["raw"].main(connection, "PART %s" % Info.args[0])
+	Channel.send("Parted from %s." % Info.args[0])
 
 help = "Parts from a specified channel"

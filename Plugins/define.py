@@ -20,7 +20,7 @@ import urllib2, re
 
 def main(connection, line):
 	if len(line.split()) <= 3:
-		connection.core["privmsg"].main(connection, line.split()[2], "Please supply the word you want to be defined.")
+		Channel.send("Please supply the word you want to be defined.")
 		return
 	st = "+".join(line.split()[4:])
 	google = urllib2.Request("http://www.google.com/m?q=define+%s" % st)

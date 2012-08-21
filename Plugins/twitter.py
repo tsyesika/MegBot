@@ -18,8 +18,8 @@
 import json, urllib2, traceback
 
 def main(connection, line):
-	if len(line.split()) <= 4:
-		line = line + " " + line.split()[0].split("!")[0][1:]
+	if not Info.args:
+		line = line + " " + Info.args[0]
 	try:
 		i = urllib2.urlopen("http://twitter.com/statuses/user_timeline/%s.json?callback=twitterCallback2&count=1" % line.split()[-1])
 		data = i.read()
