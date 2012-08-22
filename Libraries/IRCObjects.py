@@ -4,7 +4,7 @@
 ##
 
 #import re, time
-import time
+import time, re
 
 class Standard():
 	""" Never instantiate """
@@ -17,6 +17,9 @@ class Standard():
 					
 class Info(Standard):
 	def __init__(self, line):
+		if line == None:
+			self.nick, self.action. self.raw, self.channel, self.plugin_name, self.trigger, self.args = "", "", "", "", "", []
+			return
 		self.nick = line.split()[0].split("!")[0][1:]
 		self.action = line.split()[1]
 		self.raw = line
