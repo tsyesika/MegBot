@@ -47,6 +47,7 @@ class L_Helper(Standard):
 			for ele in t.split():
 				if not ele.startswith("+"):
 					nt += " %s" % ele
+			nt = nt[1:]
 			# check to see if parse has been given timezone offset (doesn't work)
 			parse = parse.replace("%z", "")
 			t = time.strptime(nt, parse)

@@ -18,13 +18,13 @@
 import json, urllib2, traceback, time
 
 def main(connection, line):
-	if len(line.split()) <= 4:
-		line = Raw2Nick(line)
+	if not Info.args:
+		line = Info.nick
 	try:
 		i = urllib2.urlopen("http://identi.ca/api/statuses/user_timeline.json?screen_name=%s" % line.split()[-1])
 		data = i.read()
 		data = json.loads(data)
-		if data and not ("-g" in line.split() or "-group" in line.split()):
+		if data and not ("-g" in Info.args or "-group" in Info.args):
 			# this is from the http://status.net/wiki/Twitter-compatible_API
 			name = data[0]["user"]["screen_name"]
 			cid = data[0]["id"]
