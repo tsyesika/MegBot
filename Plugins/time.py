@@ -20,22 +20,27 @@ import re, urllib2, shelve
 def main(connection, line):
 	#Checks to see if timezone is set :P
 	userzones = shelve.open("TimeData")
-	if len(Info.args) <= 1:
+	if not Info.args:
 		if Info.nick in userzones.keys():
-			sline.append(userzones[Info.nick])
+			Info.args = userzones[Info.nick]
 		else:
 			Channel.send("Please enter a location")
 			return
-	else:
-		google = urllib2.Request("http://www.google.co.uk/search?q=time+%s" % Info.args[0].replace(" ", "%20"))
-		google.add_header("User-Agent", "Mozilla/5.0 (compatible; U; Haiku x86; en-GB) AppleWebKit/536.10 (KHTML, like Gecko) Haiku/R1 WebPositive/1.1 Safari/536.10")
-		google = urllib2.urlopen(google)
-		source = google.read()
-		try:
-			time = re.findall("><td style=\"font-size:medium\"><b>(.+?)</b> (.+?) - <b>Time</b> in <b>(.+?)</b>", source)[0]
-			Channel.send("Time: %s - %s - %s" % time)
-		except:
-			Channel.send("Sorry, couldn't retrive time.")
+ 	if Info.args[0] == "-set" and len(Info.args) > 1:
+ 		userzones[Info.nick] = Info.args[1:]
+ 		Channel.send("Location Set ^_^")
+ 		userzones.sync()
+ 		userzones.close()
+ 		return
+	google = urllib2.Request("http://www.google.co.uk/search?q=time+%s" % "%20".join(Info.args))
+	google.add_header("User-Agent", "Mozilla/5.0 (compatible; U; Haiku x86; en-GB) AppleWebKit/536.10 (KHTML, like Gecko) Haiku/R1 WebPositive/1.1 Safari/536.10")
+	google = urllib2.urlopen(google)
+	source = google.read()
+	try:
+		time = re.findall("><td style=\"font-size:medium\"><b>(.+?)</b> (.+?) - <b>Time</b> in <b>(.+?)</b>", source)[0]
+		Channel.send("Time: %s - %s - %s" % time)
+	except:
+		Channel.send("Sorry, couldn't retrive time.")
 	userzones.sync()
 	userzones.close()
 
