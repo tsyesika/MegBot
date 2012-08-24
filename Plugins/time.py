@@ -40,7 +40,7 @@ def main(connection, line):
 		time = re.findall("><td style=\"font-size:medium\"><b>(.+?)</b> (.+?) - <b>Time</b> in <b>(.+?)</b>", source)[0]
 		Channel.send("Time: %s - %s - %s" % time)
 	except:
-		if " ".join(nfo.args).find("freeman")!=-1:
+		if " ".join(Info.args).find("freeman")!=-1:
 			Channel.send("Is it really that ... time again? It seems as if you only just arrived.")
 		else:
 			Channel.send("Sorry, couldn't retrive time.")
