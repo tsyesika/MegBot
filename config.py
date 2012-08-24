@@ -6,17 +6,17 @@
 networks = {
 	"MegNet":{
 		"address":"irc.megworld.co.uk",
-		"port":6667,
+		"port":9000,
 		"nick":"",
 		"ident":"",
 		"realname":"",
 		"ipv6":False,
-		"ssl":False,
-		"trigger":"",
+		"ssl":True,
+		"trigger":".",
 		"NSPassword":"",
 		"commands":[],
 		"modes":["b"],
-		"active":False,
+		"active":True,
 		"channels":["#bots"]
 	},
 	"Freenode":{
@@ -46,7 +46,7 @@ permissions = {
 
 paths = {
 	"plugin":"Plugins/",
-	"coreplugins":"CorePlugins/",
+	"coreplugins":"Core/",
 	"logs":"Logging/",
 	"databases":"Databases/",
 	"libraries":"Libraries/"
