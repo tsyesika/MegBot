@@ -17,6 +17,21 @@
 
 import json, urllib2, traceback, time
 
+def FormTime(ts):
+	nt = ""
+	t = 0
+	for x in range(len(ts)):
+		if ts[x] == "+" or ts[x] == "-":
+			t += 1
+		if t <= 6 and t > 0:
+			t += 1
+		elif t > 0:
+			t = 0
+			nt += ts[x]
+		else:
+			nt += ts[x]
+	return nt
+
 def main(connection, line):
 	if not Info.args:
 		line = Info.nick
@@ -29,8 +44,8 @@ def main(connection, line):
 			name = data[0]["user"]["screen_name"]
 			cid = data[0]["id"]
 			status = data[0]["text"]
-			time = Helper.HumanTime(str(data[0]["created_at"]), "%a %b %d %H:%M:%S %Y")
-			
+			ft = FormTime(str(data[0]["created_at"]))
+			time = Helper.HumanTime("%s UTC" % ft, "%a %b %d %H:%M:%S %Y %Z")
 		else:
 			i = urllib2.urlopen("http://identi.ca/api/statusnet/groups/timeline/%s.json" % line.split()[-1])
 			data = i.read()
@@ -39,7 +54,8 @@ def main(connection, line):
 				name = data[0]["user"]["screen_name"]
 				cid = data[0]["id"]
 				status = data[0]["text"]
-				time = Helper.HumanTime(data[0]["created_at"], "%a %b %d %H:%M:%S %Y")
+				ft = FormTime(str(data[0]["created_at"])) 
+				time = Helper.HumanTime("%s UTC" % ft, "%a %b %d %H:%M:%S %Y %Z")
 			else:
 				Channel.send("Sorry, they haven't posted on identi.ca")
 				return
