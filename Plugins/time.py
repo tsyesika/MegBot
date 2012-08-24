@@ -33,7 +33,7 @@ def main(connection, line):
  		userzones.close()
  		return
 	elif "freeman" in line.lower():
-		Channel.send("Is it really that … time again? It seems as if you only just arrived.")
+		Channel.send("Is it really that ... time again? It seems as if you only just arrived.")
 
 	google = urllib2.Request("http://www.google.co.uk/search?q=time+%s" % "%20".join(Info.args))
 	google.add_header("User-Agent", "Mozilla/5.0 (compatible; U; Haiku x86; en-GB) AppleWebKit/536.10 (KHTML, like Gecko) Haiku/R1 WebPositive/1.1 Safari/536.10")
