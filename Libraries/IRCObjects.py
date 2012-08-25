@@ -23,6 +23,7 @@ class Info(Standard):
 		self.nick = line.split()[0].split("!")[0][1:]
 		self.action = line.split()[1]
 		self.raw = line
+		self.message = "%s %s" % (line.split()[3][1:], " ".join(line.split()[4:]))
 		self.channel = line.split()[2]
 		self.plugin_name = line.split()[3][2:]
 		self.trigger = line.split()[3][1]
