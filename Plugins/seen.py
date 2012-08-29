@@ -26,7 +26,7 @@ def main(connection, line):
 		return
 	
 	if Info.args[0] == connection.settings["nick"]:
-		Channel.send("o I haven't seen myself, I'm all 1s and 0s")
+		Channel.send("No I haven't seen myself, I'm all 1s and 0s")
 		return
 	
 	seen = shelve.open("Seen")
