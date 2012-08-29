@@ -25,6 +25,10 @@ def main(connection, line):
 		Channel.send("Please specify a user")
 		return
 	
+	if Info.args[0] == connection.settings["nick"]:
+		Channel.send("o I haven't seen myself, I'm all 1s and 0s")
+		return
+	
 	seen = shelve.open("Seen")
 	if Info.args[0] in seen.keys():
 		record = seen[Info.args[0]]
