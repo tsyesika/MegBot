@@ -16,7 +16,7 @@
 ##
 
 def main(bot, line):
-	if Info.args:
+	if not Info.args:
 		# Generic list of plugins.
 		cout = ""
 		amount = len(bot.plugins.keys())-1
