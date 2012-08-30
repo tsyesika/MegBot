@@ -17,6 +17,14 @@
 
 import re, urllib2, shelve
 
+aliases = {
+	"nzst":"nz",
+	"est":"ny",
+	"pst":"ca",
+	"mst":"denver",
+	"cst":"texas"
+}
+
 def main(connection, line):
 	#Checks to see if timezone is set :P
 	userzones = shelve.open("TimeData")
@@ -32,6 +40,9 @@ def main(connection, line):
  		userzones.sync()
  		userzones.close()
  		return
+ 	
+ 	if Info.args[0].lower() in aliases.keys():
+ 		Info.args[0] = aliases[Info.args[0].lower()]
 	google = urllib2.Request("http://www.google.co.uk/search?q=time+%s" % "%20".join(Info.args))
 	google.add_header("User-Agent", "Mozilla/5.0 (compatible; U; Haiku x86; en-GB) AppleWebKit/536.10 (KHTML, like Gecko) Haiku/R1 WebPositive/1.1 Safari/536.10")
 	google = urllib2.urlopen(google)
