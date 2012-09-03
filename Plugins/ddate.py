@@ -57,8 +57,7 @@ def main(connection, line):
 		ddate = "Today is %s, the %s day of %s in the YOLD %d. Celebrate: %s!" % (days[dayindex], DayNum(day), seasons[season], year, seasonholidays[season])
 	else:
 		ddate = "Today is %s, the %s day of %s in the YOLD %d." % (days[dayindex], DayNum(day), seasons[season], year)
-	print ddate
+	Channel.send(ddate)
 	
 
-help = "Discordian Date"
-main(1,1)
+help = "Discordian Date, only return current date for now"
