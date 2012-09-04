@@ -13,17 +13,13 @@ NB: This readme will be subject to change throughout this releases development
 
 == Todo before 0.06 release ==
 
-- Add laod/reload/unload to core plugins
-- Write librarys for plugin developers (utils for them)
+- Rewrite load
 - SSL certificate options
-- Fix define plugin 
-- Fix when bot is disconnected
-- Add more global and/or local to network options such as triggers
 - Configuration Generator
 - Better config support (e.g. accept support for older megbot configs, supybot, rbot, eggdrop, inspircd, etc..)
 - Add support for common pastebins on the load command
-- identica group support
-- utility to allow arguments (grouped plugins)
+- Close all issues
+
 == Using ==
 
 - Make sure you have python 2.6+ installed (could work on lower, won't work on 3.x)
