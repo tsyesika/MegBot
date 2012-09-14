@@ -47,8 +47,8 @@ def main(connection, line):
 			google = urllib2.urlopen(google)
 			source = google.read()
 			langtran = re.findall("lass=\"s1\">(.+?)</a>.*>&gt;</a><a href=\"http://translate.google.com/m.*\" class=\"s1\">(.+?)</a></div><br><div dir=\"ltr\" class=\"t0\">", source)[0]
-			result = re.findall("=\"ltr\" class=\"t0\">(.+?)</div>", source)[0]
-			Channel.send(Helper.StripHTML("%s: \002[%s to %s]\017 %s" % (Info.nick, langtran[0], langtran[1], result)))
+			result = re.findall("=\"ltr\" class=\"t0\">(.+?)</div>", source)[0].decode("utf-8")
+			Channel.send(Helper.ConvertHTMLReversed(Helper.StripHTML("%s: \002[%s to %s]\017 %s" % (Info.nick, langtran[0], langtran[1], result))))
 		except:
 			traceback.print_exc()
 

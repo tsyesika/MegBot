@@ -49,7 +49,8 @@ paths = {
 	"coreplugins":"Core/",
 	"logs":"Logging/",
 	"databases":"Databases/",
-	"libraries":"Libraries/"
+	"libraries":"Libraries/",
+	"data":"Data/"
 }
 
 plugin_options = {

@@ -5,6 +5,7 @@
 
 #import re, time
 import time, re, platform, os
+from Data.HTMLEnterties import *
 
 class Standard():
 	""" Never instantiate """
@@ -33,6 +34,20 @@ class L_Helper(Standard):
 	def StripHTML(self, message):
 		p = re.compile(r'<.*?>')
 		return p.sub("", message)
+	def ConvertHTMLReversed(self, message):
+		"""
+		Converts some HTML reversed (&quot; &apos; etc...)
+		message = The message you'd like to convert.
+		Returns unicode string (even if message was str)
+		(http://www.w3schools.com/tags/ref_entities.asp)
+		"""
+		
+		# convert it to unicode
+		message = message.decode("utf-8")
+		for item in HTML_Enterties.keys():
+			message = message.replace(item, HTML_Enterties[item])
+		return message
+		
 	def TimeZoneCorrect(self, t, pre_timezone, post_timezone):
 		"""
 		This will convert from one timezone to another.
