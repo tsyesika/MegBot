@@ -28,7 +28,7 @@ def main(connection, line):
 		data = json.loads(data)
 		song = data[u'recenttracks'][u'track'][0]
 		print song[u'artist'][u'name']
-		Channel.send("%s is/was listening to: %s - %s" % (user, song[u'name'].decode('utf-8'), song[u'artist'][u'name'].decode('utf-8')))
+		Channel.send("%s is/was listening to: %s - %s" % (user, song[u'name'].encode('utf-8'), song[u'artist'][u'name'].encode('utf-8')))
 	except:
 		Channel.send("Sorry there was an error, check your username?")
 
