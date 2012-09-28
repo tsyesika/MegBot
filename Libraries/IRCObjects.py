@@ -4,7 +4,7 @@
 ##
 
 #import re, time
-import time, re, platform, os
+import time, re, platform, os, urllib2, urllib
 from Data.HTMLEnterties import *
 
 class Standard():
@@ -132,7 +132,47 @@ class L_Helper(Standard):
 			else:
 				return "%s centuries" % c
 		
-
+class L_Web(Standard):
+	def __init__(self, connection):
+		self.title = ""
+	
+	def StripHTML(self, text):
+		"""
+		Strips HTML (also in Helper - subject to change).
+		text is a string, will return it without any html elements.
+		"""
+		p = re.compile(r'<.*?>')
+		return p.sub("", text)
+	def WebSafeString(self, string):
+		"""
+		Returns a web safe string to be put in urls (for GET requests).
+		"""
+		return urllib.urlencode({"q":string})[2:]
+		
+	def SpellCheck(self, word):
+		"""
+		Uses googles spell checking capabilities and returns corrected word (if there is one)
+		word can be a string it'll be converted into websafe string.
+		Will return -1 is an error occured!
+		<span class="spell">Showing results for </span><a href="/search?hl=en&amp;sa=X&amp;ei=Sj5kULDxMsX80QXNmIH4CQ&amp;ved=0CCgQvwUoAQ&amp;q=50+shades+of+gray&amp;spell=1" class=spell>50 <b><i>shades</i></b> of gray</a><br>
+		"""
+		try:
+			g = urllib2.Request("http://google.com/search?q=%s" % self.WebSafeString(word))
+			g.add_header("User-agent", "Mozilla/5.0 (iPhone; U; CPU iPhone OS 3_0 like Mac OS X; en-us) AppleWebKit/528.18 (KHTML, like Gecko) Version/4.0 Mobile/7A341 Safari/528.16")
+			g = urllib2.urlopen(g)
+		except:
+			return -1
+		d = g.read()
+		if d.find("Showing results for </span>")!=-1:
+			# Spelling correction :)
+			correction = re.findall("<span class=\"spell\">Showing results for </span><a href=\"(.+?);spell=1\" class=spell>(.+?)<br>", d)
+			if correction:
+				correction = self.StripHTML(correction[0][1])
+			else:
+				correction = word
+		else:
+			correction = word
+		return correction
 class L_Channel(Standard):
 	def __init__(self, connection, name):
 		self.connection = connection # Connection of bot, instance.
