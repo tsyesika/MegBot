@@ -17,64 +17,89 @@
 
 import imp, os, urllib2, shutil,time
 
+def FindName(args):
+	"""
+	Returns first argument in args which doesn't start with -
+	"""
+	if not args:
+		return
+	if args[0][0] != "-":
+		return args[0]
+	return FindName(args[1:])
+	
 def main(connection, line):
+	"""
+	Handles plugin reloading for Core, Libraries, Config and normal user plugins.
+	This will handle flags within the IRC. If also the libraries are being reloaded the
+	special case of Helper, Web and Server are re-seeded in all the plugins the bot has.
+	
+	Once an auth system is inplace the http:// loading needs adding & pastebin loading.
+	"""
 	if not Info.args:
-		Channel.send("Please enter plugin name.")
+		Channel.send("You must give a plugin name")
+		return
+	# Lets look for flags
+	# -c = core
+	# -l = library
+	# -C = config
+	if "-c" in Info.args:
+		# Okay - core plugins
+		name = "Core/%s.py" % FindName(Info.args)
+	elif "-l" in Info.args:
+		# okay - libraries
+		name = "Libraries/%s.py" % FindName(Info.args)
+	elif "-C" in Info.args:
+		# okay - config
+		name = "config.py"
+	elif FindName(Info.args):
+		# Must be a normal plugin
+		name = "Plugins/%s.py" % FindName(Info.args)
+	else:
+		Channel.send("You need to enter a plugin to reload/load")
 		return
 	
-	pname = Info.args[-1]
-	
-	if len(Info.args) > 1:
-		if Info.args[0] == "-config" or Info.args[0] == "-C":
-			# re-loading main config.
-			connection.config = imp.load_source("config", "config.py")
-			Channel.send("Config reloaded")
-			return # no need for the rest of the code as it's a static location
-		if Info.args[0] == "-core" or Info.args[0] == "-c":
-			ppath = connection.config.paths["coreplugins"]
-			pbank = connection.core
-			pkey = "Core%s" % pname
-		elif Info.args[0] == "-library" or Info.args[0] == "-l":
-			ppath = connection.config.paths["libraries"]
-			pbank = connection.libraries
-			pkey = pname
-		else:	
-			ppath = connection.config.paths["plugin"]
-			pbank = connection.plugins 
-			pkey = pname
-	else:
-		ppath = connection.config.paths["plugin"]
-		pbank = connection.plugins
-		pkey = pname
-	
-	if pname.find("/")!=-1:
-		try:
-			pluginname = pname.split("/")[-1]
-			if not pluginname.endswith(".py"):
-				pluginname = pluginname + ".py"
-			newplugin = open("temp", "w")
-			plugin = urllib2.urlopen(Info.args[0])
-			newplugin.write(plugin.read())
-			newplugin.close()
-			shutil.move("temp", ppath + pluginname)
-			connection.core["pluginload"].main(connection, plugin)
-			Channel.send("Plugin has been retrived & loaded.")
-			return
-		except:
-			Channel.send("Failed to retrive plugin or load.")
-	if os.path.isfile("%s%s.py" % (ppath, pname)):
-		e = True
-		if not pkey in pbank.keys():
-			e = False
-		if not e and "unloader" in dir(pbank[pkey]):
-			pbank[pkey].unloader(connection)
-		pbank[pkey] = imp.load_source(pkey, ppath + pname + ".py")
-	else:
-		Channel.send("Can't find plugin.")
+	print "Debug: %s" %  name
+	if not os.path.isfile(name):
+		Channel.send("Can't find plugin %s. Sorry." % name)
 		return
-	if e:
-		Channel.send("Plugin has been reloaded.")
+	
+	pn = name.split("/")[-1].replace(".py", "")
+	# Due to clashes we need to prepend "Core" onto core plugin names.
+	if "-c" in Info.args:
+		pn = "Core%s" % pn
+	try:
+		plugin = imp.load_source(pn, name)
+	except:
+		Channel.send("There was a problem loading %s. Check the syntax?" % (pn))
+		return
+	# Helper, Web & Server needs setting to all plugins. (Channel is set per call). 
+	if "-l" in Info.args:
+		# Libraries.
+		if pn == "IRCObjects":
+			connection.server = plugin.L_Server(connection)
+			for p in connection.plugins.keys():
+				p = connection.plugins[p]
+				p.Web = plugin.L_Web(connection)
+				p.Server = connection.server
+				p.Helper = plugin.L_Helper()
+			# Okay all done.
+		# Lets set the library in the bot
+		connection.libraries[pn] = plugin
+		Channel.send("Library %s has been reloaded." % (pn))
+	elif "-C" in Info.args:
+		# config.
+		# Has the nick changed?
+		if connection.config["nick"] != plugin.networks[connection.name]["nick"]:
+			Server.raw("NICK %s" % plugin.networks[connection.name]["nick"])
+		connection.config = plugin.networks[connection.name]
+		connection.settings = plugin
+		Channel.send("Config has been reloaded.")
+	elif "-c" in Info.args:
+		# core
+		connection.core[pn] = plugin
+		Channel.send("Core plugin %s has been reloaded" % pn[4:])		
 	else:
-		Channel.send("Plugin has been loaded.")
+		connection.plugins[pn] = plugin
+		Channel.send("Plugin %s has been reloaded" % pn)
 
-help = "Loads or reloads a plugin (can take a URL)"
+help = "Loads or reloads a plugin"
