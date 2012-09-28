@@ -17,71 +17,54 @@
 #   along with MegBot.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-import urllib2, re, time, traceback
+import urllib2, re
 
-wind_direction = {
-	"S":"South",
-	"N":"North",
-	"W":"West",
-	"E":"East",
-	"NW":"North West",
-	"SW":"South West",
-	"NE":"North East",
-	"SE":"South East"
-}
-def main(connection, line, url=None, tag=""):
-	# to do - use a proper parsing technique (regex = baddd)
+def main(connection, line):
+	"""
+	Uses googles page to parse out weather and display it.
+	This plugin might be better relying or at least having a fall back situation on a
+	constant API as google seem to enjoy wapping their code around so this method
+	breaks frequently. Yet to find a good API though. Also maybe look into some HTML parser
+	or write one instead of using ugly regexes
+	"""
 	if not Info.args:
-		Channel.send("Please supply a place you'd like the weather for.")
+		Channel.send("Please specify a place")
 		return
-	if not url:
-		google = urllib2.urlopen("http://www.google.com/ig/api?weather=%s" % "+".join(Info.args).replace(",", ""))
+	
+	# Checks the spelling of said place.
+	new_spelling = Web.SpellCheck(" ".join(Info.args))
+	different = False
+	if new_spelling != " ".join(Info.args):
+		# They're different (lets add (corrected from onto it))
+		different = True
 	else:
-		google = urllib2.urlopen(url)
-	source = google.read()
+		new_spelling = " ".join(Info.args)
+	
+	g = urllib2.Request("http://google.com/search?q=weather+%s" % Web.WebSafeString(new_spelling))
+	g.add_header("User-agent", "Mozilla/5.0 (iPhone; U; CPU iPhone OS 3_0 like Mac OS X; en-us) AppleWebKit/528.18 (KHTML, like Gecko) Version/4.0 Mobile/7A341 Safari/528.16")
 	try:
-		name = re.findall("><city data=\"(.+?)\"/>", source)[0]
+		g = urllib2.urlopen(g)
+		d = g.read()
 	except:
-		name = " ".join(line.split()[4:])
-	try:
-		current = re.findall("<current_conditions><condition data=\"(.+?)\"/<temp_f", source)[0]
-	except:
-		current = "N/A"
-	try:
-		temp_f = re.findall("<temp_f data=\"(.+?)\"/><temp_c", source)[0]
-	except:
-		temp_f = "N/A"
-	try:
-		temp_c = re.findall("<temp_c data=\"(.+?)\"/><humidity", source)[0]	
-	except:
-		temp_c = "N/A"
-	try:
-		temp_k = 273 + int(temp_c)
-	except:
-		temp_k = "N/A"
-	try:
-		humidity = re.findall("<humidity data=\"Humidity: (.+?)%\"/><icon", source)[0]
-	except:
-		humidity = "N/A"
-	try:
-		wind = re.findall("<wind_condition data=\"Wind: (.+?) at (.+?) mph\"/>", source)[0]
-	except:
-		wind = "N/A"
-	try:
-		wind = (wind_direction[wind[0]], wind[1], int(int(wind[1]) * 1.609344))
-	except:
-		wind = ("N/A", "N/A", "N/A")
-	if temp_c == "N/A" and temp_f == "N/A" and temp_k == "N/A" and humidity == "N/A":
-		#Checks to see if spelt wrong..
-		lu = urllib2.urlopen("http://google.com/m/?q=weather+%s" % "+".join(Info.args).replace(",", ""))
-		lu = lu.read()
-		if lu.find("<br/> Showing results for  <a href=")!=-1:
-			cname = re.findall("<br/>  <br/> Showing results for  <a href=\"(.+?)\">(.+?) </a>. Search inste", lu)[0][1].replace(" ", "+")
-			main(connection, line, "http://www.google.com/ig/api?weather=%s" % cname, "(Corrected to %s from %s)" % (" ".join(cname.split("+")[1:]), " ".join(Info.args[0])))
-			return
-		else:
-			Channel.send("%s: Couldn't get data for %s" % (Info.nick, name))
-	else:
-		Channel.send("%s: [Weather for %s]: \002Temp:\017 %s°C/%s°F/%sK  \002Humidity:\017 %s%%  \002Wind Direction:\017 %s  \002Wind Speed:\017 %smph/%skph %s" % (Info.nick, name, temp_c, temp_f, temp_k, humidity, wind[0], wind[1], wind[2], tag))
+		Channel.send("There was a fault connecting with the weather server. Please try later")
+		return
+	
+	if d.find("<span class=\"vk_h\">")==-1:
+		Channel.send("Can't find any weather for that location. Sorry")
+		return
 
+	place = re.findall("<span class=\"vk_h\">(.+?)</span><div class=\"vk_sh\" styl", d)[0]
+	conditions = re.findall(", </span><span id=\"wob_dc\">(.+?)</span></div></div>", d)[0]
+	temp = re.findall("<span class=\"wob_t wob_ct vk_bk\" id=\"wob_tm\">(.+?)</span><span class=\"wob_t vk_bk\" id=\"wob_ttm\" style=\"display:(.+?)\">(.+?)</span></div>", d)[0]
+	temp = (int(temp[0]), int(temp[2]), int(temp[0]) + 273)
+	precip = re.findall("<div>Precip:&nbsp;<span id=\"wob_pp\">(.+?)</span></div><div>", d)[0]
+	humidity = re.findall("</div><div>Humidity:&nbsp;<span id=\"wob_hm\">(.+?)</span>", d)[0]
+	ws = re.findall("<span><span class=\"wob_t\" id=\"wob_ws\" style=\"display:(.+?)\">(.+?)</span>", d)[0][1]
+	if ws.endswith("km/h"):
+		ws = "%s mph/%s" % (int(int(ws.split()[0])*0.621371 + .5), ws)
+	else:
+		ws += "/%s km/h" % (int(int(ws.split()[0])*1.60934 + .5)) 
+	Channel.send("[%s] Condition: %s | Temp: %s°C/%s°F/%sK | Precpitation: %s | Humidity: %s | Wind Speed: %s" % (place, conditions, temp[0], temp[1], temp[2], precip, humidity, ws))
+	
+	
 help = "Uses google to try and look up a weather from a specified place."
