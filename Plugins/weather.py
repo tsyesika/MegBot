@@ -40,7 +40,7 @@ def main(connection, line):
 	else:
 		new_spelling = " ".join(Info.args)
 	
-	g = urllib2.Request("http://google.com/search?q=weather+%s" % Web.WebSafeString(new_spelling))
+	g = urllib2.Request("http://google.co.uk/search?q=weather+%s" % Web.WebSafeString(new_spelling))
 	g.add_header("User-agent", "Mozilla/5.0 (iPhone; U; CPU iPhone OS 3_0 like Mac OS X; en-us) AppleWebKit/528.18 (KHTML, like Gecko) Version/4.0 Mobile/7A341 Safari/528.16")
 	try:
 		g = urllib2.urlopen(g)
