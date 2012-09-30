@@ -17,7 +17,8 @@
 #   along with MegBot.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-import urllib2, re
+import urllib2
+import xml.etree.ElementTree as etree
 
 def main(connection, line):
 	"""
@@ -58,21 +59,31 @@ def main(connection, line):
 	
 	# Okay dokie, lets now lookup the weather using yahoo's weather API.
 	weather = urllib2.urlopen("http://weather.yahooapis.com/forecastrss?w=%s" % weoid)
-	weather = weather.read()
-	
-	at = re.findall("<yweather:atmosphere humidity=\"(.+?)\"  visibility=\"(.+?)\"  pressure=\"(.+?)\"  rising=", weather)[0]
-	cond = re.findall("<yweather:condition  text=\"(.+?)\"  code=\"(.+?)\"  temp=\"(.+?)\"  date=", weather)[0]
-	wind = re.findall("<yweather:wind chill=\"(.+?)\"   direction=\"(.+?)\"   speed=\"(.+?)\" />", weather)[0]
-	
-	# okay now we need to convert F to C & K
-	c = int((float(cond[2]) - 32) / (9 / 5.) + .5)
+	weather = etree.fromstring(weather.read())
+
+	# Grab XML elements from tree
+	# (prefixes don't seem to be working in my version of python)
+	condition = weather.find("channel/item/{http://xml.weather.yahoo.com/ns/rss/1.0}condition")
+	wind = weather.find("channel/{http://xml.weather.yahoo.com/ns/rss/1.0}wind")
+
+	# Location is given to us as in the form of city, region, country, but region
+	# is sometimes "", so we do this:
+	location = weather.find("channel/{http://xml.weather.yahoo.com/ns/rss/1.0}location")
+	locate = []
+	for i in ["city", "region", "country"]:
+		tmp = location.get(i)
+		if tmp:
+			locate.append(tmp)
+	location = ", ".join(locate)
+
+	# Okay now we need to convert F to C & K
+	c = int((float(condition.get("temp")) - 32) / (9 / 5.) + .5)
 	k = c + 273
 	
 	# Convert wind speed from mph to kmph
-	kmph = int(int(wind[2]) * 1.60934 + .5)
-	
-	location = re.findall("<title>Yahoo! Weather - (.+?)</title>", weather)[0]
-	
-	Channel.send("[%s] Condition: %s | Temp: %sC/%sF/%sK | Wind Speed %smph/%skmph %s" % (location, cond[0], c, cond[2], k, wind[2], kmph, different))
+	kmph = int(int(wind.get("speed")) * 1.60934 + .5)
+
+	# Send it all to the channel
+	Channel.send("[%s] Condition: %s | Temp: %sC/%sF/%sK | Wind Speed %smph/%skmph %s" % (location, condition.get("text"), c, condition.get("temp"), k, wind.get("speed"), kmph, different))
 	
 help = "Uses Yahoo's weather API to give you the weather for the location specified."
