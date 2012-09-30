@@ -21,11 +21,14 @@ import urllib2, re
 
 def main(connection, line):
 	"""
-	Uses googles page to parse out weather and display it.
-	This plugin might be better relying or at least having a fall back situation on a
-	constant API as google seem to enjoy wapping their code around so this method
-	breaks frequently. Yet to find a good API though. Also maybe look into some HTML parser
-	or write one instead of using ugly regexes
+	Uses the Yahoo API with the (so far) undocumented Weoid API MegWorld provides.
+	This will check the spelling of the entered place, look up it's Weoid and then the weather for said place.
+	The Yahoo weather documentation is:
+	http://developer.yahoo.com/weather/
+	The MegWorld Weoid API takes the argument place as a GET argument.
+	
+	Todo:
+	- Speed improvements? (possibly add caching?)
 	"""
 	if not Info.args:
 		Channel.send("Please specify a place")
@@ -36,35 +39,42 @@ def main(connection, line):
 	different = False
 	if new_spelling != " ".join(Info.args):
 		# They're different (lets add (corrected from onto it))
-		different = True
+		different = "(Changed from: %s" % " ".join(Info.args)
 	else:
-		new_spelling = " ".join(Info.args)
+		different = ""
 	
-	g = urllib2.Request("http://google.co.uk/search?q=weather+%s" % Web.WebSafeString(new_spelling))
-	g.add_header("User-agent", "Mozilla/5.0 (iPhone; U; CPU iPhone OS 3_0 like Mac OS X; en-us) AppleWebKit/528.18 (KHTML, like Gecko) Version/4.0 Mobile/7A341 Safari/528.16")
-	try:
-		g = urllib2.urlopen(g)
-		d = g.read()
-	except:
-		Channel.send("There was a fault connecting with the weather server. Please try later")
+	# Lets replace , with +
+	new_spelling = new_spelling.replace(",", "+")
+	new_spelling = new_spelling.replace(";", "+")
+	new_spelling = new_spelling.replace(".", "")
+	
+	# first lets look up it's weoid.
+	weoid = urllib2.urlopen("http://api.megworld.co.uk/WeoidLookup/lookup.php?place=%s" % ("+".join(new_spelling.split())))
+	weoid = weoid.read()
+	if weoid == "Invalid.":
+		Channel.send("There has been a problem with the plugin. Please contact the developer.")
+		return
+	elif weoid == "Not Found":
+		Channel.send("Can't find that place sorry. You sure it's spelt right? (%s)" % new_spelling)
 		return
 	
-	if d.find("<span class=\"vk_h\">")==-1:
-		Channel.send("Can't find any weather for that location. Sorry")
-		return
-
-	place = re.findall("<span class=\"vk_h\">(.+?)</span><div class=\"vk_sh\" styl", d)[0]
-	conditions = re.findall(", </span><span id=\"wob_dc\">(.+?)</span></div></div>", d)[0]
-	temp = re.findall("<span class=\"wob_t wob_ct vk_bk\" id=\"wob_tm\">(.+?)</span><span class=\"wob_t vk_bk\" id=\"wob_ttm\" style=\"display:(.+?)\">(.+?)</span></div>", d)[0]
-	temp = (int(temp[0]), int(temp[2]), int(temp[0]) + 273)
-	precip = re.findall("<div>Precip:&nbsp;<span id=\"wob_pp\">(.+?)</span></div><div>", d)[0]
-	humidity = re.findall("</div><div>Humidity:&nbsp;<span id=\"wob_hm\">(.+?)</span>", d)[0]
-	ws = re.findall("<span><span class=\"wob_t\" id=\"wob_ws\" style=\"display:(.+?)\">(.+?)</span>", d)[0][1]
-	if ws.endswith("km/h"):
-		ws = "%s mph/%s" % (int(int(ws.split()[0])*0.621371 + .5), ws)
-	else:
-		ws += "/%s km/h" % (int(int(ws.split()[0])*1.60934 + .5)) 
-	Channel.send("[%s] Condition: %s | Temp: %s°C/%s°F/%sK | Precpitation: %s | Humidity: %s | Wind Speed: %s" % (place, conditions, temp[0], temp[1], temp[2], precip, humidity, ws))
+	# Okay dokie, lets now lookup the weather using yahoo's weather API.
+	weather = urllib2.urlopen("http://weather.yahooapis.com/forecastrss?w=%s" % weoid)
+	weather = weather.read()
 	
+	at = re.findall("<yweather:atmosphere humidity=\"(.+?)\"  visibility=\"(.+?)\"  pressure=\"(.+?)\"  rising=", weather)[0]
+	cond = re.findall("<yweather:condition  text=\"(.+?)\"  code=\"(.+?)\"  temp=\"(.+?)\"  date=", weather)[0]
+	wind = re.findall("<yweather:wind chill=\"(.+?)\"   direction=\"(.+?)\"   speed=\"(.+?)\" />", weather)[0]
 	
-help = "Uses google to try and look up a weather from a specified place."
+	# okay now we need to convert F to C & K
+	c = int((float(cond[2]) - 32) / (9 / 5.) + .5)
+	k = c + 273
+	
+	# Convert wind speed from mph to kmph
+	kmph = int(int(wind[2]) * 1.60934 + .5)
+	
+	location = re.findall("<title>Yahoo! Weather - (.+?)</title>", weather)[0]
+	
+	Channel.send("[%s] Condition: %s | Temp: %sC/%sF/%sK | Wind Speed %smph/%skmph %s" % (location, cond[0], c, cond[2], k, wind[2], kmph, different))
+	
+help = "Uses Yahoo's weather API to give you the weather for the location specified."
