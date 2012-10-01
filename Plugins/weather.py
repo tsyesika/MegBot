@@ -39,17 +39,15 @@ def main(connection, line):
 	different = False
 	if new_spelling != " ".join(Info.args):
 		# They're different (lets add (corrected from onto it))
-		different = "(Changed from: %s" % " ".join(Info.args)
+		different = "(Changed from: %s)" % " ".join(Info.args)
 	else:
 		different = ""
 	
 	# Lets replace , with +
-	new_spelling = new_spelling.replace(",", "+")
-	new_spelling = new_spelling.replace(";", "+")
-	new_spelling = new_spelling.replace(".", "")
+	new_spelling = Web.WebSafeString(new_spelling)
 	
 	# first lets look up it's weoid.
-	weoid = urllib2.urlopen("http://api.megworld.co.uk/WeoidLookup/lookup.php?place=%s" % ("+".join(new_spelling.split())))
+	weoid = urllib2.urlopen("http://api.megworld.co.uk/WeoidLookup/lookup.php?place=%s" % (new_spelling))
 	weoid = weoid.read()
 	if weoid == "Invalid.":
 		Channel.send("There has been a problem with the plugin. Please contact the developer.")
