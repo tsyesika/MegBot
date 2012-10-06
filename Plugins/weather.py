@@ -76,6 +76,7 @@ def main(connection, line):
 			locate.append(tmp)
 	location = ", ".join(locate)
 	location = location.encode("utf-8") #quick hack in case of UNICODES :O
+	location = Format.Bold(location)
 
 	# Okay now we need to convert F to C & K
 	c = int((float(condition.get("temp")) - 32) / (9 / 5.) + .5)

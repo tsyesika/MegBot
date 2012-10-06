@@ -29,7 +29,7 @@ def main(connection, line):
 			cid = data[0]["id"]
 			status = data[0]["text"]
 			time = data[0]["created_at"]
-			Channel.send("\002[%s]\017 %s " % (name, status))
+			Channel.send("[%s] %s " % (Format.Bold(name), status))
 		else:
 			Channel.send("Sorry, they haven't tweeted")
 	except:
