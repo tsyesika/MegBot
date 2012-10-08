@@ -42,7 +42,7 @@ def main(connection, line):
 	for x in chks:
 		if x[0][0] == "(":
 			x = (x[0].split("(")[1].split(")")[0], x[1])
-		message += "| \002%s\017 - %s " % tuple(x)
+		message += "| %s - %s " % (Format.Bold(x[0]), x[1])
 	if correction:
 		message += " (Corrected from: %s)" % st
 	Channel.send(Helper.StripHTML("[%s] %s" % (pron, message[2:])))

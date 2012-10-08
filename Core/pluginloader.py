@@ -16,5 +16,6 @@ def main(connection, plugin=None):
 			connection.plugins[name].Server = connection.server
 			connection.plugins[name].Helper = connection.libraries["IRCObjects"].L_Helper()
 			connection.plugins[name].Web = connection.libraries["IRCObjects"].L_Web(connection)
+			connection.plugins[name].Format = connection.libraries["IRCObjects"].L_Format
 			if "init" in dir(connection.plugins[name]):
 				connection.plugins[name].init(connection)
