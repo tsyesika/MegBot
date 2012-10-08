@@ -17,7 +17,7 @@
 #   along with MegBot.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-import urllib2
+import urllib2, shelve, time
 import xml.etree.ElementTree as etree
 
 def main(connection, line):
@@ -56,27 +56,46 @@ def main(connection, line):
 	elif weoid == "Not Found":
 		Channel.send("Can't find that place sorry. You sure it's spelt right? (%s)" % new_spelling.replace("+", " "))
 		return
-	
-	# Okay dokie, lets now lookup the weather using yahoo's weather API.
-	weather = urllib2.urlopen("http://weather.yahooapis.com/forecastrss?w=%s" % weoid)
-	weather = etree.fromstring(weather.read())
 
-	# Grab XML elements from tree
-	# (prefixes don't seem to be working in my version of python)
-	condition = weather.find("channel/item/{http://xml.weather.yahoo.com/ns/rss/1.0}condition")
-	wind = weather.find("channel/{http://xml.weather.yahoo.com/ns/rss/1.0}wind")
+	cache = shelve.open("weather-cache")
+	current_time = time.time()
 
-	# Location is given to us as in the form of city, region, country, but region
-	# is sometimes "", so we do this:
-	location = weather.find("channel/{http://xml.weather.yahoo.com/ns/rss/1.0}location")
-	locate = []
-	for i in ["city", "region", "country"]:
-		tmp = location.get(i)
-		if tmp:
-			locate.append(tmp)
-	location = ", ".join(locate)
-	location = location.encode("utf-8") #quick hack in case of UNICODES :O
-	location = Format.Bold(location)
+	try:
+		condition, wind, location, cache_time = cache[weoid]
+
+		# check to see if cache is older than 1 hour
+		if (current_time - cache_time) > 3600:
+			raise KeyError #cheap hack :P
+
+		print "Using cache for %s" % weoid
+
+	except KeyError:
+		# Either there's no cache or it's out of date
+		# Let's lookup the weather using yahoo's weather API.
+		weather = urllib2.urlopen("http://weather.yahooapis.com/forecastrss?w=%s" % weoid)
+		weather = etree.fromstring(weather.read())
+
+		# Grab XML elements from tree
+		# (prefixes don't seem to be working in my version of python)
+		condition = weather.find("channel/item/{http://xml.weather.yahoo.com/ns/rss/1.0}condition")
+		wind = weather.find("channel/{http://xml.weather.yahoo.com/ns/rss/1.0}wind")
+
+		# Location is given to us as in the form of city, region, country, but region
+		# is sometimes "", so we do this:
+		location = weather.find("channel/{http://xml.weather.yahoo.com/ns/rss/1.0}location")
+		locate = []
+		for i in ["city", "region", "country"]:
+			tmp = location.get(i)
+			if tmp:
+				locate.append(tmp)
+		location = ", ".join(locate)
+		location = location.encode("utf-8") #quick hack in case of UNICODES :O
+		location = Format.Bold(location)
+
+		# Store weather in cache
+		cache[weoid] = (condition, wind, location, current_time)
+		cache.sync()
+		cache.close()
 
 	# Okay now we need to convert F to C & K
 	c = int((float(condition.get("temp")) - 32) / (9 / 5.) + .5)
