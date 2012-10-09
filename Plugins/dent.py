@@ -63,6 +63,6 @@ def main(connection, line):
 		traceback.print_exc()
 		Channel.send("An error has occured")
 		return
-	Channel.send("\002[%s]\017 %s - \002Approx:\017 %s ago - \002Link:\017http://www.identi.ca/notice/%s" % (name, status, time, cid))
+	Channel.send("[%s] %s - %s %s ago - %s http://www.identi.ca/notice/%s" % (Format.Bold(name), status, Format.Bold("Approx:"), time, Format.Bold("Link:"), cid))
 
 help = "Gets the last dent from a specific user/group (or tries your nickname if non is given) from identi.ca (for group support use -g or -group)"
