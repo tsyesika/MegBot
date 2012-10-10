@@ -61,7 +61,7 @@ def main(connection, line):
 	current_time = time.time()
 
 	try:
-		condition, wind, location, cache_time = cache[weoid]
+		condition, wind, location, atmos, cache_time = cache[weoid]
 
 		# check to see if cache is older than 1 hour
 		if (current_time - cache_time) > 3600:
@@ -79,6 +79,7 @@ def main(connection, line):
 		# (prefixes don't seem to be working in my version of python)
 		condition = weather.find("channel/item/{http://xml.weather.yahoo.com/ns/rss/1.0}condition")
 		wind = weather.find("channel/{http://xml.weather.yahoo.com/ns/rss/1.0}wind")
+		atmos = weather.find("channel/{http://xml.weather.yahoo.com/ns/rss/1.0}atmosphere")
 
 		# Location is given to us as in the form of city, region, country, but region
 		# is sometimes "", so we do this:
@@ -93,7 +94,7 @@ def main(connection, line):
 		location = Format.Bold(location)
 
 		# Store weather in cache
-		cache[weoid] = (condition, wind, location, current_time)
+		cache[weoid] = (condition, wind, location, atmos, current_time)
 		cache.sync()
 		cache.close()
 
@@ -105,6 +106,6 @@ def main(connection, line):
 	kmph = int(int(wind.get("speed")) * 1.60934 + .5)
 
 	# Send it all to the channel
-	Channel.send("[%s] Condition: %s | Temp: %sC/%sF/%sK | Wind Speed %smph/%skmph %s" % (location, condition.get("text"), c, condition.get("temp"), k, wind.get("speed"), kmph, different))
+	Channel.send("[%s] Condition: %s | Temp: %sC/%sF/%sK | Humidity: %s%% | Wind Speed %smph/%skmph %s" % (location, condition.get("text"), c, condition.get("temp"), k, atmos.get("humidity"), wind.get("speed"), kmph, different))
 	
 help = "Uses Yahoo's weather API to give you the weather for the location specified."
