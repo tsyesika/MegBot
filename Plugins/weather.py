@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+	# -*- coding: utf-8 -*-
 
 ##
 #This file is part of MegBot.
@@ -50,7 +50,7 @@ def main(connection, line):
 	# first lets look up it's weoid.
 	weoid = urllib2.urlopen("http://api.megworld.co.uk/WeoidLookup/lookup.php?place=%s&cache=1" % (new_spelling))
 	weoid = weoid.read()
-	if weoid == "Invalid.":
+	if weoid == "Invalid." or not weoid:
 		Channel.send("There has been a problem with the plugin. Please contact the developer.")
 		return
 	elif weoid == "Not Found":
