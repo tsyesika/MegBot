@@ -27,14 +27,14 @@ def main(connection, line):
 	The Yahoo weather documentation is:
 	http://developer.yahoo.com/weather/
 	The MegWorld Weoid API takes the argument place as a GET argument.
-	
+
 	Todo:
 	- Speed improvements? (possibly add caching?)
 	"""
 	if not Info.args:
 		Channel.send("Please specify a place")
 		return
-	
+
 	# Checks the spelling of said place.
 	new_spelling = Web.SpellCheck(" ".join(Info.args))
 	different = False
@@ -43,10 +43,10 @@ def main(connection, line):
 		different = "(Changed from: %s)" % " ".join(Info.args)
 	else:
 		different = ""
-	
+
 	# Lets replace , with +
 	new_spelling = Web.WebSafeString(new_spelling)
-	
+
 	# first lets look up it's weoid.
 	weoid = urllib2.urlopen("http://api.megworld.co.uk/WeoidLookup/lookup.php?place=%s&cache=1" % (new_spelling))
 	weoid = weoid.read()
