@@ -173,6 +173,67 @@ class L_Web(Standard):
 		else:
 			correction = word
 		return correction
+
+class L_Format(Standard):
+	"""mIRC style formatting"""
+	bold = chr(2)
+	underline = chr(37)
+	stress = chr(26)
+	colour = chr(3)
+	reset = chr(17)
+	colours = {
+		"white":"00",
+		"black":"01",
+		"blue":"02",
+		"green":"03",
+		"light red":"04",
+		"brown":"05",
+		"purple":"06",
+		"orange":"07",
+		"yellow":"08",
+		"light green":"09",
+		"cyan":"10",
+		"light cyan":"11",
+		"light blue":"12",
+		"pink":"13",
+		"grey":"14",
+		"light grey":"15"
+		}
+
+	@staticmethod
+	def _format(input, code):
+		return "%s%s%s" % (code, input, code)
+
+	@staticmethod
+	def Bold(input):
+		"""Makes text bold"""
+		return L_Format._format(input, L_Format.bold)
+
+	@staticmethod
+	def Stress(input):
+		"""Makes text stressed or italic (depending on the client)"""
+		return L_Format._format(input, L_Format.stress)
+
+	@staticmethod
+	def Underline(input):
+		"""Makes text underlined"""
+		return L_Format._format(input, L_Format.underline)
+
+	@staticmethod
+	def Colour(input, fcolour, bcolour=None):
+		"""Makes text coloured"""
+		if bcolour == None:
+			colour = fcolour
+		else:
+			colour = "%s,%s" % (fcolour, bcolour)
+
+		return "%s%s%s%s" % (L_Format.colour, colour, input, L_Format.reset)
+
+	@staticmethod
+	def Reset(input):
+		"""Resets formatting"""
+		return "%s%s" % (input, L_Format.reset)
+
 class L_Channel(Standard):
 	def __init__(self, connection, name):
 		self.connection = connection # Connection of bot, instance.

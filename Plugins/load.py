@@ -82,6 +82,7 @@ def main(connection, line):
 				p.Web = plugin.L_Web(connection)
 				p.Server = connection.server
 				p.Helper = plugin.L_Helper()
+				p.Format = plugin.L_Format
 			# Okay all done.
 		# Lets set the library in the bot
 		connection.libraries[pn] = plugin

@@ -35,7 +35,7 @@ def main(connection, line):
 		name = re.findall("<td class='word'>\n(.+?)\n</td>", source)[0]
 		definition = re.findall("<div class=\"definition\">(.+?)</div><div class=\"example\">(.+?)</div>", source)[0]
 		definition = [re.sub("<.+?>", "", definition[0]), re.sub("<.+?>", "", definition[1])]
-		definition = "%s: \002[%s]\017 - %s \002Example:\017 %s" % (Info.nick, name, definition[0].replace("&quot", "\""), definition[1].replace("&quot", "\""))
+		definition = "%s: [%s] - %s %s %s" % (Info.nick, Format.Bold(name), definition[0].replace("&quot", "\""), Format.Bold("Example:"), definition[1].replace("&quot", "\""))
 	except:
 		definition = "Sorry, can't find a definiton"
 		traceback.print_exc()
