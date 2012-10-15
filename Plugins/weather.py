@@ -48,13 +48,13 @@ def main(connection, line):
 	new_spelling = Web.WebSafeString(new_spelling)
 	
 	# first lets look up it's weoid.
-	weoid = urllib2.urlopen("http://api.megworld.co.uk/WeoidLookup/lookup.php?place=%s" % (new_spelling))
+	weoid = urllib2.urlopen("http://api.megworld.co.uk/WeoidLookup/lookup.php?place=%s&cache=1" % (new_spelling))
 	weoid = weoid.read()
 	if weoid == "Invalid.":
 		Channel.send("There has been a problem with the plugin. Please contact the developer.")
 		return
 	elif weoid == "Not Found":
-		Channel.send("Can't find that place sorry. You sure it's spelt right? (%s)" % new_spelling)
+		Channel.send("Can't find that place sorry. You sure it's spelt right? (%s)" % new_spelling.replace("+", " "))
 		return
 	
 	# Okay dokie, lets now lookup the weather using yahoo's weather API.
