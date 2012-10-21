@@ -1,6 +1,12 @@
 import time, threading
 
 def executor(connection, line, plugin):
+	"""
+	This executes and manages plugin calls.
+	This will kill the plugins execution after
+	<x> numver of seconds to prevent lockup due to
+	plugins executing and excess RAM useage and CPU time.
+	"""
 	if not "times" in dir(connection):
 		connection.times = {}
 	else:

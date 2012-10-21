@@ -1,6 +1,12 @@
 import glob, imp, os
 
 def main(connection, plugin=None):
+	"""
+	This will load plugins, if plugin is left as the default (None) then 
+	it will look in Plugins/ (or what's specified in the config under
+	the dict path). if it's specified it will only load that specific plugin.
+	This will also add the Server, Helper and Web instances to the bots
+	"""
 	if plugin:
 		if "unload" in dir(connection.plugins[plugin]):
 			connection.plugins[plugin].unload(connection)

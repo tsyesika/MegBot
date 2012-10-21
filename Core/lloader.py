@@ -8,6 +8,11 @@ from os import path, remove
 from imp import load_source
 
 def main(connection):
+	"""
+	Loads the libraries from Library/ (or what's specified in the config
+	under the path dict.
+	Returns a dict {library_name : <library instance>}
+	"""
 	libraries = {}
 	if "libraries" in connection.config.paths.keys():
 		lpath = connection.config.paths["libraries"]
