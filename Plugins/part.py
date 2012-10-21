@@ -17,9 +17,9 @@
 
 def main(connection, line):
 	if not Info.args:
-		connection.core["raw"].main(connection, "PART %s" % Info.channel)
+		Server.part(Info.channel)
 		return
-	connection.core["raw"].main(connection, "PART %s" % Info.args[0])
+	Server.part(Info.args[0])
 	Channel.send("Parted from %s." % Info.args[0])
 
 help = "Parts from a specified channel"

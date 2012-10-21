@@ -15,7 +15,7 @@ class Standard():
 			for anm in dir(self):
 				if anm.startswith("on_"):
 					connection.hooker.register_hook(anm, eval("self.%s" % anm))
-					
+				
 class Info(Standard):
 	def __init__(self, line):
 		if line == None:
@@ -366,18 +366,29 @@ class L_Server(Standard):
 		self.ops = 0
 		self.motd = []
 		self.nick = connection.settings["nick"]
+	def raw(self, message, ending="\r\n"):
+		"""
+		Sends a raw message, it appends the ending which defaults to
+		\r\n, this will use the Core plugin Core/raw.py
+		"""
+		self.connection.core["Coreraw"].main(self.connection, message, None, ending)
 	def on_JOIN(self, connection, message):
 		self.channels = self.connection.channels
 	def send(self, nick, message=None):
 		if not message:
 			# Assumes it's a raw message
-			self.connection.core["Coreraw"].main(connection, nick)
+			self.connection.core["Coreraw"].main(self.connection, nick)
 		else:
-			self.connecton.core["Coreprivmsg"].main(conneciton, nick, message)
+			self.connecton.core["Coreprivmsg"].main(self.conneciton, nick, message)
 	def join(self, channel):
-		self.connection.core["Corejoin"].main(connection, channel)
+		self.connection.core["Corejoin"].main(self.connection, channel)
 	def part(self, channel):
-		self.connection.core["Corepart"].main(connection, channel)
+		# Core/part.py doesn't exist as isn't needed by the core of the
+		# bot. so we're going to just part and clean it up.
+		self.raw("PART %s" % channel)
+		del self.connection.channels[channel]
+		
+		# need to figure out a way to unregister any still active hooks.
 	def on_266(self, connection, message):
 		number = message.split()[-3]
 		try:
@@ -408,7 +419,7 @@ class L_Server(Standard):
 			self.motd[-1] = self.motd[:-2]
 	def nick(self, nick):
 		# sets nickname
-		self.connection.core["Coreraw"].main(connection, "NICK %s" % nick)
+		self.connection.core["Coreraw"].main(self.connection, "NICK %s" % nick)
 		self.connection.hooker.hook(self, "nick", nick)
 	def on_NICK(self, connection, nick):
 		self.nick = nick
