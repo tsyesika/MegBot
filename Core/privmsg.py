@@ -1,14 +1,13 @@
-def main(connection, channel, message):
+def main(connection, channel, message, recurse=False):
 	""" Sends a PRIVMSG """
-	if len(message) > 400:
-		to_send = []
-		for x in range((len(message) % 400) + 1):
-			connection.core["Coreraw"].main(connection, "PRIVMSG %s :%s" % (channel, message[x*400:x*400*2]))
-		
-	if type(message) != type(str):
-		message = str(message)
-	connection.core["Coreraw"].main(connection, "PRIVMSG %s :%s" % (channel, message))
+	# Todo, stop it chopping words up.
+	
+	pre_message = "PRIVMSG %s :" % (channel)
 
-def initalise():
-	""" Called when plugin is loaded """
-	pass
+	# Max length of message can be 510 (512 inc. \r\n so 510 as raw adds those).
+	MAX_LENGTH = 510 - len(pre_message)
+	messages = [message[i:i+MAX_LENGTH] for i in range(0, len(message), MAX_LENGTH)]
+	
+	# now send to raw.
+	for message in messages:
+		connection.core["Coreraw"].main(connection, "%s%s" % (pre_message, message))
