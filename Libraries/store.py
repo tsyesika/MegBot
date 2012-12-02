@@ -23,15 +23,47 @@ class Store():
 		self.__type = type(data)
 		self.data = data
 		self.__sfile = None #holder
+
 	def __repr__(self):
 		return self.data.__str__()
 	def __str__(self):
 		return self.__repr__()
+	def __getitem__(self, key):
+		if self.__type == type({}) or self.__type == type([]) or self.__type == type(""):
+			return self.data[key]
+		else:
+			raise AttributeError
 	def __setitem__(self, key, value):
-		if type(self.data) == type({}) or type(self.data) == type([]):
+		if self.__type == type({}) or self.__type == type([]):
 			self.data[key] = value
 		else:
 			raise AttributeError
+	def __delitem__(self, key):
+		if self.__type == type({}) or self.__type == type([]):
+			del self.data[key]
+		else:
+			raise AttributeError
+	def __getslice__(self, i, j):
+		if self.__type == type([]) or self.__type == type(""):
+			return self.data[i:j]
+		else:
+			raise AttributeError
+	def __setslice__(self, i, j, value):
+		if self.__type == type([]):
+			self.data[i:j] = value
+		else:
+			raise AttributeError
+	def __delslice__(self, i, j):
+		if self.__type == type([]):
+			del self.data[i:j]
+		else:
+			raise AttributeError
+	def __contains__(self, key):
+		if self.__type == type([]) or self.__type == type(""):
+			return key in self.data
+		else:
+			raise AttributeError
+		
 	def append(self, value):
 		if self.__type == type([]):
 			return self.data.append(value)
@@ -177,5 +209,3 @@ class Store():
 		self.__sfile = open(self.fpath, "w")
 		self.__sfile.write(foutd)
 		self.__sfile.close()
-
-	
