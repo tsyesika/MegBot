@@ -87,5 +87,5 @@ if __name__ == "__main__":
 			sleep(2)
 					
 	except KeyboardInterrupt:
-		print "Ctrl-C been hit, run for your lives !"
+		print "\nCtrl-C been hit, run for your lives!"
 		exit()
