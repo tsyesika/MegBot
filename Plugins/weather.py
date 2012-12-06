@@ -17,8 +17,9 @@
 #   along with MegBot.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-import urllib2, shelve, time
+import urllib2, time
 import xml.etree.ElementTree as etree
+import Libraries.store as store
 
 def main(connection, line):
 	"""
@@ -57,7 +58,7 @@ def main(connection, line):
 		Channel.send("Can't find that place sorry. You sure it's spelt right? (%s)" % new_spelling.replace("+", " "))
 		return
 
-	cache = shelve.open("weather-cache")
+	cache = store.Store("weather-cache", {})
 	current_time = time.time()
 
 	try:
@@ -95,8 +96,7 @@ def main(connection, line):
 
 		# Store weather in cache
 		cache[weoid] = (condition, wind, location, atmos, current_time)
-		cache.sync()
-		cache.close()
+		cache.save()
 
 	# Okay now we need to convert F to C & K
 	c = int((float(condition.get("temp")) - 32) / (9 / 5.) + .5)
