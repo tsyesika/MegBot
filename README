@@ -13,12 +13,14 @@ NB: This readme will be subject to change throughout this releases development
 
 == Todo before 0.06 release ==
 
-- Rewrite load
+- Give deamon mode (so doesn't rely on tmux or screen)
+- Make a authentication system (needs design work)
 - SSL certificate options
 - Configuration Generator
 - Better config support (e.g. accept support for older megbot configs, supybot, rbot, eggdrop, inspircd, etc..)
-- Add support for common pastebins on the load command
-- Close all issues
+- Add support for common pastebins on the load command (don't do until authentication system works)
+- Fix Time
+- Switch plugins to use Store library
 
 == Using ==
 
