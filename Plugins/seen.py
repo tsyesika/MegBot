@@ -15,7 +15,8 @@
 #   along with MegBot.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-import shelve, time
+import time
+import Libraries.store as store
 
 def main(connection, line):
 	"""
@@ -29,7 +30,11 @@ def main(connection, line):
 		Channel.send("No I haven't seen myself, I'm all 1s and 0s")
 		return
 	
-	seen = shelve.open("Seen")
+	try:
+		seen = store.Store("Seen")
+	except IOError:
+		seen = store.Store("Seen", {})
+
 	if Info.args[0] in seen.keys():
 		record = seen[Info.args[0]]
 		Channel.send("%s said %sin %s at %s" % (
@@ -46,14 +51,16 @@ def on_PRIVMSG(connection, line):
 	Logs this speach.
 	"""
 	Info = connection.libraries["IRCObjects"].Info(line)
-	seen = shelve.open("Seen")
+	try:
+		seen = store.Store("Seen")
+	except IOError:
+		seen = store.Store("Seen", {})
 	seen[Info.nick] = {
 		"msg":Info.message,
 		"time":time.time(),
 		"channel":Info.channel,
 	}
-	seen.sync()
-	seen.close()
+	seen.save()
 	
 	
 def init(connection):

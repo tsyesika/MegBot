@@ -58,11 +58,19 @@ def main(connection, line):
 		Channel.send("Can't find that place sorry. You sure it's spelt right? (%s)" % new_spelling.replace("+", " "))
 		return
 
-	cache = store.Store("weather-cache", {})
+	try:
+		cache = store.Store("WeatherCache")
+	except IOError:
+		cache = store.Store("WeatherCache", {})
+
 	current_time = time.time()
 
 	try:
 		condition, wind, location, atmos, cache_time = cache[weoid]
+
+		conition = etree.fromstring(condition)
+		wind = etree.fromstring(wind)
+		atmos = etree.fromstring(atmos)
 
 		# check to see if cache is older than 1 hour
 		if (current_time - cache_time) > 3600:
@@ -95,7 +103,7 @@ def main(connection, line):
 		location = Format.Bold(location)
 
 		# Store weather in cache
-		cache[weoid] = (condition, wind, location, atmos, current_time)
+		cache[weoid] = (etree.tostring(condition), etree.tostring(wind), location, etree.tostring(atmos), current_time)
 		cache.save()
 
 	# Okay now we need to convert F to C & K

@@ -15,7 +15,8 @@
 #   along with MegBot.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-import re, urllib2, shelve
+import re, urllib2
+import Libraries.store as store
 
 aliases = {
 	"nzst":"nz",
@@ -27,7 +28,10 @@ aliases = {
 
 def main(connection, line):
 	#Checks to see if timezone is set :P
-	userzones = shelve.open("TimeData")
+	try:
+		userzones = store.Store("TimeData", {})
+	except IOError:
+		userzones = store.Store("TimeData")
 	if not Info.args:
 		if Info.nick in userzones.keys():
 			Info.args = userzones[Info.nick]
@@ -37,8 +41,7 @@ def main(connection, line):
 	if Info.args[0] == "-set" and len(Info.args) > 1:
  		userzones[Info.nick] = Info.args[1:]
  		Channel.send("Location Set ^_^")
- 		userzones.sync()
- 		userzones.close()
+ 		userzones.save()
  		return
  	
  	if Info.args[0].lower() in aliases.keys():
@@ -56,7 +59,6 @@ def main(connection, line):
 		else:
 			Channel.send("Sorry, couldn't retrive time.")
 		
-	userzones.sync()
-	userzones.close()
+	userzones.save()
 
 help = "Uses google to look up the time, if no time is specified it will check to see if any time is save with it. Use -set <location> to set a location"
