@@ -37,12 +37,13 @@ def main(connection, line):
 
 	if Info.args[0] in seen.keys():
 		record = seen[Info.args[0]]
-		Channel.send("%s said %sin %s at %s" % (
-			Info.args[0],
-			record["msg"],
-			record["channel"],
-			time.ctime(record["time"])
-		))
+		if record["channel"] == Info.channel:
+			Channel.send("%s said %s in %s at %s" % (
+				Info.args[0],
+				record["msg"],
+				record["channel"],
+				time.ctime(record["time"])
+			))
 	else:
 		Channel.send("Can't find %s." % Info.args[0])
 	
