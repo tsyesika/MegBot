@@ -29,9 +29,9 @@ aliases = {
 def main(connection, line):
 	#Checks to see if timezone is set :P
 	try:
-		userzones = store.Store("TimeData", {})
-	except IOError:
 		userzones = store.Store("TimeData")
+	except IOError:
+		userzones = store.Store("TimeData", {})
 	if not Info.args:
 		if Info.nick in userzones.keys():
 			Info.args = userzones[Info.nick]

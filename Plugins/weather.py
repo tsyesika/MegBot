@@ -68,7 +68,7 @@ def main(connection, line):
 	try:
 		condition, wind, location, atmos, cache_time = cache[weoid]
 
-		conition = etree.fromstring(condition)
+		condition = etree.fromstring(condition)
 		wind = etree.fromstring(wind)
 		atmos = etree.fromstring(atmos)
 

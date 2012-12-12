@@ -35,15 +35,14 @@ def main(connection, line):
 	except IOError:
 		seen = store.Store("Seen", {})
 
-	if Info.args[0] in seen.keys():
+	if Info.args[0] in seen.keys() and seen[Info.args[0]]["channel"] == Info.channel:
 		record = seen[Info.args[0]]
-		if record["channel"] == Info.channel:
-			Channel.send("%s said %s in %s at %s" % (
-				Info.args[0],
-				record["msg"],
-				record["channel"],
-				time.ctime(record["time"])
-			))
+		Channel.send("%s said %s in %s at %s" % (
+			Info.args[0],
+			record["msg"],
+			record["channel"],
+			time.ctime(record["time"])
+		))
 	else:
 		Channel.send("Can't find %s." % Info.args[0])
 	
