@@ -21,6 +21,7 @@ NB: This readme will be subject to change throughout this releases development
 - Add support for common pastebins on the load command (don't do until authentication system works)
 - Fix Time
 - Switch plugins to use Store library
+	* Split Store management into its own thread to save on disk IO
 
 == Using ==
 

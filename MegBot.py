@@ -34,6 +34,16 @@ class Bot(object):
 		self.hooker = hooker
 		self.sock = socket.socket()
 		self.core["Coreconnect"].main(self)
+
+		# Some of the directories in config.py won't be created in git, so let's try
+		# and create them. We'll assume a user who has set custom directory tree has
+		# created them :P
+		for path in self.config.paths.values():
+			try:
+				os.mkdir(path, 0775)
+			except:
+				pass
+
 		if run:
 			self.plugins = {}
 			if "Corelloader" in self.core.keys() and run:
