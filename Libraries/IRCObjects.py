@@ -112,19 +112,26 @@ class L_Helper(Standard):
 			else:
 				return "%s weeks" % w
 		elif (((t / 60) / 60) / 24) <= 365 :
-			# a year (below a decade)
+			# a year
+			m = int(t / 60.0 / 60.0 / 24.0 / 7.0 / 4.0 + 0.5)
+			if m <= 1:
+				return "A month"
+			else:
+				return "%s months" % m
+		elif ((((t / 60) / 60) / 24) / 365) <= 10:
+			# a decade (decade - century)
 			y = int(t / 60.0 / 60.0 / 24.0 / 365.0 + 0.5)
 			if y <= 1:
 				return "A year"
 			else:
-				return "%s years" % y
-		elif ((((t / 60) / 60) / 24) / 365) <= 10:
-			# a decade (decade - century)
-			d = int(t / 60.0 / 60.0 / 24.0 / 365.0 / 10.0 + 0.5)
+				return "%s year" % y
+		elif ((((t / 60) / 60) / 24) / 365) <= 100:
+			# a century
+			d = int(t / 60.0 / 60.0 / 24.0 / 365.0 / 10 + 0.5)
 			if d <= 1:
 				return "A decade"
 			else:
-				return "%s decades" % d
+				return "%s decades" % y
 		else:
 			c = int(t / 60.0 / 60.0 / 24.0 / 365.0 / 100.0 + 0.5)
 			if c <= 1:
