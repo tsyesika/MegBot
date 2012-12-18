@@ -15,7 +15,7 @@ networks = {
 		"trigger":".",
 		"NSPassword":"",
 		"commands":[],
-		"modes":["b"],
+		"modes":["B"],
 		"active":True,
 		"channels":["#bots"]
 	},
