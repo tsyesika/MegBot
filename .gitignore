@@ -1,5 +1,4 @@
 *.py[co]
 *~
 *.swp
-Seen
-weather-cache
+Databases/*
