@@ -59,7 +59,7 @@ class Store():
 		else:
 			raise AttributeError
 	def __contains__(self, key):
-		if self.__type == type([]) or self.__type == type(""):
+		if self.__type == type({}) or self.__type == type([]) or self.__type == type(""):
 			return key in self.data
 		else:
 			raise AttributeError

@@ -124,7 +124,7 @@ class L_Helper(Standard):
 			if y <= 1:
 				return "A year"
 			else:
-				return "%s year" % y
+				return "%s years" % y
 		elif ((((t / 60) / 60) / 24) / 365) <= 100:
 			# a century
 			d = int(t / 60.0 / 60.0 / 24.0 / 365.0 / 10 + 0.5)

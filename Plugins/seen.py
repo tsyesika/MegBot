@@ -35,16 +35,15 @@ def main(connection, line):
 	except IOError:
 		seen = store.Store("Seen", {})
 
-	if Info.args[0] in seen.keys() and seen[Info.args[0]]["channel"] == Info.channel:
-		record = seen[Info.args[0]]
-		Channel.send("%s said %s in %s at %s" % (
+	try:
+		record = seen[connection.name][Info.channel][Info.args[0]]
+		Channel.send("%s said \"%s\" about %s ago" % (
 			Info.args[0],
-			record["msg"],
-			record["channel"],
-			time.ctime(record["time"])
+			record["msg"].strip(),
+			Helper.HumanTime(record["time"]).lower()
 		))
-	else:
-		Channel.send("Can't find %s." % Info.args[0])
+	except KeyError:
+		Channel.send("Haven't seen %s." % Info.args[0])
 	
 def on_PRIVMSG(connection, line):
 	"""
@@ -55,11 +54,16 @@ def on_PRIVMSG(connection, line):
 		seen = store.Store("Seen")
 	except IOError:
 		seen = store.Store("Seen", {})
-	seen[Info.nick] = {
-		"msg":Info.message,
-		"time":time.time(),
-		"channel":Info.channel,
-	}
+	# there's got to be a better way fo doing this... it looks so ugly :(
+	if connection.name in seen:
+		if Info.channel in seen[connection.name]:
+			seen[connection.name][Info.channel][Info.nick] = {"msg":Info.message, "time":time.time()}
+		else:
+			#new channel
+			seen[connection.name][Info.channel] = {Info.nick: {"msg":Info.message, "time":time.time()}}
+	else:
+		#new connection etc.
+		seen[connection.name] = {Info.channel: {Info.nick: {"msg":Info.message, "time":time.time()}}}
 	seen.save()
 	
 	
