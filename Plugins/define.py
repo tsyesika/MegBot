@@ -16,37 +16,20 @@
 #   along with MegBot.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-import urllib2, re
-
-USER_AGENT = "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_6; en-us) AppleWebKit/533.19.4 (KHTML, like Gecko) Version/5.0.3"
+import urllib2, re, json
 
 def main(connection):
     if not Info.args:
         Channel.send("Please supply the word you want to be defined.")
         return
-    phrase = "+".join(Info.args)
-    google = urllib2.Requephrase("http://www.google.com/m?q=define+%s" % phrase)
-    google.add_header("User-Agent", USER_AGENT)
-    google = urllib2.urlopen(google)
-    source = google.read()
-    pron = re.findall("<span class=\"t5vw2s\">(.+?)</span>", source)[0]
-    if pron.replace("·", "").lower() == phrase.lower():
-        correction = None
-    else:
-        correction = pron.replace("·�", "")
-    chks = re.findall("<br/><span class=\"ut3asb\">(.+?):</span><span class=\"hxh2cq\">(.+?)</span>", source)
-    if not chks:
-        chks = re.findall("<span class=\"cg2aoo\">(.+?)\</span> <br/><span class=\"hxh2cq\">1. (.+?)</span>", source)
-    if not chks:
-        Channel.send("Sorry can't find definition for %s" % phrase)
-        return
-    message = ""
-    for part in chks:
-        if part[0][0] == "(":
-            part = (part[0].split("(")[1].split(")")[0], part[1])
-        message += "| %s - %s " % (Format.Bold(part[0]), part[1])
-    if correction:
-        message += " (Corrected from: %s)" % phrase
-    Channel.send(Helper.StripHTML("[%s] %s" % (pron, message[2:])))
+    query_original = " ".join(Info.args)
+    query_string = "+".join(Info.args)
+    request = urllib2.urlopen("http://api.duckduckgo.com/?q=define+%s&format=json" % query_string)
 
-help = "Uses google to define a word you specify"
+    output = json.loads(request.read())
+    if output['AbstractText'] == '':
+        Channel.send("Couldn't find a definition for %s" % query_original)
+    else:
+        Channel.send("[%s] %s" % (Format.Bold(query_original), output['AbstractText']))
+
+help = "Use DuckDuckGo to define a word or phrase"
