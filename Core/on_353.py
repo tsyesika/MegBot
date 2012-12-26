@@ -32,7 +32,7 @@ def main(connection, message):
     connection.channels[channel] = {"all":[], "hop":[], "sop":[], "aop":[], "vop":[], "non":[], "founder":[]}
     for nick in nicks:
         if nick[0] in ["+", "&", "@", "%", "~"]:
-            connection.channels[channel][bot.config.permissions[nick[0]]].append(nick[1:])
+            connection.channels[channel][connection.config.permissions[nick[0]]].append(nick[1:])
             connection.channels[channel]["all"].append(nick[1:])
         else:
             connection.channels[channel]["non"].append(nick)
