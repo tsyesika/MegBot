@@ -16,13 +16,13 @@
 ##
 
 def main(connection, line):
-	if not Info.args:
-		# Being called by bot.
-		return 
-	if "Channel" in dir():
-		Channel.send("Please specify a channel to join.")
-		return
-	Server.join(Info.args[0])
-	Channel.send("%s joined." % Info.args[0])
+    if not Info.args:
+        # Being called by bot.
+        return 
+    if "Channel" in dir():
+        Channel.send("Please specify a channel to join.")
+        return
+    Server.join(Info.args[0])
+    Channel.send("%s joined." % Info.args[0])
 
 help = "Tries to join the specified channel."

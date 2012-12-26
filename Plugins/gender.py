@@ -18,24 +18,24 @@
 import urllib2
 
 def main(connection, line):
-	# Find name
-	if not Info.args:
-		Channel.send("Please specify a name.")
-		return
-		
-	name = Info.args[0]
-	
-	definitions = {
-		"F":"female",
-		"M":"male",
-		"U":"unisex"
-	}
+    # Find name
+    if not Info.args:
+        Channel.send("Please specify a name.")
+        return
+        
+    name = Info.args[0]
+    
+    definitions = {
+        "F":"female",
+        "M":"male",
+        "U":"unisex"
+    }
 
-	s = urllib2.urlopen("http://api.megworld.co.uk/Name-Gender/gender.php?name=%s" % name)
-	d = s.read()
-	if d in definitions.keys():
-		Channel.send("%s is %s" % (name, definitions[d]))
-	else:
-		Channel.send("Sorry we don't know %s, please check later for it" % name)
+    s = urllib2.urlopen("http://api.megworld.co.uk/Name-Gender/gender.php?name=%s" % name)
+    d = s.read()
+    if d in definitions.keys():
+        Channel.send("%s is %s" % (name, definitions[d]))
+    else:
+        Channel.send("Sorry we don't know %s, please check later for it" % name)
 
 help = "Uses MegWorld's API to try and work out the gender from a given real name"

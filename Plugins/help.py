@@ -16,34 +16,34 @@
 ##
 
 def main(bot, line):
-	if not Info.args:
-		# Generic list of plugins.
-		cout = ""
-		amount = len(bot.plugins.keys())-1
-		done = False
-		for i, x in enumerate(bot.plugins.keys()):
-			done = True
-			if i == amount:
-				cout += " & " + x
-			else:
-				cout += ", " + x
-		if done:
-			Channel.send("%s: %s" % (Info.nick, cout[2:]))
-		else:
-			Channel.send("%s: It seems no plugins are loaded, please speak to the bot admin." % Info.nick)
-	else:
-		plugin = Info.args[0]
-		if plugin in bot.plugins.keys():
-			if "help" in dir(bot.plugins[plugin]):
-				if type(bot.plugins[plugin].help) == type(range):
-					# It's a function
-					bots.plugins[plugin].help(bot, line)
-				elif type(bot.plugins[plugin].help) == type(""):
-					# It's a string
-					Channel.send("%s: %s" % (Info.nick, bot.plugins[plugin].help))
-			else:
-				Channel.send("%s: Can't find any help for %s." % (Info.nick, plugin))
-		else:
-			Channel.send("%s: Can't find plugin %s." % (Info.nick, plugin))
+    if not Info.args:
+        # Generic list of plugins.
+        cout = ""
+        amount = len(bot.plugins.keys())-1
+        done = False
+        for i, x in enumerate(bot.plugins.keys()):
+            done = True
+            if i == amount:
+                cout += " & " + x
+            else:
+                cout += ", " + x
+        if done:
+            Channel.send("%s: %s" % (Info.nick, cout[2:]))
+        else:
+            Channel.send("%s: It seems no plugins are loaded, please speak to the bot admin." % Info.nick)
+    else:
+        plugin = Info.args[0]
+        if plugin in bot.plugins.keys():
+            if "help" in dir(bot.plugins[plugin]):
+                if type(bot.plugins[plugin].help) == type(range):
+                    # It's a function
+                    bots.plugins[plugin].help(bot, line)
+                elif type(bot.plugins[plugin].help) == type(""):
+                    # It's a string
+                    Channel.send("%s: %s" % (Info.nick, bot.plugins[plugin].help))
+            else:
+                Channel.send("%s: Can't find any help for %s." % (Info.nick, plugin))
+        else:
+            Channel.send("%s: Can't find plugin %s." % (Info.nick, plugin))
 
 help = "Displays a list of plugins or if a plugin is specified tries to get the help for that plugin"

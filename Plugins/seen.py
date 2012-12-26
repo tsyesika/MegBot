@@ -19,58 +19,58 @@ import time
 import Libraries.store as store
 
 def main(connection, line):
-	"""
-	Looks for the last time the user spoke and reports it.
-	"""
-	if not Info.args:
-		Channel.send("Please specify a user")
-		return
-	
-	if Info.args[0] == connection.settings["nick"]:
-		Channel.send("No I haven't seen myself, I'm all 1s and 0s")
-		return
-	
-	try:
-		seen = store.Store("Seen")
-	except IOError:
-		seen = store.Store("Seen", {})
+    """
+    Looks for the last time the user spoke and reports it.
+    """
+    if not Info.args:
+        Channel.send("Please specify a user")
+        return
+    
+    if Info.args[0] == connection.settings["nick"]:
+        Channel.send("No I haven't seen myself, I'm all 1s and 0s")
+        return
+    
+    try:
+        seen = store.Store("Seen")
+    except IOError:
+        seen = store.Store("Seen", {})
 
-	try:
-		record = seen[connection.name][Info.channel][Info.args[0]]
-		Channel.send("%s said \"%s\" about %s ago" % (
-			Info.args[0],
-			record["msg"].strip(),
-			Helper.HumanTime(record["time"]).lower()
-		))
-	except KeyError:
-		Channel.send("Haven't seen %s." % Info.args[0])
-	
+    try:
+        record = seen[connection.name][Info.channel][Info.args[0]]
+        Channel.send("%s said \"%s\" about %s ago" % (
+            Info.args[0],
+            record["msg"].strip(),
+            Helper.HumanTime(record["time"]).lower()
+        ))
+    except KeyError:
+        Channel.send("Haven't seen %s." % Info.args[0])
+    
 def on_PRIVMSG(connection, line):
-	"""
-	Logs this speach.
-	"""
-	Info = connection.libraries["IRCObjects"].Info(line)
-	try:
-		seen = store.Store("Seen")
-	except IOError:
-		seen = store.Store("Seen", {})
-	# there's got to be a better way fo doing this... it looks so ugly :(
-	if connection.name in seen:
-		if Info.channel in seen[connection.name]:
-			seen[connection.name][Info.channel][Info.nick] = {"msg":Info.message, "time":time.time()}
-		else:
-			#new channel
-			seen[connection.name][Info.channel] = {Info.nick: {"msg":Info.message, "time":time.time()}}
-	else:
-		#new connection etc.
-		seen[connection.name] = {Info.channel: {Info.nick: {"msg":Info.message, "time":time.time()}}}
-	seen.save()
-	
-	
+    """
+    Logs this speach.
+    """
+    Info = connection.libraries["IRCObjects"].Info(line)
+    try:
+        seen = store.Store("Seen")
+    except IOError:
+        seen = store.Store("Seen", {})
+    # there's got to be a better way fo doing this... it looks so ugly :(
+    if connection.name in seen:
+        if Info.channel in seen[connection.name]:
+            seen[connection.name][Info.channel][Info.nick] = {"msg":Info.message, "time":time.time()}
+        else:
+            #new channel
+            seen[connection.name][Info.channel] = {Info.nick: {"msg":Info.message, "time":time.time()}}
+    else:
+        #new connection etc.
+        seen[connection.name] = {Info.channel: {Info.nick: {"msg":Info.message, "time":time.time()}}}
+    seen.save()
+    
+    
 def init(connection):
-	connection.hooker.register_hook("on_PRIVMSG", on_PRIVMSG)
+    connection.hooker.register_hook("on_PRIVMSG", on_PRIVMSG)
 
 def unload(connection):
-	connection.hooker.unregister_hook("on_PRIVMSG", on_PRIVMSG)
+    connection.hooker.unregister_hook("on_PRIVMSG", on_PRIVMSG)
 
 help = "Tells you the last time a specified nick spoke."

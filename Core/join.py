@@ -17,8 +17,8 @@
 import time
 
 def main(connection, channel):
-	""" Joins channel specified """
-	if connection.libraries:
-		connection.channels[channel] = connection.libraries["IRCObjects"].L_Channel(connection, channel)
-		connection.channels[channel].__setuphooks__(connection)
-	connection.core["Coreraw"].main(connection, "JOIN %s" % channel)
+    """ Joins channel specified """
+    if connection.libraries:
+        connection.channels[channel] = connection.libraries["IRCObjects"].L_Channel(connection, channel)
+        connection.channels[channel].__setuphooks__(connection)
+    connection.core["Coreraw"].main(connection, "JOIN %s" % channel)

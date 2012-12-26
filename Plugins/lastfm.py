@@ -18,18 +18,18 @@
 import urllib2, json
 
 def main(connection, line):
-	if not Info.args:
-		user = Info.nick
-	else:
-		user = Info.args[0]
-	try:
-		lastfm = urllib2.urlopen("http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=%s&api_key=b25b959554ed76058ac220b7b2e0a026&format=json" % user)
-		data = lastfm.read()
-		data = json.loads(data)
-		song = data[u'recenttracks'][u'track'][0]
-		print song[u'artist'][u'name']
-		Channel.send("%s is/was listening to: %s - %s" % (user, song[u'name'].encode('utf-8'), song[u'artist'][u'name'].encode('utf-8')))
-	except:
-		Channel.send("Sorry there was an error, check your username?")
+    if not Info.args:
+        user = Info.nick
+    else:
+        user = Info.args[0]
+    try:
+        lastfm = urllib2.urlopen("http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=%s&api_key=b25b959554ed76058ac220b7b2e0a026&format=json" % user)
+        data = lastfm.read()
+        data = json.loads(data)
+        song = data[u'recenttracks'][u'track'][0]
+        print song[u'artist'][u'name']
+        Channel.send("%s is/was listening to: %s - %s" % (user, song[u'name'].encode('utf-8'), song[u'artist'][u'name'].encode('utf-8')))
+    except:
+        Channel.send("Sorry there was an error, check your username?")
 
 help = "Gets the last scrobbled song from a specified user (if no one was specifies it tries your nick) from last.fm"

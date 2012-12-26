@@ -115,60 +115,60 @@ currancies = {
 }
 currancy_switch = {}
 for c in currancies:
-	currancy_switch[currancies[c].lower()] = c
+    currancy_switch[currancies[c].lower()] = c
 for x in currancies.keys():
-	currancies[x.lower()] = currancies[x]
-	del currancies[x]
+    currancies[x.lower()] = currancies[x]
+    del currancies[x]
 
 
 def fixurl(url):
-	url = url.replace("+", "%2B")
-	url = url.replace("/", "%2F")
-	url = url.replace("(", "%28")
-	url = url.replace(")", "%29")
-	url = url.replace(" ", "+")
-	return url
+    url = url.replace("+", "%2B")
+    url = url.replace("/", "%2F")
+    url = url.replace("(", "%28")
+    url = url.replace(")", "%29")
+    url = url.replace(" ", "+")
+    return url
 
 def main(connection, line):
-	global currancy_switch, currancies
-	if not Info.args:
-		Channel.send("Plese enter mathamatical expression.")
-		return
-	exp = " ".join(Info.args)
-	lexp = exp.lower()
-	# Try and figure out what it is first...
-	# Conversion?
-	if lexp.find("to")!=-1:
-		#currancy?
-		tpart = lexp.split("to")
-		a, tpart[0]  = tuple(tpart[0].split(" ")[:2])
-		tpart = [tpart[0].replace(" ", ""), tpart[1].replace(" ", "")]
-		if (tpart[0] in currancies.keys()):
-			tpart[0] = currancies[tpart[0]].lower()
-		if (tpart[1] in currancies.keys()):
-			tpart[1] = currancies[tpart[1]].lower()
-		if (tpart[0] in currancy_switch.keys()) and (tpart[1] in currancy_switch.keys()):
-			google = urllib2.Request("http://www.google.com/finance/converter?a=%s&from=%s&to=%s" % (a, tpart[0].upper(), tpart[1].upper()))
-			google.add_header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel; Mac OS X 10_6_6; en-gb) AppleWebKit/533.19.4 (KHTML, like Gecko Vesion/5.0.3")
-			google = urllib2.urlopen(google)
-			source = google.read()
-			total = re.findall("<div id=currency_converter_result>(.+?)<span class=bld>(.+?)</span>", source)[0][1]
-			Channel.send("%s %s = %s %s" % (a, currancy_switch[tpart[0]], total.split(" ")[0], currancy_switch[tpart[1]]))
-			return 
-	
-	google = urllib2.Request("http://google.com/m?q=%s" % fixurl(exp))
-	google.add_header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_6; en-gb) AppleWebKit/533.19.4 (KHTML, like Gecko) Version/5.0.3")
-	google = urllib2.urlopen(google)
-	source = google.read()[5000:]
-	#Channel.send("%s" % source[source.find("999 + 999")-30:source.find("2 + 2 = 4")+20])
-	#f = open("test.html", "w")
-		#f.write(source)
-		#f.close()
-	a = re.findall("<span class=\"sifhoi\">(.+?)</span> </d", source)
-	a = a[0].replace("&nbsp;", ",")
-	try:
-		Channel.send("%s" % a)
-	except:
-		Channel.send("Math Error: ?")
-		
+    global currancy_switch, currancies
+    if not Info.args:
+        Channel.send("Plese enter mathamatical expression.")
+        return
+    exp = " ".join(Info.args)
+    lexp = exp.lower()
+    # Try and figure out what it is first...
+    # Conversion?
+    if lexp.find("to")!=-1:
+        #currancy?
+        tpart = lexp.split("to")
+        a, tpart[0]  = tuple(tpart[0].split(" ")[:2])
+        tpart = [tpart[0].replace(" ", ""), tpart[1].replace(" ", "")]
+        if (tpart[0] in currancies.keys()):
+            tpart[0] = currancies[tpart[0]].lower()
+        if (tpart[1] in currancies.keys()):
+            tpart[1] = currancies[tpart[1]].lower()
+        if (tpart[0] in currancy_switch.keys()) and (tpart[1] in currancy_switch.keys()):
+            google = urllib2.Request("http://www.google.com/finance/converter?a=%s&from=%s&to=%s" % (a, tpart[0].upper(), tpart[1].upper()))
+            google.add_header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel; Mac OS X 10_6_6; en-gb) AppleWebKit/533.19.4 (KHTML, like Gecko Vesion/5.0.3")
+            google = urllib2.urlopen(google)
+            source = google.read()
+            total = re.findall("<div id=currency_converter_result>(.+?)<span class=bld>(.+?)</span>", source)[0][1]
+            Channel.send("%s %s = %s %s" % (a, currancy_switch[tpart[0]], total.split(" ")[0], currancy_switch[tpart[1]]))
+            return 
+    
+    google = urllib2.Request("http://google.com/m?q=%s" % fixurl(exp))
+    google.add_header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_6; en-gb) AppleWebKit/533.19.4 (KHTML, like Gecko) Version/5.0.3")
+    google = urllib2.urlopen(google)
+    source = google.read()[5000:]
+    #Channel.send("%s" % source[source.find("999 + 999")-30:source.find("2 + 2 = 4")+20])
+    #f = open("test.html", "w")
+        #f.write(source)
+        #f.close()
+    a = re.findall("<span class=\"sifhoi\">(.+?)</span> </d", source)
+    a = a[0].replace("&nbsp;", ",")
+    try:
+        Channel.send("%s" % a)
+    except:
+        Channel.send("Math Error: ?")
+        
 help = "Uses google to do calculations or conversions"
