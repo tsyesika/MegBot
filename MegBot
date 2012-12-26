@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 ##
 #This file is part of MegBot.
 #
@@ -15,18 +16,20 @@
 #   along with MegBot.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-import socket, sys, traceback, os
+import socket
+import sys
+import os
 from thread import start_new_thread
-from time import sleep, ctime
+from time import sleep
 from imp import load_source
 from glob import glob
 
 class Bot(object):
-    def __init__(self, name, settings, hooker, plugins, config, run=True):
+    def __init__(self, name, hooker, plugins, config, run=True):
         """Initalises bot"""
         self.name = name
         self.config = config
-        self.settings = settings
+        self.settings = config.networks[name]
         self.running = False
         self.channels = {}
         self.core = plugins
@@ -55,6 +58,15 @@ class Bot(object):
 
 
     def run(self):
+        """This will run the bot.
+
+        It loops (indefinitly) asking the parser for messages from the IRC
+        It'll then split them up indevidually by \r\n (end of an IRC message)
+        Once it has each message it'll pass it along to the delegator which
+        will validate and then deluege if needed to the correct
+        part of the bot
+        """
+
         while True:
             while not self.running:
                 sleep(.1)
@@ -69,8 +81,7 @@ class Bot(object):
                 self.sock.close()
             except:
                 pass
-            self.__init__(self.name, 
-                    self.settings, 
+            self.__init__(self.name,
                     self.hooker, 
                     self.core, 
                     self.config, 
@@ -78,24 +89,23 @@ class Bot(object):
         
 
 if __name__ == "__main__":
-    config = load_source("config", "config.py")
+    global_config = load_source("config", "config.py")
     coreplugins = {}
     for c in glob("Core/*.py"):
         # Thanks to webpigeon (https://github.com/xray7224/MegBot/issues/3)
         name = "Core%s" % os.path.splitext(os.path.basename(c))[0]
         coreplugins[name] = load_source(name, c)
     bots = {}
-    for network in config.networks.keys():
-        if not "active" in config.networks[network].keys() or (
-                config.networks[network]["active"]):
+    for network in global_config.networks.keys():
+        if not "active" in global_config.networks[network].keys() or (
+                global_config.networks[network]["active"]):
             
             bots[network] = start_new_thread(
                                             Bot, 
                                             (network, 
-                                            config.networks[network], 
                                             coreplugins["Corehooker"].Hooker(), 
                                             coreplugins, 
-                                            config))
+                                            global_config))
     try:
         while True:
             sleep(2)

@@ -7,9 +7,9 @@ networks = {
 	"MegNet":{
 		"address":"irc.megworld.co.uk",
 		"port":9000,
-		"nick":"",
-		"ident":"",
-		"realname":"",
+		"nick":"MegTest",
+		"ident":"MegBot",
+		"realname":"MegBot",
 		"ipv6":False,
 		"ssl":True,
 		"trigger":".",
@@ -58,3 +58,4 @@ plugin_options = {
 		"default_language":"en"
 	}
 }
+

@@ -1,5 +1,5 @@
 ##
-#This file is part of MegBot.
+#   This file is part of MegBot.
 #
 #   MegBot is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -14,10 +14,26 @@
 #   You should have received a copy of the GNU General Public License
 #   along with MegBot.  If not, see <http://www.gnu.org/licenses/>.
 ##
+
+"""This will join a channel specified.
+The channel must contain the #
+
+Todo: Varify that # is prefixed on the channel; if it's not, prefix it with #
+
+so a call of main(<connection> "channel") produces a 
+    "JOIN #channel"
+
+not:
+    "JOIN channel"
+
+
+"""
+
 import time
 
 def main(connection, channel):
     """ Joins channel specified """
+
     if connection.libraries:
         connection.channels[channel] = connection.libraries["IRCObjects"].L_Channel(connection, channel)
         connection.channels[channel].__setuphooks__(connection)
