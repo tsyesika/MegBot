@@ -69,8 +69,9 @@ def main(connection):
                                                 )
                                     )
     connection.core["Coreraw"].main(connection, 
-                                    "USER 8 * %s :%s" % 
+                                    "USER %s %s * :%s" % 
                                         (
+                                        connection.settings["nick"],
                                         connection.settings["ident"], 
                                         connection.settings["realname"]
                                         )
