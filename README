@@ -13,6 +13,10 @@ NB: This readme will be subject to change throughout this releases development
 
 == Todo before 0.06 release ==
 
+- Better error handling
+- Addition of Channel.me Channel.notice
+- Include a variable on Server for motd (not sure if this is useful yet.)
+- Automatic loader for libraries using L_ naming scheme.
 - Give deamon mode (so doesn't rely on tmux or screen)
 - Make a authentication system (needs design work)
 - SSL certificate options
