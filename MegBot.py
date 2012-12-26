@@ -34,8 +34,9 @@ class Bot(object):
         self.sock = socket.socket()
         self.core["Coreconnect"].main(self)
 
-        # Some of the directories in config.py won't be created in git, so let's try
-        # and create them. We'll assume a user who has set custom directory tree has
+        # Some of the directories in config.py won't be created in git, 
+        # so let's try and create them. 
+        # We'll assume a user who has set custom directory tree has
         # created them :P
         for path in self.config.paths.values():
             try:
@@ -51,6 +52,8 @@ class Bot(object):
             self.server.__setuphooks__(self)
             self.core["Corepluginloader"].main(self)
             self.run()
+
+
     def run(self):
         while True:
             while not self.running:
@@ -61,25 +64,19 @@ class Bot(object):
                 except:
                     self.running = False
                 for line in data.split("\r\n"):
-                    if line:
-                        print "[IN] %s" % line    
-                        self.core["Coreping"].main(self, line.split())
-                        if len(line.split()) > 1:
-                            try:
-                                self.hooker.hook(self, line.split()[1], line)
-                            except:
-                                traceback.print_exc()
-                        if len(line.split()) > 3 and len(line.split()[3]) > 1 and line.split()[3][1] == self.settings["trigger"]:
-                            if line.split()[3][2:] in self.plugins.keys():
-                                try:
-                                    self.core["Coreexecutor"].executor(self, line, line.split()[3][2:])
-                                except:
-                                    traceback.print_exc() # Debug lines
+                    self.core["Coredelegator"].main(self, line)
             try:
                 self.sock.close()
             except:
                 pass
-            self.__init__(self.name, self.settings, self.hooker, self.core, self.config, False) 
+            self.__init__(self.name, 
+                    self.settings, 
+                    self.hooker, 
+                    self.core, 
+                    self.config, 
+                    False)
+        
+
 if __name__ == "__main__":
     config = load_source("config", "config.py")
     coreplugins = {}
@@ -89,8 +86,16 @@ if __name__ == "__main__":
         coreplugins[name] = load_source(name, c)
     bots = {}
     for network in config.networks.keys():
-        if not "active" in config.networks[network].keys() or config.networks[network]["active"]:
-            bots[network] = start_new_thread(Bot, (network, config.networks[network], coreplugins["Corehooker"].Hooker(), coreplugins, config))
+        if not "active" in config.networks[network].keys() or (
+                config.networks[network]["active"]):
+            
+            bots[network] = start_new_thread(
+                                            Bot, 
+                                            (network, 
+                                            config.networks[network], 
+                                            coreplugins["Corehooker"].Hooker(), 
+                                            coreplugins, 
+                                            config))
     try:
         while True:
             sleep(2)

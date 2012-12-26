@@ -1,6 +1,6 @@
 import time, threading
 
-def executor(connection, line, plugin):
+def main(connection, line, plugin):
     """
     This executes and manages plugin calls.
     This will kill the plugins execution after
