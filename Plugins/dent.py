@@ -22,16 +22,16 @@ def FormTime(time):
     # don't expect these variable names to make any sense
     output = ""
     t = 0
-    for char in time:
-        if time[char] == "+" or time[char] == "-":
+    for char_index in range(len(time)):
+        if time[char_index] == "+" or time[char_index] == "-":
             t += 1
         if t <= 6 and t > 0:
             t += 1
         elif t > 0:
             t = 0
-            output += time[char]
+            output += time[char_index]
         else:
-            output += time[char]
+            output += time[char_index]
     return output
 
 def main(connection, line):
