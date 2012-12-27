@@ -15,54 +15,58 @@
 #   along with MegBot.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-import json, urllib2, traceback, time
+import json, urllib2, traceback
 
-def FormTime(ts):
-    nt = ""
+def FormTime(time):
+    # yeah, i have no fucking clue what was going on here
+    # don't expect these variable names to make any sense
+    output = ""
     t = 0
-    for x in range(len(ts)):
-        if ts[x] == "+" or ts[x] == "-":
+    for char in time:
+        if time[char] == "+" or time[char] == "-":
             t += 1
         if t <= 6 and t > 0:
             t += 1
         elif t > 0:
             t = 0
-            nt += ts[x]
+            output += time[char]
         else:
-            nt += ts[x]
-    return nt
+            output += time[char]
+    return output
 
 def main(connection, line):
     if not Info.args:
-        line = Info.nick
+        nick = Info.nick
+    else:
+        nick = Info.args[-1]
     try:
-        i = urllib2.urlopen("http://identi.ca/api/statuses/user_timeline.json?screen_name=%s" % line.split()[-1])
-        data = i.read()
+        data = urllib2.urlopen("http://identi.ca/api/statuses/user_timeline.json?screen_name=%s" % nick)
+        data = data.read()
         data = json.loads(data)
         if data and not ("-g" in Info.args or "-group" in Info.args):
             # this is from the http://status.net/wiki/Twitter-compatible_API
             name = data[0]["user"]["screen_name"]
             cid = data[0]["id"]
             status = data[0]["text"]
-            ft = FormTime(str(data[0]["created_at"]))
-            time = Helper.HumanTime("%s UTC" % ft, "%a %b %d %H:%M:%S %Y %Z")
+            created = FormTime(str(data[0]["created_at"]))
+            dent_time = Helper.HumanTime("%s UTC" % created, "%a %b %d %H:%M:%S %Y %Z")
         else:
-            i = urllib2.urlopen("http://identi.ca/api/statusnet/groups/timeline/%s.json" % line.split()[-1])
-            data = i.read()
+            data = urllib2.urlopen("http://identi.ca/api/statusnet/groups/timeline/%s.json" % nick)
+            data = data.read()
             data = json.loads(data)
             if data:
                 name = data[0]["user"]["screen_name"]
                 cid = data[0]["id"]
                 status = data[0]["text"]
-                ft = FormTime(str(data[0]["created_at"])) 
-                time = Helper.HumanTime("%s UTC" % ft, "%a %b %d %H:%M:%S %Y %Z")
+                created = FormTime(str(data[0]["created_at"])) 
+                dent_time = Helper.HumanTime("%s UTC" % created, "%a %b %d %H:%M:%S %Y %Z")
             else:
                 Channel.send("Sorry, they haven't posted on identi.ca")
                 return
-    except:
+    except Exception:
         traceback.print_exc()
         Channel.send("An error has occured")
         return
-    Channel.send("[%s] %s - %s %s ago - %s http://www.identi.ca/notice/%s" % (Format.Bold(name), status, Format.Bold("Approx:"), time, Format.Bold("Link:"), cid))
+    Channel.send("[%s] %s - %s %s ago - %s http://www.identi.ca/notice/%s" % (Format.Bold(name), status, Format.Bold("Approx:"), dent_time, Format.Bold("Link:"), cid))
 
 help = "Gets the last dent from a specific user/group (or tries your nickname if non is given) from identi.ca (for group support use -g or -group)"

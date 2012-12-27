@@ -16,6 +16,12 @@
 ##
 
 import urllib2
+    
+DEFINITIONS = {
+    "F":"female",
+    "M":"male",
+    "U":"unisex"
+}
 
 def main(connection, line):
     # Find name
@@ -24,17 +30,11 @@ def main(connection, line):
         return
         
     name = Info.args[0]
-    
-    definitions = {
-        "F":"female",
-        "M":"male",
-        "U":"unisex"
-    }
 
-    s = urllib2.urlopen("http://api.megworld.co.uk/Name-Gender/gender.php?name=%s" % name)
-    d = s.read()
-    if d in definitions.keys():
-        Channel.send("%s is %s" % (name, definitions[d]))
+    reply = urllib2.urlopen("http://api.megworld.co.uk/Name-Gender/gender.php?name=%s" % name)
+    reply = reply.read()
+    if reply in DEFINITIONS.keys():
+        Channel.send("%s is %s" % (name, DEFINITIONS[reply]))
     else:
         Channel.send("Sorry we don't know %s, please check later for it" % name)
 

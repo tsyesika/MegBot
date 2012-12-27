@@ -1,4 +1,7 @@
 ##
+#
+# -*- coding: utf-8 -*-
+#
 #   This file is part of MegBot
 #
 #   MegBot is free software: you can redistribute it and/or modify
@@ -14,27 +17,27 @@
 #   You should have received a copy of the GNU General Public License
 #   along with MegBot.  If not, see <http://www.gnu.org/licenses/>.
 #   
-# -*- coding: utf-8 -*-
 ##
 
 from datetime import date
 import calendar
 
-def DayNum(day):
-    if day!=11 and ((day % 10) == 1):
-        return `day` + 'st'
-    elif day!=12 and ((day % 10) == 2):
-        return `day` + 'nd'
-    elif day!=13 and ((day % 10) == 3):
-        return `day` + 'rd'
+DAYS = ["Sweetmorn", "Boomtime", "Pungenday", "Prickle-Prickle", "Setting Orange"]
+SEASONS = ["Chaos", "Discord", "Confusion", "Bureaucracy", "The Aftermath"]
+SEASONHOLIDAYS = ["Chaoflux", "Discoflux", "Confuflux", "Bureflux", "Afflux"]
+APOSTLEHOLIDAYS = ["Mungday", "Mojoday", "Syaday", "Zaraday", "Maladay"]
+
+def day_num(day):
+    if day != 11 and ((day % 10) == 1):
+        return str(day) + 'st'
+    elif day != 12 and ((day % 10) == 2):
+        return str(day) + 'nd'
+    elif day != 13 and ((day % 10) == 3):
+        return str(day) + 'rd'
     else:
-        return `day` + 'th'
+        return str(day) + 'th'
 
 def main(connection, line):
-    seasons = ["Chaos", "Discord", "Confusion", "Bureaucracy", "The Aftermath"]
-    days = ["Sweetmorn", "Boomtime", "Pungenday", "Prickle-Prickle", "Setting Orange"]
-    seasonholidays = ["Chaoflux", "Discoflux", "Confuflux", "Bureflux", "Afflux"]
-    apostleholidays = ["Mungday", "Mojoday", "Syaday", "Zaraday", "Maladay" ]
     today = date.today()
     is_leap_year = calendar.isleap(today.year)
     day_of_year = today.timetuple().tm_yday
@@ -47,17 +50,20 @@ def main(connection, line):
     dayindex = (day_of_year - 1) % 5
     season = season % 4
     year = today.year + 1166
+    output = "Today is %s, the %s day of %s in the YOLD %d."
+    output = output  % (DAYS[dayindex], day_num(day), SEASONS[season], year)
+
     if is_leap_year and today.month == 2 and today.day == 29:
-        ddate = "Today is St. Tib's Day, YOLD %d" % year
+        output_string = "Today is St. Tib's Day, YOLD %d" % year
     elif today.month == 3 and today.day == 25:
-        ddate = "Today is %s, the %s day of %s in the YOLD %d. Don't Panic! Celebrate: Towel Day!" % (days[dayindex], DayNum(day), seasons[season], year)
+        output = output + "Don't Panic! Celebrate: Towel Day!"
     elif day == 5:
-        ddate = "Today is %s, the %s day of %s in the YOLD %d. Celebrate: %s!" % (days[dayindex], DayNum(day), seasons[season], year, apostleholidays[season])
+        output = output + "Celebrate: %s!" % APOSTLEHOLIDAYS[season]
     elif day == 50:
-        ddate = "Today is %s, the %s day of %s in the YOLD %d. Celebrate: %s!" % (days[dayindex], DayNum(day), seasons[season], year, seasonholidays[season])
+        output = output + "Celebrate: %s!" % SEASONHOLIDAYS[season]
     else:
-        ddate = "Today is %s, the %s day of %s in the YOLD %d." % (days[dayindex], DayNum(day), seasons[season], year)
-    Channel.send(ddate)
+        output_string = output_string
+    Channel.send(output_string)
     
 
 help = "Discordian Date, only return current date for now"
