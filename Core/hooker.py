@@ -23,20 +23,23 @@ called multiple times by a single line), this is ensured by the use of sets.
 
 To register a hook you would use the register_hook method, unregistering you
 call the unregister_hook method. To call all the hooks you make a call to hook
-this will parse out the second element in the list (list[1]) and look for all hooks
-which call on that.
+this will parse out the second element in the list (list[1]) and look
+for all hooks which call on that.
 
-The hooks should be registered with the prefix on_<hook> e.g. to register on a PRVIMSG
-you would make a call to reigster reigster_hook("on_PRIVMSG", <function>) the 
-capitalisation on the hook is important, the on_ should be all lowercase with an uppercase
-hook (on_UPPERCASE). The same is true for unregister_hook.
+The hooks should be registered with the prefix on_<hook> e.g. to 
+register on a PRVIMSG you would make a call to reigster:
 
-Hooks are not automatically unregistered, the onus is on the developer once a hook is registerd
-for them to unregister it before their code is unloaded/reloaded. 
+    reigster_hook("on_PRIVMSG", <function>) 
+
+the capitalisation on the hook is important, the on_ should 
+be all lowercase with an uppercase hook (on_UPPERCASE).
+The same is true for unregister_hook.
+
+Hooks are not automatically unregistered, the onus is on the developer once
+a hook is registerd for them to unregister it before their code is 
+unloaded/reloaded. 
 """
 
-import os
-import traceback
 from imp import load_source
 
 class Hooker(object):
@@ -44,11 +47,16 @@ class Hooker(object):
     __hooks = {}
 
     def __init__(self):
-        self.register_hook('on_376', load_source("on_376", "Core/on_376.py").main)
-        self.register_hook('on_353', load_source("on_353", "Core/on_353.py").main)
-        self.register_hook('on_MODE', load_source("on_MODE", "Core/on_MODE.py").main)
-        self.register_hook('on_422', load_source("on_376", "Core/on_376.py").main)
-        self.register_hook('on_QUIT', load_source("on_QUIT", "Core/on_QUIT.py").main)
+        self.register_hook('on_376', load_source("on_376", 
+                                                 "Core/on_376.py").main)
+        self.register_hook('on_353', load_source("on_353", 
+                                                 "Core/on_353.py").main)
+        self.register_hook('on_MODE', load_source("on_MODE",
+                                                  "Core/on_MODE.py").main)
+        self.register_hook('on_422', load_source("on_376",
+                                                 "Core/on_376.py").main)
+        self.register_hook('on_QUIT', load_source("on_QUIT",
+                                                  "Core/on_QUIT.py").main)
     def hook(self, bot, act, line):
         """Hooks plugins, etc..."""
         act = 'on_'+act

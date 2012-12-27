@@ -25,7 +25,6 @@ Todo: allow the sleep to defined in the config (possibly like irssi 'wait 2000')
 """
 
 import time
-import traceback
 
 def main(connection, message):
     """End of MOTD"""
@@ -34,13 +33,13 @@ def main(connection, message):
         connection.core["Corejoin"].main(connection, channel)
     
     if connection.settings["NSPassword"]:
-        connection.core["Coreprivmsg"].main(connection, 
-                                            "NickServ", 
-                                            "identify %s" % 
-                                                (
-                                                    bot.settings["NSPassword"]
-                                                )
-                                           )
+        prvmsg = connection.core["Coreprivmsg"].main
+        prvmsg(connection, 
+               "NickServ", 
+               "identify %s" % (
+                               connection.settings["NSPassword"]
+                               )
+              )
     time.sleep(2)
     
     for cmd in connection.settings["commands"]:

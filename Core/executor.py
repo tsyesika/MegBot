@@ -38,21 +38,41 @@ def main(connection, line, plugin):
         clear(connection)
     
     if not line in connection.times.keys():
-        # we'll ignore the call to a plugin if the plugin
-        # has been called already (and not ended).
+        call(connection, line, plugin)
 
-        if line.split()[2] in connection.channels:
-            connection.plugins[plugin].Info = connection.libraries["IRCObjects"].Info(line)
-            connection.plugins[plugin].Channel = connection.channels[line.split()[2]]
-            connection.times[line] = [threading.Thread(target=connection.plugins[plugin].main, args=(connection, line)), time.time(), plugin]
-            connection.times[line][0].start()
+def call(connection, line, plugin_name):
+    """ Makes a call to a plugin (if needed) """
+    
+    # This checks that megbot is actually in the channel first.
+    # If it isn't we'll just return out.
+    if line.split()[2] not in connection.channels:
+        return
+
+    # Lets get the plugin we're going to deal with.
+    plugin = connection.plugins[plugin_name]
+
+    
+    # We need to add the Info and Channel libraries to the plugin.
+    plugin.Info = connection.libraries["IRCObjects"].Info(line)
+    plugin.Channel = connection.channels[line.split()[2]]
+    
+    # Now lets make a thread for the plugin to run in.
+    thread = threading.Thread(target=plugin.main,
+                              args=(connection, line)
+                             )
+    connection.times[line] = [thread, time.time(), plugin_name]
+
+    # And finally, we need to start it.
+    connection.times[line][0].start()
 
 def clear(connection):
+    """ Clears the plugins that have timed out or finished """
     purge = []
     for plugincall in connection.times:
         if (connection.times[plugincall][1] - time.time()) > 5:
-            connection.times[plugincall] #destroy me
+            pass
+            #connection.times[plugincall] - destroy me
         elif not connection.times[plugincall][0].isAlive():
             purge.append(connection.times[plugincall])
-    for p in purge:
-            del connection.times[plugincall]
+    for process in purge:
+        del connection.times[plugincall]

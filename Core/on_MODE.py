@@ -28,26 +28,23 @@ and not stale information from when the bot joined the channel.
 """
 
 
-def main(connection, message):
+def main(connection, line):
     """When a mode is set"""
-    try:
-        mode = message.split()[3][1:]
-        channel = message.split()[2][1:]
-        for v1, m in enumerate(mode):
-            if m in ["a", "o", "q", "h", "v"]:
-                if len(line.split()) <= 3:
-                    nick = line.split()[0][1:].split("!")[0]
-                else:
-                    nick = message.split()[4:][v1]
-                if m == "a":
-                    connection.channels[channel]["sop"].append(nick)
-                elif m == "o":
-                    connection.channels[channel]["aop"].append(nick)
-                elif m == "h":
-                    connection.channels[channel]["hop"].append(nick)
-                elif m == "v":
-                    connection.channels[channel]["vop"].append(nick)
-                elif m == "q":
-                    connection.channel[channel]["founder"].append(nick)
-    except:
-        traceback.print_exc()
+    mode = line.split()[3][1:]
+    channel = line.split()[2][1:]
+    for v1, m in enumerate(mode):
+        if m in ["a", "o", "q", "h", "v"]:
+            if len(line.split()) <= 3:
+                nick = line.split()[0][1:].split("!")[0]
+            else:
+                nick = line.split()[4:][v1]
+            if m == "a":
+                connection.channels[channel]["sop"].append(nick)
+            elif m == "o":
+                connection.channels[channel]["aop"].append(nick)
+            elif m == "h":
+                connection.channels[channel]["hop"].append(nick)
+            elif m == "v":
+                connection.channels[channel]["vop"].append(nick)
+            elif m == "q":
+                connection.channel[channel]["founder"].append(nick)

@@ -27,13 +27,22 @@ via the connection you pass to it (as it's first argument).
 
 def main(connection, message):
     """Names on joining of a channel"""
-    channel = message.split("#")[1].split()[0]
+    channel_name = message.split("#")[1].split()[0]
     nicks = message.split(":")[2].split()
-    connection.channels[channel] = {"all":[], "hop":[], "sop":[], "aop":[], "vop":[], "non":[], "founder":[]}
+    channel = {"all":[], 
+               "hop":[],
+               "sop":[],
+               "aop":[],
+               "vop":[],
+               "non":[],
+               "founder":[]
+              }
     for nick in nicks:
         if nick[0] in ["+", "&", "@", "%", "~"]:
-            connection.channels[channel][connection.config.permissions[nick[0]]].append(nick[1:])
-            connection.channels[channel]["all"].append(nick[1:])
+            channel[connection.config.permissions[nick[0]]].append(nick[1:])
+            channel["all"].append(nick[1:])
         else:
-            connection.channels[channel]["non"].append(nick)
-            connection.channels[channel]["all"].append(nick)
+
+            channel["non"].append(nick)
+            channel["all"].append(nick)
+    connection.channels[channel_name] = channel

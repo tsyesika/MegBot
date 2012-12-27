@@ -25,16 +25,14 @@ so a call of main(<connection> "channel") produces a
 
 not:
     "JOIN channel"
-
-
 """
-
-import time
 
 def main(connection, channel):
     """ Joins channel specified """
 
     if connection.libraries:
-        connection.channels[channel] = connection.libraries["IRCObjects"].L_Channel(connection, channel)
+        channel_inst = connection.libraries["IRCObjects"].L_Channel(connection, 
+                                                                    channel)
+        connection.channels[channel] = channel_inst
         connection.channels[channel].__setuphooks__(connection)
     connection.core["Coreraw"].main(connection, "JOIN %s" % channel)
