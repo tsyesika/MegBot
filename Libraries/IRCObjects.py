@@ -1,15 +1,38 @@
 # -*- coding: utf-8 -*-
 ##
-# IRC Objects
+#   This file is part of MegBot.
+#
+#   MegBot is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+#
+#   MegBot is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   also along with MegBot.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-#import re, time
-import time, re, platform, os, urllib2, urllib
+import time
+import re
+import platform
+import os
+import urllib2
+import urllib
+
 from Data.HTMLEnterties import *
 
 class Standard():
     """ Never instantiate """
     def __setuphooks__(self, connection):
+        """ Sets up hooks for the class
+        Any method on the class (inhereted) that begins with
+        the prefix on_ will be automatically registered with
+        the hooker
+        """
         if "Corehooker" in connection.core.keys():
             # Woot, we got ability to have hooks
             for anm in dir(self):
@@ -19,24 +42,37 @@ class Standard():
 class Info(Standard):
     def __init__(self, line):
         if line == None:
-            self.nick, self.action. self.raw, self.channel, self.plugin_name, self.trigger, self.args = "", "", "", "", "", []
+            self.nick = ""
+            self.action = ""
+            self.raw = ""
+            self.channel = ""
+            self.plugin_name = ""
+            self.trigger = ""
+            self.args = []
             return
-        self.nick = line.split()[0].split("!")[0][1:]
-        self.action = line.split()[1]
+        
+        # We'll split the line as we need it split below
+        line_split = line.split()
+
+        # Lets pull things out.
+        self.nick = line_split[0].split("!")[0][1:]
+        self.action = line_split[1]
         self.raw = line
-        self.message = "%s %s" % (line.split()[3][1:], " ".join(line.split()[4:]))
-        self.channel = line.split()[2]
-        self.plugin_name = line.split()[3][2:]
-        self.trigger = line.split()[3][1]
-        self.args = line.split()[4:]
+        self.message = "%s %s" % (line_split[3][1:], " ".join(line_split[4:]))
+        self.channel = line_split[2]
+        self.plugin_name = line_split[3][2:]
+        self.trigger = line_split[3][1]
+        self.args = line_split[4:]
 
 class L_Helper(Standard):
     def StripHTML(self, message):
+        """ This strips the HTML off a specific message """
         p = re.compile(r'<.*?>')
         return p.sub("", message)
+
+
     def ConvertHTMLReversed(self, message):
-        """
-        Converts some HTML reversed (&quot; &apos; etc...)
+        """ Converts some HTML reversed (&quot; &apos; etc...)
         message = The message you'd like to convert.
         Returns unicode string (even if message was str)
         (http://www.w3schools.com/tags/ref_entities.asp)
@@ -48,27 +84,36 @@ class L_Helper(Standard):
             message = message.replace(item, HTML_Enterties[item])
         return message
         
+    
     def TimeZoneCorrect(self, t, pre_timezone, post_timezone):
-        """
-        This will convert from one timezone to another.
+        """ This will convert from one timezone to another.
         t = time.time() - seconds after the EPOC
-        pre_timezone = timezone t is - +/-XXXX producable by time.strftime("%z")
-        post_timezone = timezone t should be in - UTC", "BST", etc.. producable by time.strftime("%Z")
+        pre_timezone = t is - +/-XXXX producable by time.strftime("%z")
+        post_timezone = t should be in - UTC", "BST", etc.. 
+                       producable by time.strftime("%Z")
         """
-        utc = time.strptime(time.strftime("%b %d %H:%M:%S %Y ", time.gmtime(t))+pre_timezone, "%b %d %H:%M:%S %Y %Z")
+
+        utc = time.strptime(time.strftime("%b %d %H:%M:%S %Y ",
+                                          time.gmtime(t))+pre_timezone, 
+                                          "%b %d %H:%M:%S %Y %Z")
+        
         # convert to post_timezone
-        et = time.strptime(time.strftime("%b %d %H:%M:%S %Y ", utc)+post_timezone, "%b %d %H:%M:%S %Y %Z")
+        et = time.strptime(time.strftime("%b %d %H:%M:%S %Y ", 
+                                          utc)+post_timezone,
+                                         "%b %d %H:%M:%S %Y %Z")
         return ime.mktime(et)
         
+    
     def HumanTime(self, t=time.time(), parse=None, f=None):
-        """
-        This function will return a string which will give a useful
+        """ This function will return a string which will give a useful
         offset for humans ("5 minutes ago", "6 months ago", etc...):
-        
         t = time (float or string) froom time.time() or formatted (required)
-        parse = a string for formatting e.g. "%a %b %d %H:%M%S %Y %Z" (required if t is a str) 
+        parse = a string for formatting 
+                    e.g. "%a %b %d %H:%M%S %Y %Z" (required if t is a str) 
+        
         f = from an offset, defaults to time.time() (now), must be a float.
         """
+
         if type(t) == type("") and parse:
             t = time.strptime(t, parse)
             t = time.mktime(t)
@@ -150,18 +195,20 @@ class L_Web(Standard):
         """
         p = re.compile(r'<.*?>')
         return p.sub("", text)
+    
+    
     def WebSafeString(self, string):
         """
         Returns a web safe string to be put in urls (for GET requests).
         """
         return urllib.urlencode({"q":string})[2:]
         
+    
     def SpellCheck(self, word):
-        """
-        Uses googles spell checking capabilities and returns corrected word (if there is one)
+        """ Uses googles spell checking capabilities
+        returns corrected word (if there is one)
         word can be a string it'll be converted into websafe string.
         Will return -1 is an error occured!
-        <span class="spell">Showing results for </span><a href="/search?hl=en&amp;sa=X&amp;ei=Sj5kULDxMsX80QXNmIH4CQ&amp;ved=0CCgQvwUoAQ&amp;q=50+shades+of+gray&amp;spell=1" class=spell>50 <b><i>shades</i></b> of gray</a><br>
         """
         try:
             g = urllib2.Request("http://google.com/search?q=%s" % self.WebSafeString(word))
@@ -261,36 +308,57 @@ class L_Channel(Standard):
                 self.voiced.append(person[1:])
             else:
                 self.users.append(person[1:])
-        self.cleaned_nicks = self.ops + self.halfops + self.normals #All nicks but without any modes
+
+        # Include all the nicks but with stripped off modes
+        # e.g. &Jessica -> Jessica
+        self.cleaned_nicks = self.ops + self.halfops + self.normals
         self.recently_sent = []
         self.recently_recved = []
+
+
     def send(self, message):
         self.connection.core["Coreprivmsg"].main(self.connection, self.name, message)
         self.recently_sent.append(message)
         if len(self.recently_sent) <= 5:
             self.recently_sent.pop(0)
+    
+    
     def on_JOIN(self, connection, message):
         nick = message.split()[0][1:].split("!")[0]
         self.nicks.append(nick)
         self.normals.append(nick)
+    
+    
     def set_topic(self, topic):
         self.topic = topic
         self.connection.server.raw("TOPIC %s :%s" % (self.name, topic))
+    
+    
     def voice(self, nick):
         if self.connection.server:
             self.connection.server.raw("MODE %s +v %s" % (self.name, nick))
+    
+    
     def devoice(self, nick):
         if self.connection.server:
             self.connection.server.raw("MODE %s -v %s" % (self.name, nick))
+    
+    
     def op(self, nick):
         if self.connection.server:
             self.connection.server.raw("MODE %s +o %s" % (self.name, nick))
+    
+    
     def deop(self, nick):
         if self.connection.server:
             self.connection.server.raw("MODE %s -o %s" % (self.name, nick))
+    
+    
     def set_mode(self, mode):
         if self.connection.server:
             self.connection.server.raw("MODE %s %s" % (self.name, mode))
+    
+    
     def on_MODE(self, connection, message):
         mode = message.split()[3]
         if len(message.split()) > 4:
@@ -337,13 +405,20 @@ class L_Channel(Standard):
             for m in range(len(mode)):
                 cm = mode[m]
                 func(m)
+    
+    
     def on_TOPIC(self, connection, message):
         new_topic = " ".join(message.split()[4:])[1:]
         self.topic = new_topic
+    
+    
+    
     def on_PRIVMSG(self, connection, message):
         self.recently_recved.append(" ".join(message.split()[4:]))
         if len(self.recently_recved) > 5:
             self.recently_recved.pop(0)
+    
+    
     def on_353(self, connection, message):
         message = message.split()
         message = message[message.index(self.name)+1:]
@@ -358,6 +433,8 @@ class L_Channel(Standard):
                 self.voiced.append(n[1:])
             else:
                 self.normals.append(n)
+    
+    
     def on_332(self, connection, message):
         message = message.split()
         message = " ".join(message[message.index(self.name)+1:])[1:]
@@ -373,22 +450,32 @@ class L_Server(Standard):
         self.ops = 0
         self.motd = []
         self.nick = connection.settings["nick"]
+    
+    
     def raw(self, message, ending="\r\n"):
         """
         Sends a raw message, it appends the ending which defaults to
         \r\n, this will use the Core plugin Core/raw.py
         """
         self.connection.core["Coreraw"].main(self.connection, message, None, ending)
+    
+    
     def on_JOIN(self, connection, message):
         self.channels = self.connection.channels
+    
+    
     def send(self, nick, message=None):
         if not message:
             # Assumes it's a raw message
             self.connection.core["Coreraw"].main(self.connection, nick)
         else:
             self.connecton.core["Coreprivmsg"].main(self.conneciton, nick, message)
+    
+    
     def join(self, channel):
         self.connection.core["Corejoin"].main(self.connection, channel)
+    
+    
     def part(self, channel):
         # Core/part.py doesn't exist as isn't needed by the core of the
         # bot. so we're going to just part and clean it up.
@@ -396,45 +483,63 @@ class L_Server(Standard):
         del self.connection.channels[channel]
         
         # need to figure out a way to unregister any still active hooks.
+    
+    
     def on_266(self, connection, message):
         number = message.split()[-3]
         try:
             self.users = int(number)
         except:
             pass
+    
+    
     def on_251(self, connection, message):
         number = message.split()[-2]
         try:
             self.servers = int(number)
         except:
             pass
+    
+    
     def on_254(self, connection, message):
         number = message.split()[-3]
         try:
             self.channels = int(number)
         except:
             pass
+   
+    
     def on_252(self, connection, message):
         number = message.split()[-3]
         try:
             self.ops = int(number)
         except:
             pass
+    
+    
     def on_372(self, connection, message):
         self.motd.append(" ".join(message.split()[4:]))
         if self.motd[-1][-2:] == "\r\n":
             self.motd[-1] = self.motd[:-2]
+    
+    
     def nick(self, nick):
         # sets nickname
         self.connection.core["Coreraw"].main(self.connection, "NICK %s" % nick)
         self.connection.hooker.hook(self, "nick", nick)
+    
+    
     def on_NICK(self, connection, nick):
         self.nick = nick
+    
+    
     def mode(self, user, mode=None):
         if not mode:
             # Assumes user to be mode and it to be set on self
             mode = user
             user = self.nick
         self.raw("MODE %s %s" % (user, mode))
+    
+    
     def oper(self, user, password):
         self.raw("OPER %s %s" % (user, password))
