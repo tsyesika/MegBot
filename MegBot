@@ -89,7 +89,11 @@ class Bot(object):
         
 
 if __name__ == "__main__":
-    global_config = load_source("config", "config.py")
+    try:
+        global_config = load_source("config", "config.py")
+    except IOError:
+        print "Could not find \"config.py\", maybe you forgot to copy and edit the example config?"
+        sys.exit()
     coreplugins = {}
     for c in glob("Core/*.py"):
         # Thanks to webpigeon (https://github.com/xray7224/MegBot/issues/3)
