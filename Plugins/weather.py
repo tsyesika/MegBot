@@ -108,7 +108,7 @@ def main(connection, line):
 
     # Okay now we need to convert F to C & K
     celsius = int((float(condition.get("temp")) - 32) / (9 / 5.) + .5)
-    k = c + 273
+    kelvin = celsius + 273
     
     # Convert wind speed from mph to kmph
     kmph = int(int(wind.get("speed")) * 1.60934 + .5)
