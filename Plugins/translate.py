@@ -17,11 +17,11 @@
 
 import urllib2, re, traceback
 
-supported = ["en", "de", "cy", "af", "sq", "ar", "hy", "az", "eu", "be", "bn", "bg", "ca", "zh-CN", "zh-TW", "hr", "cs", "da", "nl", "et", "tl", "fi", "fr", \
+SUPPORTED_LANGS = ["en", "de", "cy", "af", "sq", "ar", "hy", "az", "eu", "be", "bn", "bg", "ca", "zh-CN", "zh-TW", "hr", "cs", "da", "nl", "et", "tl", "fi", "fr", \
             "gl", "ka", "de", "el", "gu", "ht", "iw", "hi", "hu", "is", "id", "ga", "it", "ja", "kn", "ko", "la", "lv", "lt", "mk", "ms", "mt", "no", "fa", \
             "pl", "pt", "ro", "ru", "sr", "sk", "sl", "es", "sw", "sv", "ta", "te", "th", "tr", "uk", "ur", "vi", "yi"]
 
-# This is the default language if no language is specified (languages which can be default languages arei n supported)
+# This is the default language if no language is specified (languages which can be default languages are in SUPPORTED_LANGS)
 def main(connection, line):
     if not Info.args:
         Channel.send("Please supply lang|lang <text to translate> or languages")
@@ -34,7 +34,7 @@ def main(connection, line):
             langpair = (Info.args[0].split("|")[0], Info.args[0].split("|")[1])
             ltranslate = "+".join(Info.args[1:])
         else:
-            if Info.args[0] in supported:
+            if Info.args[0] in SUPPORTED_LANGS:
                 langpair = ("auto", Info.args[0])
                 ltranslate = "+".join(Info.args[1:])
             else:

@@ -21,12 +21,12 @@ def main(bot, line):
         cout = ""
         amount = len(bot.plugins.keys())-1
         done = False
-        for i, x in enumerate(bot.plugins.keys()):
+        for i, plugin_name in enumerate(bot.plugins.keys()):
             done = True
             if i == amount:
-                cout += " & " + x
+                cout += " & " + plugin_name
             else:
-                cout += ", " + x
+                cout += ", " + plugin_name
         if done:
             Channel.send("%s: %s" % (Info.nick, cout[2:]))
         else:

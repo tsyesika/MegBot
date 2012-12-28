@@ -23,7 +23,10 @@ def main(connection, line):
     else:
         user = Info.args[0]
     try:
-        lastfm = urllib2.urlopen("http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=%s&api_key=b25b959554ed76058ac220b7b2e0a026&format=json" % user)
+        #this key needs changing
+        api_key = 'b25b959554ed76058ac220b7b2e0a026'
+        url = "http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=%s&api_key=%s&format=json"
+        lastfm = urllib2.urlopen(url % (api_key, user))
         data = lastfm.read()
         data = json.loads(data)
         song = data[u'recenttracks'][u'track'][0]

@@ -107,13 +107,14 @@ def main(connection, line):
         cache.save()
 
     # Okay now we need to convert F to C & K
-    c = int((float(condition.get("temp")) - 32) / (9 / 5.) + .5)
+    celsius = int((float(condition.get("temp")) - 32) / (9 / 5.) + .5)
     k = c + 273
     
     # Convert wind speed from mph to kmph
     kmph = int(int(wind.get("speed")) * 1.60934 + .5)
 
     # Send it all to the channel
-    Channel.send("[%s] Condition: %s | Temp: %sC/%sF/%sK | Humidity: %s%% | Wind Speed %smph/%skmph %s" % (location, condition.get("text"), c, condition.get("temp"), k, atmos.get("humidity"), wind.get("speed"), kmph, different))
+    output_fmt = "[%s] Condition: %s | Temp: %sC/%sF/%sK | Humidity: %s%% | Wind Speed %smph/%skmph %s"
+    Channel.send(output_fmt % (location, condition.get("text"), celsius, condition.get("temp"), kelvin, atmos.get("humidity"), wind.get("speed"), kmph, different))
     
 help = "Uses Yahoo's weather API to give you the weather for the location specified."

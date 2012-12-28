@@ -15,9 +15,9 @@
 #   along with MegBot.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-import imp, os, urllib2, shutil,time
+import imp, os 
 
-def FindName(args):
+def find_name(args):
     """
     Returns first argument in args which doesn't start with -
     """
@@ -25,7 +25,7 @@ def FindName(args):
         return
     if args[0][0] != "-":
         return args[0]
-    return FindName(args[1:])
+    return find_name(args[1:])
     
 def main(connection, line):
     """
@@ -44,16 +44,16 @@ def main(connection, line):
     # -C = config
     if "-c" in Info.args:
         # Okay - core plugins
-        name = "Core/%s.py" % FindName(Info.args)
+        name = "Core/%s.py" % find_name(Info.args)
     elif "-l" in Info.args:
         # okay - libraries
-        name = "Libraries/%s.py" % FindName(Info.args)
+        name = "Libraries/%s.py" % find_name(Info.args)
     elif "-C" in Info.args:
         # okay - config
         name = "config.py"
-    elif FindName(Info.args):
+    elif find_name(Info.args):
         # Must be a normal plugin
-        name = "Plugins/%s.py" % FindName(Info.args)
+        name = "Plugins/%s.py" % find_name(Info.args)
     else:
         Channel.send("You need to enter a plugin to reload/load")
         return
@@ -63,19 +63,19 @@ def main(connection, line):
         Channel.send("Can't find plugin %s. Sorry." % name)
         return
     
-    pn = name.split("/")[-1].replace(".py", "")
+    plugin_name = name.split("/")[-1].replace(".py", "")
     # Due to clashes we need to prepend "Core" onto core plugin names.
     if "-c" in Info.args:
-        pn = "Core%s" % pn
+        plugin_name = "Core%s" % plugin_name
     try:
-        plugin = imp.load_source(pn, name)
+        plugin = imp.load_source(plugin_name, name)
     except:
-        Channel.send("There was a problem loading %s. Check the syntax?" % (pn))
+        Channel.send("There was a problem loading %s. Check the syntax?" % (plugin_name))
         return
     # Helper, Web & Server needs setting to all plugins. (Channel is set per call). 
     if "-l" in Info.args:
         # Libraries.
-        if pn == "IRCObjects":
+        if plugin_name == "IRCObjects":
             connection.server = plugin.L_Server(connection)
             for p in connection.plugins.keys():
                 p = connection.plugins[p]
@@ -85,8 +85,8 @@ def main(connection, line):
                 p.Format = plugin.L_Format
             # Okay all done.
         # Lets set the library in the bot
-        connection.libraries[pn] = plugin
-        Channel.send("Library %s has been reloaded." % (pn))
+        connection.libraries[plugin_name] = plugin
+        Channel.send("Library %s has been reloaded." % (plugin_name))
     elif "-C" in Info.args:
         # config.
         # Has the nick changed?
@@ -97,10 +97,10 @@ def main(connection, line):
         Channel.send("Config has been reloaded.")
     elif "-c" in Info.args:
         # core
-        connection.core[pn] = plugin
-        Channel.send("Core plugin %s has been reloaded" % pn[4:])        
+        connection.core[plugin_name] = plugin
+        Channel.send("Core plugin %s has been reloaded" % plugin_name[4:])        
     else:
-        connection.plugins[pn] = plugin
-        Channel.send("Plugin %s has been reloaded" % pn)
+        connection.plugins[plugin_name] = plugin
+        Channel.send("Plugin %s has been reloaded" % plugin_name)
 
 help = "Loads or reloads a plugin"
