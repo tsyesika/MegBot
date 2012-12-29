@@ -48,15 +48,14 @@ def main(connection, line):
 	# Lets replace , with +
 	new_spelling = Web.WebSafeString(new_spelling)
 
-	# first lets look up it's weoid.
-	weoid = urllib2.urlopen("http://api.megworld.co.uk/WeoidLookup/lookup.php?place=%s&cache=1" % (new_spelling))
-	weoid = weoid.read()
-	if weoid == "Invalid." or not weoid:
-		Channel.send("There has been a problem with the plugin. Please contact the developer.")
+	# first lets look up it's woeid.
+	woeid = urllib2.urlopen("http://api.megworld.co.uk/WoeidLookup/lookup.php?format=xml&place=%s" % (new_spelling))
+	woeid = etree.fromstring(woeid.read())
+	if int(woeid.find('Error').text) > 0:
+		Channel.send("Sorry, couldn't find that place.")
 		return
-	elif weoid == "Not Found":
-		Channel.send("Can't find that place sorry. You sure it's spelt right? (%s)" % new_spelling.replace("+", " "))
-		return
+
+	woeid = woeid.find('Result/woeid').text
 
 	try:
 		cache = store.Store("WeatherCache")
@@ -66,7 +65,7 @@ def main(connection, line):
 	current_time = time.time()
 
 	try:
-		condition, wind, location, atmos, cache_time = cache[weoid]
+		condition, wind, location, atmos, cache_time = cache[woeid]
 
 		condition = etree.fromstring(condition)
 		wind = etree.fromstring(wind)
@@ -76,12 +75,12 @@ def main(connection, line):
 		if (current_time - cache_time) > 3600:
 			raise KeyError #cheap hack :P
 
-		print "Using cache for %s" % weoid
+		print "Using cache for %s" % woeid
 
 	except KeyError:
 		# Either there's no cache or it's out of date
 		# Let's lookup the weather using yahoo's weather API.
-		weather = urllib2.urlopen("http://weather.yahooapis.com/forecastrss?w=%s" % weoid)
+		weather = urllib2.urlopen("http://weather.yahooapis.com/forecastrss?w=%s" % woeid)
 		weather = etree.fromstring(weather.read())
 
 		# Grab XML elements from tree
@@ -103,7 +102,7 @@ def main(connection, line):
 		location = Format.Bold(location)
 
 		# Store weather in cache
-		cache[weoid] = (etree.tostring(condition), etree.tostring(wind), location, etree.tostring(atmos), current_time)
+		cache[woeid] = (etree.tostring(condition), etree.tostring(wind), location, etree.tostring(atmos), current_time)
 		cache.save()
 
 	# Okay now we need to convert F to C & K
