@@ -59,6 +59,7 @@ class Hooker(object):
                                                   "Core/on_QUIT.py").main)
     def hook(self, bot, act, line):
         """Hooks plugins, etc..."""
+        print "[IN] %s" % line
         act = 'on_'+act
         if act not in self.__hooks.keys():
             return
