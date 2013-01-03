@@ -40,6 +40,7 @@ a hook is registerd for them to unregister it before their code is
 unloaded/reloaded. 
 """
 
+import traceback
 from imp import load_source
 
 class Hooker(object):
@@ -63,10 +64,13 @@ class Hooker(object):
         act = 'on_'+act
         if act not in self.__hooks.keys():
             return
-        for callback in self.__hooks[act]:
-            if line.split()[0] == "#":
-                callback.Channel = bot.channels[line.split()[1]]
-            callback(bot, line)
+        try:
+            for callback in self.__hooks[act]:
+                if line.split()[0] == "#":
+                    callback.Channel = bot.channels[line.split()[1]]
+                callback(bot, line)
+        except:
+            traceback.print_exc()
 
     def register_hook(self, hook, callback):
         """registers a new callback"""
