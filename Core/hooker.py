@@ -67,8 +67,6 @@ class Hooker(object):
             return
         try:
             for callback in self.__hooks[act]:
-                if line[0] == "#":
-                    callback.Channel = bot.channels[line[1]]
                 callback(bot, line)
         except:
             print "[ERRORLINE] %s" % " ".join(line)
