@@ -51,10 +51,6 @@ class Info(Standard):
             self.args = []
             return
         
-        # We'll split the line as we need it split below
-        if line == type (""):
-            line = line.split()
-
         # Lets pull things out.
         self.nick = line[0].split("!")[0][1:]
         self.action = line[1]
