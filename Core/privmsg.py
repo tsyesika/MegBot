@@ -37,6 +37,7 @@ def main(connection, channel, message):
 
     # Max length of message can be 510 
     # (512 inc. \r\n so 510 as raw adds those).
+    # See section 2.3 of RFC1459
     
     max_length = 510 - len(pre_message)
     messages = []

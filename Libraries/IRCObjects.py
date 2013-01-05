@@ -52,17 +52,18 @@ class Info(Standard):
             return
         
         # We'll split the line as we need it split below
-        line_split = line.split()
+        if line == type (""):
+            line = line.split()
 
         # Lets pull things out.
-        self.nick = line_split[0].split("!")[0][1:]
-        self.action = line_split[1]
+        self.nick = line[0].split("!")[0][1:]
+        self.action = line[1]
         self.raw = line
-        self.message = "%s %s" % (line_split[3][1:], " ".join(line_split[4:]))
-        self.channel = line_split[2]
-        self.plugin_name = line_split[3][2:]
-        self.trigger = line_split[3][1]
-        self.args = line_split[4:]
+        self.message = "%s %s" % (line[3][1:], " ".join(line[4:]))
+        self.channel = line[2]
+        self.plugin_name = line[3][2:]
+        self.trigger = line[3][1]
+        self.args = line[4:]
 
 class L_Helper(Standard):
     def StripHTML(self, message):
@@ -324,7 +325,7 @@ class L_Channel(Standard):
     
     
     def on_JOIN(self, connection, message):
-        nick = message.split()[0][1:].split("!")[0]
+        nick = message[0][1:].split("!")[0]
         self.nicks.append(nick)
         self.normals.append(nick)
     
@@ -360,9 +361,9 @@ class L_Channel(Standard):
     
     
     def on_MODE(self, connection, message):
-        mode = message.split()[3]
-        if len(message.split()) > 4:
-            nick = message.split()[4]
+        mode = message[3]
+        if len(message) > 4:
+            nick = message[4]
             def a(x, y):
                 if x in self.normals:
                     self.normals.remove(x)
@@ -408,20 +409,23 @@ class L_Channel(Standard):
     
     
     def on_TOPIC(self, connection, message):
-        new_topic = " ".join(message.split()[4:])[1:]
+        new_topic = " ".join(message[4:])[1:]
         self.topic = new_topic
     
     
     
     def on_PRIVMSG(self, connection, message):
-        self.recently_recved.append(" ".join(message.split()[4:]))
+        self.recently_recved.append(" ".join(message[4:]))
         if len(self.recently_recved) > 5:
             self.recently_recved.pop(0)
     
     
     def on_353(self, connection, message):
-        message = message.split()
-        message = message[message.index(self.name)+1:]
+        try:
+            message = message[message.index(self.name)+1:]
+        except ValueError:
+            # Sometimes we get called for the wrong channel
+            return
         message[0] = message[0][1:] # ":" is put on the front of this.
         for n in message:
             self.nicks.append(n)
@@ -436,8 +440,11 @@ class L_Channel(Standard):
     
     
     def on_332(self, connection, message):
-        message = message.split()
-        message = " ".join(message[message.index(self.name)+1:])[1:]
+        try:
+            message = " ".join(message[message.index(self.name)+1:])[1:]
+        except ValueError:
+            # Sometimes we get called for the wrong channel
+            return
         self.topic = message
         
 class L_Server(Standard):
@@ -486,7 +493,7 @@ class L_Server(Standard):
     
     
     def on_266(self, connection, message):
-        number = message.split()[-3]
+        number = message[-3]
         try:
             self.users = int(number)
         except:
@@ -494,7 +501,7 @@ class L_Server(Standard):
     
     
     def on_251(self, connection, message):
-        number = message.split()[-2]
+        number = message[-2]
         try:
             self.servers = int(number)
         except:
@@ -502,7 +509,7 @@ class L_Server(Standard):
     
     
     def on_254(self, connection, message):
-        number = message.split()[-3]
+        number = message[-3]
         try:
             self.channels = int(number)
         except:
@@ -510,7 +517,7 @@ class L_Server(Standard):
    
     
     def on_252(self, connection, message):
-        number = message.split()[-3]
+        number = message[-3]
         try:
             self.ops = int(number)
         except:
@@ -518,7 +525,7 @@ class L_Server(Standard):
     
     
     def on_372(self, connection, message):
-        self.motd.append(" ".join(message.split()[4:]))
+        self.motd.append(" ".join(message[4:]))
         if self.motd[-1][-2:] == "\r\n":
             self.motd[-1] = self.motd[:-2]
     

@@ -36,17 +36,23 @@ def main(connection, line, plugin):
         connection.times = {}
     else:
         clear(connection)
-    
-    if not line in connection.times.keys():
-        call(connection, line, plugin)
 
-def call(connection, line, plugin_name):
+    hashable_line = " ".join(line)
+
+    # I think this will stop repeat calls to the same plugin from the same user?
+    # Maybe? M
+    if not hashable_line in connection.times.keys():
+        call(connection, line, hashable_line, plugin)
+
+def call(connection, line, hashable_line, plugin_name):
     """ Makes a call to a plugin (if needed) """
     
     # This checks that megbot is actually in the channel first.
     # If it isn't we'll just return out.
-    if line.split()[2] not in connection.channels:
+    if line[2] not in connection.channels:
         return
+
+    # Turn line back into a string so we have something hash
 
     # Lets get the plugin we're going to deal with.
     plugin = connection.plugins[plugin_name]
@@ -54,16 +60,16 @@ def call(connection, line, plugin_name):
     
     # We need to add the Info and Channel libraries to the plugin.
     plugin.Info = connection.libraries["IRCObjects"].Info(line)
-    plugin.Channel = connection.channels[line.split()[2]]
+    plugin.Channel = connection.channels[line[2]]
     
     # Now lets make a thread for the plugin to run in.
     thread = threading.Thread(target=plugin.main,
                               args=(connection, line)
                              )
-    connection.times[line] = [thread, time.time(), plugin_name]
+    connection.times[hashable_line] = [thread, time.time(), plugin_name]
 
     # And finally, we need to start it.
-    connection.times[line][0].start()
+    connection.times[hashable_line][0].start()
 
 def clear(connection):
     """ Clears the plugins that have timed out or finished """
@@ -71,6 +77,8 @@ def clear(connection):
     for plugincall in connection.times:
         if (connection.times[plugincall][1] - time.time()) > 5:
             pass
+            # There doesn't appear to be a clean way of killing a thread stuck
+            # in an infinite loop or just taking its sweet fucking time
             #connection.times[plugincall] - destroy me
         elif not connection.times[plugincall][0].isAlive():
             purge.append(connection.times[plugincall])

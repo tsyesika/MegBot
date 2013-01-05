@@ -46,26 +46,26 @@ def main(connection, command):
     # since we want to look at each element we'll split it
     # it'll be quicker splitting it once here than each time
     # we want to examen an element. Splitting it by spaces.
-    split_command = command.split()
+    command = command.split()
 
 
     # We need to know the length for some inital crude validation
     # since like split we need locations we'll calculate it once.
-    split_length = len(split_command)
+    command_length = len(command)
 
     
     # Lets hand off to ping in case it's a PING message.
-    connection.core["Coreping"].main(connection, split_command)
+    connection.core["Coreping"].main(connection, command)
     
 
     # Okay, if it's short than length one it's ether a ping (which
     # has been handled now) or it's malformed in which case we don't
     # want to do anything more with it so we'll end here.
-    if split_length <= 1:
+    if command_length <= 1:
         return
 
     # Okay, we'll now see if any hooks wish to be called on it.
-    connection.hooker.hook(connection, split_command[1], command)
+    connection.hooker.hook(connection, command[1], command)
 
     # Now we just need to handle plugin calls, these will always be
     # like ["nick!ident@host", "PRIVMSG", "#channel", ":message"]
@@ -73,7 +73,7 @@ def main(connection, command):
     # any messages less than or equal to 3 in length or if the
     # type isn't a PRIVMSG then we can ignore the command
 
-    if split_length <= 3 or split_command[1] != "PRIVMSG":
+    if command_length <= 3 or command[1] != "PRIVMSG":
         return
 
     # Now we'll check the line isn't blank
@@ -81,7 +81,7 @@ def main(connection, command):
     # ["nick!ident@host", "PRIVMSG", "#channel", ":"]
     # if it's blank we can throw it away.
     
-    if split_command[3] == ":":
+    if command[3] == ":":
         return
 
     # Okay now we need to test that the trigger has been used
@@ -94,13 +94,13 @@ def main(connection, command):
     
     # if they didn't use the trigger, we can do nothing.
     
-    if split_command[3][1:trigger_length+1] != trigger:
+    if command[3][1:trigger_length+1] != trigger:
         return
 
     # Okay so at this point we can say they are trying to call a plugin.
     # first thing's first is we need to check the plugin actually exists
     
-    plugin = split_command[3][trigger_length+1:]
+    plugin = command[3][trigger_length+1:]
     if plugin not in connection.plugins:
         return
 

@@ -60,16 +60,18 @@ class Hooker(object):
                                                   "Core/on_QUIT.py").main)
     def hook(self, bot, act, line):
         """Hooks plugins, etc..."""
-        print "[IN] %s" % line
+        print "[IN] %s" % " ".join(line)
+
         act = 'on_'+act
         if act not in self.__hooks.keys():
             return
         try:
             for callback in self.__hooks[act]:
-                if line.split()[0] == "#":
-                    callback.Channel = bot.channels[line.split()[1]]
+                if line[0] == "#":
+                    callback.Channel = bot.channels[line[1]]
                 callback(bot, line)
         except:
+            print "[ERRORLINE] %s" % " ".join(line)
             traceback.print_exc()
 
     def register_hook(self, hook, callback):

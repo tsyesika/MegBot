@@ -16,7 +16,7 @@
 ##
 
 """This is called when you enter a channel, it will parse the line
-which lists the peopel in the channel and produce a dictionary with
+which lists the people in the channel and produce a dictionary with
 the value of a list. The list will contain all the members of that
 paticular type (e.g. half op (hop), vop (voiced), etc...
 
@@ -25,10 +25,10 @@ The list isn't returned by main but added directly to <connection>.channels
 via the connection you pass to it (as it's first argument).
 """
 
-def main(connection, message):
+def main(connection, line):
     """Names on joining of a channel"""
-    channel_name = message.split("#")[1].split()[0]
-    nicks = message.split(":")[2].split()
+    channel_name = line[4][1:]
+    nicks = [line[5][1:]] + line[6:]
     channel = {"all":[], 
                "hop":[],
                "sop":[],

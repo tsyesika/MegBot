@@ -37,7 +37,7 @@ def main(bot, line):
             if "help" in dir(bot.plugins[plugin]):
                 if type(bot.plugins[plugin].help) == type(range):
                     # It's a function
-                    bots.plugins[plugin].help(bot, line)
+                    bots.plugins[plugin].help(bot, Info)
                 elif type(bot.plugins[plugin].help) == type(""):
                     # It's a string
                     Channel.send("%s: %s" % (Info.nick, bot.plugins[plugin].help))
