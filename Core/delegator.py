@@ -43,10 +43,11 @@ def main(connection, command):
     if not command:
         return
 
-    # since we want to look at each element we'll split it
-    # it'll be quicker splitting it once here than each time
-    # we want to examen an element. Splitting it by spaces.
-    command = command.split()
+    # Strip trailing whitespace and then split along spaces. We want to be able
+    # to put the message back together later, including messages that contain
+    # continuous multiple spaces.
+    # See Python documentation on S.split() versus S.split(" ")
+    command = command.rstrip().split(" ")
 
 
     # We need to know the length for some inital crude validation
