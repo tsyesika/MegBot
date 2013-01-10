@@ -25,11 +25,16 @@ def closure(keeper):
     return
 
 class Keeper():
-
+    bot = None
     never = None
 
     def __init__(self, item=None, expire=None, closure=None):
         """ Sets up inital variables """
+        if not self.bot:
+            # this should have been set, this class won't function
+            # correctly without a link with the bot.
+            raise Exception
+
         self.item = item
         self.time = time.time()
         self.id = hashlib.sha256(self.item.__str__ + os.urandom(10))
@@ -41,7 +46,8 @@ class Keeper():
 
     def expire():
         """ Will expire item """
-        pass
+        self.__wrapup()
+        self.__destrory()
 
     def changeExpirery(expire):
         """ Will change the time which the item expires """

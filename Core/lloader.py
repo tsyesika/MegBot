@@ -47,4 +47,6 @@ def main(connection):
     for plugin in glob(lpath + "*.py"):
         fixed = plugin.replace(lpath, "").replace(".py", "")
         libraries[fixed] = load_source(fixed, plugin)
+        if fixed == "keep":
+            libraries[fixed].Keeper.bot = connection
     return libraries
