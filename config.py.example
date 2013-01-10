@@ -39,14 +39,6 @@ networks = {
     }
 }
 
-permissions = {
-    "~":"founder",
-    "&":"sop",
-    "@":"aop",
-    "%":"hop",
-    "+":"vop"
-}
-
 paths = {
     "plugin":"Plugins/",
     "coreplugins":"Core/",
