@@ -32,6 +32,15 @@ def main(connection, message):
     for channel in connection.settings["channels"]:
         connection.core["Corejoin"].main(connection, channel)
     
+    if connection.settings["modes"]:
+        connection.core["Coreraw"].main(connection, 
+                                        "MODE %s %s" % 
+                                            ( 
+                                            connection.settings["nick"], 
+                                            connection.settings["modes"] 
+                                            ) 
+                                        ) 
+
     if connection.settings["NSPassword"]:
         prvmsg = connection.core["Coreprivmsg"].main
         prvmsg(connection, 
