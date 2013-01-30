@@ -33,6 +33,6 @@ NB: This readme will be subject to change throughout this releases development
 - edit config (to your network)
 - Run `python MegBot.py` 
 
-NB: if you would like to run it and close the terminal look into htop or screen
+NB: if you would like to run it and close the terminal look into tmux or screen
 
  
