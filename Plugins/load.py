@@ -15,7 +15,7 @@
 #   along with MegBot.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-import imp, os 
+import imp, os
 
 def find_name(args):
     """
@@ -26,13 +26,13 @@ def find_name(args):
     if args[0][0] != "-":
         return args[0]
     return find_name(args[1:])
-    
+
 def main(connection, line):
     """
     Handles plugin reloading for Core, Libraries, Config and normal user plugins.
     This will handle flags within the IRC. If also the libraries are being reloaded the
     special case of Helper, Web and Server are re-seeded in all the plugins the bot has.
-    
+
     Once an auth system is inplace the http:// loading needs adding & pastebin loading.
     """
     if not Info.args:
@@ -57,12 +57,12 @@ def main(connection, line):
     else:
         Channel.send("You need to enter a plugin to reload/load")
         return
-    
+
     print "Debug: %s" %  name
     if not os.path.isfile(name):
         Channel.send("Can't find plugin %s. Sorry." % name)
         return
-    
+
     plugin_name = name.split("/")[-1].replace(".py", "")
     # Due to clashes we need to prepend "Core" onto core plugin names.
     if "-c" in Info.args:
@@ -72,7 +72,7 @@ def main(connection, line):
     except:
         Channel.send("There was a problem loading %s. Check the syntax?" % (plugin_name))
         return
-    # Helper, Web & Server needs setting to all plugins. (Channel is set per call). 
+    # Helper, Web & Server needs setting to all plugins. (Channel is set per call).
     if "-l" in Info.args:
         # Libraries.
         if plugin_name == "IRCObjects":
@@ -98,7 +98,7 @@ def main(connection, line):
     elif "-c" in Info.args:
         # core
         connection.core[plugin_name] = plugin
-        Channel.send("Core plugin %s has been reloaded" % plugin_name[4:])        
+        Channel.send("Core plugin %s has been reloaded" % plugin_name[4:])
     else:
         connection.plugins[plugin_name] = plugin
         Channel.send("Plugin %s has been reloaded" % plugin_name)

@@ -16,9 +16,9 @@
 
 """This is called when the bot wants data from the IRCd
 It'll call recv on the socket (which will return "" when the
-connection has been dropped (by the remote end). This will 
+connection has been dropped (by the remote end). This will
 switch the 'running' variable on the bot which will initrate
-the reconnection. 
+the reconnection.
 
 If the message is filled it will fill a list with less than or
 equal to 2048 bytes of data. This is then checked to see if it's

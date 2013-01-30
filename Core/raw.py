@@ -31,7 +31,7 @@ the function is called).
 NB: The IRCd must have the ending \r\n as defined in the IRC RFCs for
     it to be a valid message. you should be able to break messages up
     over several lines providing the last line has \r\n.
-    
+
     If you don't have that when you send another message to the IRCd it'll
     assume it's part of this message and cause an invalid message to be sent.
 """

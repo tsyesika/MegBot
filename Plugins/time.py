@@ -43,7 +43,7 @@ def main(connection, line):
         Channel.send("Location Set ^_^")
         userzones.save()
         return
-    
+
     if Info.args[0].lower() in aliases.keys():
         Info.args[0] = aliases[Info.args[0].lower()]
     google = urllib2.Request("http://www.google.co.uk/search?q=time+%s" % "%20".join(Info.args))
@@ -58,7 +58,7 @@ def main(connection, line):
             Channel.send("Is it really that ... time again? It seems as if you only just arrived.")
         else:
             Channel.send("Sorry, couldn't retrive time.")
-        
+
     userzones.save()
 
 help = "Uses google to look up the time, if no time is specified it will check to see if any time is save with it. Use -set <location> to set a location"

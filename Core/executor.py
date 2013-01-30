@@ -15,11 +15,11 @@
 #   along with MegBot.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-""" This will take a valid plugin and the raw IRC line (which caused the 
+""" This will take a valid plugin and the raw IRC line (which caused the
     call to the plugin and pull out the args. Once the arguments have been
     pulled out it'll make a valid call to the plugin (in a thread so not to
     lock up the bot on plugins which take a long time to execute). The bot
-    will stop a plugin's execution if it takes too long. 
+    will stop a plugin's execution if it takes too long.
 """
 
 import time
@@ -46,7 +46,7 @@ def main(connection, line, plugin):
 
 def call(connection, line, hashable_line, plugin_name):
     """ Makes a call to a plugin (if needed) """
-    
+
     # This checks that megbot is actually in the channel first.
     # If it isn't we'll just return out.
     if line[2] not in connection.channels:
@@ -57,11 +57,11 @@ def call(connection, line, hashable_line, plugin_name):
     # Lets get the plugin we're going to deal with.
     plugin = connection.plugins[plugin_name]
 
-    
+
     # We need to add the Info and Channel libraries to the plugin.
     plugin.Info = connection.libraries["IRCObjects"].Info(line)
     plugin.Channel = connection.channels[line[2]]
-    
+
     # Now lets make a thread for the plugin to run in.
     thread = threading.Thread(target=plugin.main,
                               args=(connection, line)

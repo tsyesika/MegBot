@@ -19,7 +19,7 @@
 This will be called when the bot recives a ping, it checks it's
 valid (by checking the first element). The server ping will look
 like:
-    
+
     PING :server.address.of.node
 
 a valid responce should be:

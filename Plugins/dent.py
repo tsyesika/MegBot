@@ -58,7 +58,7 @@ def main(connection, line):
                 name = data[0]["user"]["screen_name"]
                 cid = data[0]["id"]
                 status = data[0]["text"]
-                created = FormTime(str(data[0]["created_at"])) 
+                created = FormTime(str(data[0]["created_at"]))
                 dent_time = Helper.HumanTime("%s UTC" % created, "%a %b %d %H:%M:%S %Y %Z")
             else:
                 Channel.send("Sorry, they haven't posted on identi.ca")

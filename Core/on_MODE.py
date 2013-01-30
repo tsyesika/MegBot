@@ -17,12 +17,12 @@
 
 """This is called when a mode is changed in a channel.
 It will update the bot's channels attribute, the channels
-attribute holds information about a specific channel (including 
+attribute holds information about a specific channel (including
 the user list split into different types (sop, aop, hop, etc...)
 
 When a MODE command is issued it will check if it's a mode which
 changes the mode of a user in a channel (giving them ops, founder, etc...)
-if it is, the instances list will be updated accordingly, this ensures 
+if it is, the instances list will be updated accordingly, this ensures
 calls to any library which depends on these will get the correct information
 and not stale information from when the bot joined the channel.
 """

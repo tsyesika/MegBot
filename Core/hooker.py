@@ -26,18 +26,18 @@ call the unregister_hook method. To call all the hooks you make a call to hook
 this will parse out the second element in the list (list[1]) and look
 for all hooks which call on that.
 
-The hooks should be registered with the prefix on_<hook> e.g. to 
+The hooks should be registered with the prefix on_<hook> e.g. to
 register on a PRVIMSG you would make a call to reigster:
 
-    reigster_hook("on_PRIVMSG", <function>) 
+    reigster_hook("on_PRIVMSG", <function>)
 
-the capitalisation on the hook is important, the on_ should 
+the capitalisation on the hook is important, the on_ should
 be all lowercase with an uppercase hook (on_UPPERCASE).
 The same is true for unregister_hook.
 
 Hooks are not automatically unregistered, the onus is on the developer once
-a hook is registerd for them to unregister it before their code is 
-unloaded/reloaded. 
+a hook is registerd for them to unregister it before their code is
+unloaded/reloaded.
 """
 
 import traceback
@@ -48,7 +48,7 @@ class Hooker(object):
     __hooks = {}
 
     def __init__(self):
-        self.register_hook('on_376', load_source("on_376", 
+        self.register_hook('on_376', load_source("on_376",
                                                  "Core/on_376.py").main)
         self.register_hook('on_MODE', load_source("on_MODE",
                                                   "Core/on_MODE.py").main)
@@ -74,7 +74,7 @@ class Hooker(object):
         """registers a new callback"""
         if hook not in self.__hooks.keys():
             self.__hooks[hook] = set()
-        self.__hooks[hook].add(callback) 
+        self.__hooks[hook].add(callback)
 
     def unregister_hook(self, hook, callback):
         """unregisters an existing callback"""

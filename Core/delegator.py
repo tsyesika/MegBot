@@ -26,7 +26,7 @@ then it'll delegate that to the core executor plugin.
 """
 
 def main(connection, command):
-    """Delegates to other other core items when a valid IRC command 
+    """Delegates to other other core items when a valid IRC command
     is passed to it.
 
     command: this should be a raw command passed from the IRCd (str)
@@ -38,7 +38,7 @@ def main(connection, command):
     the function will return None as it'll delegate to other core
     modules or do nothing and return back.
     """
-    
+
     # we don't want to do anything if the line is blank
     if not command:
         return
@@ -49,15 +49,12 @@ def main(connection, command):
     # See Python documentation on S.split() versus S.split(" ")
     command = command.rstrip().split(" ")
 
-
     # We need to know the length for some inital crude validation
     # since like split we need locations we'll calculate it once.
     command_length = len(command)
 
-    
     # Lets hand off to ping in case it's a PING message.
     connection.core["Coreping"].main(connection, command)
-    
 
     # Okay, if it's short than length one it's ether a ping (which
     # has been handled now) or it's malformed in which case we don't
@@ -81,26 +78,26 @@ def main(connection, command):
     # a blank line will look like:
     # ["nick!ident@host", "PRIVMSG", "#channel", ":"]
     # if it's blank we can throw it away.
-    
+
     if command[3] == ":":
         return
 
     # Okay now we need to test that the trigger has been used
     # if it has we know the user is trying to execute a plugin.
-    # First triggers could be bigger than 1 character so lets get 
+    # First triggers could be bigger than 1 character so lets get
     # the length of the trigger.
 
     trigger = connection.settings["trigger"]
     trigger_length = len(trigger)
-    
+
     # if they didn't use the trigger, we can do nothing.
-    
+
     if command[3][1:trigger_length+1] != trigger:
         return
 
     # Okay so at this point we can say they are trying to call a plugin.
     # first thing's first is we need to check the plugin actually exists
-    
+
     plugin = command[3][trigger_length+1:]
     if plugin not in connection.plugins:
         return

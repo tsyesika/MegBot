@@ -39,7 +39,7 @@ def main(connection, line):
         chks = re.findall("<span class=\"cg2aoo\">(.+?)\</span> <br/><span class=\"hxh2cq\">1. (.+?)</span>", source)
     if not chks:
         Channel.send("Sorry can't find definition for %s" % phrase)
-        return 
+        return
     message = ""
     for part in chks:
         if part[0][0] == "(":
