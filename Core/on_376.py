@@ -29,9 +29,6 @@ import time
 def main(connection, message):
     """End of MOTD"""
 
-    for channel in connection.settings["channels"]:
-        connection.core["Corejoin"].main(connection, channel)
-    
     if connection.settings["modes"]:
         connection.core["Coreraw"].main(connection, 
                                         "MODE %s %s" % 
@@ -49,6 +46,10 @@ def main(connection, message):
                                connection.settings["NSPassword"]
                                )
               )
+
+    for channel in connection.settings["channels"]:
+        connection.core["Corejoin"].main(connection, channel)
+    
     time.sleep(2)
     
     for cmd in connection.settings["commands"]:
