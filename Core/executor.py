@@ -25,6 +25,11 @@
 import time
 import threading
 
+class KillableThread(threading.Thread):
+    def kill_meh(self):
+        """Raises an (hopefully) uncatchable SystemExit exceptoin"""
+        raise SystemExit
+
 def main(connection, line, plugin):
     """ This executes and manages plugin calls.
     This will kill the plugins execution after
@@ -63,7 +68,7 @@ def call(connection, line, hashable_line, plugin_name):
     plugin.Channel = connection.channels[line[2]]
 
     # Now lets make a thread for the plugin to run in.
-    thread = threading.Thread(target=plugin.main,
+    thread = KillableThread(target=plugin.main,
                               args=(connection, line)
                              )
     connection.times[hashable_line] = [thread, time.time(), plugin_name]
@@ -75,12 +80,9 @@ def clear(connection):
     """ Clears the plugins that have timed out or finished """
     purge = []
     for plugincall in connection.times:
-        if (connection.times[plugincall][1] - time.time()) > 5:
-            pass
-            # There doesn't appear to be a clean way of killing a thread stuck
-            # in an infinite loop or just taking its sweet fucking time
-            #connection.times[plugincall] - destroy me
-        elif not connection.times[plugincall][0].isAlive():
+        if not connection.times[plugincall][0].isAlive():
             purge.append(connection.times[plugincall])
+        elif (connection.times[plugincall][1] - time.time()) > 30:
+            connection.times[plugincall][0].kill_meh()
     for process in purge:
         del connection.times[plugincall]
