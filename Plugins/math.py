@@ -113,7 +113,7 @@ def main(conneciton, info):
             val = Elem(int(item, 16), Elem.OPERAND)
             base = 16
         elif item.startswith("o") or item.startswith("º"):
-            val = Elem(int(item, 8), Elem.OPERAND)
+            val = Elem(int(item[2:], 8), Elem.OPERAND)
             base = 8
         elif item.startswith("0"):
             # assume binary?
