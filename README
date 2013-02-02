@@ -31,7 +31,8 @@ NB: This readme will be subject to change throughout this releases development
 
 - Make sure you have python 2.6+ installed (could work on lower, won't work on 3.x)
 - edit config (to your network)
-- Run `python MegBot.py`
+- run `chmod +x MegBot`
+- Run `./MegBot`
 
 NB: if you would like to run it and close the terminal look into tmux or screen
 
