@@ -20,7 +20,7 @@ It'll handle reconnection. Note this won't return back until the connection
 has been made.
 
 Todo: Support varify certs.
-Todo: Have a reconnection limit support? 
+Todo: Have a reconnection limit support?
         (i.e. after 10 tries it'll give up.)
 """
 
@@ -39,40 +39,40 @@ def main(connection):
 
         import ssl
         connection.sock = ssl.wrap_socket(connection.sock)
-  
+
     connected = False
 
     while not connected:
         try:
-            connection.sock.connect((connection.settings["address"], 
+            connection.sock.connect((connection.settings["address"],
                                      connection.settings["port"]))
             connected = True
 
         except socket.error:
             # We want to wait here. Hitting the server too much
-            # isn't a good idea, if they haven't specified a 
+            # isn't a good idea, if they haven't specified a
             # network specific timeout or a global one we'll use
-            # 10 seconds as it's a sensible time. 
+            # 10 seconds as it's a sensible time.
 
             timeout = 10 # default, 10 seconds.
-            
+
             if "timeout" in connection.settings.keys():
                 timeout = connection.settings["timeout"]
             elif "timeout" in dir(connection.config):
                 timeout = connection.config.timeout
-            
+
             sleep(timeout)
-   
-    connection.core["Coreraw"].main(connection, 
+
+    connection.core["Coreraw"].main(connection,
                                     "NICK %s" % (
                                                 connection.settings["nick"]
                                                 )
                                     )
-    connection.core["Coreraw"].main(connection, 
-                                    "USER %s %s * :%s" % 
+    connection.core["Coreraw"].main(connection,
+                                    "USER %s %s * :%s" %
                                         (
                                         connection.settings["nick"],
-                                        connection.settings["ident"], 
+                                        connection.settings["ident"],
                                         connection.settings["realname"]
                                         )
                                    )

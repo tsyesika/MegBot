@@ -20,7 +20,7 @@ The channel must contain the #
 
 Todo: Varify that # is prefixed on the channel; if it's not, prefix it with #
 
-so a call of main(<connection> "channel") produces a 
+so a call of main(<connection> "channel") produces a
     "JOIN #channel"
 
 not:
@@ -31,7 +31,7 @@ def main(connection, channel):
     """ Joins channel specified """
 
     if connection.libraries:
-        channel_inst = connection.libraries["IRCObjects"].L_Channel(connection, 
+        channel_inst = connection.libraries["IRCObjects"].L_Channel(connection,
                                                                     channel)
         connection.channels[channel] = channel_inst
         connection.channels[channel].__setuphooks__(connection)

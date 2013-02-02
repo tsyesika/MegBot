@@ -25,11 +25,11 @@ def main(connection, line):
     if not Info.args:
         Channel.send("Please specify a user")
         return
-    
+
     if Info.args[0] == connection.settings["nick"]:
         Channel.send("No I haven't seen myself, I'm all 1s and 0s")
         return
-    
+
     try:
         seen = store.Store("Seen")
     except IOError:
@@ -44,7 +44,7 @@ def main(connection, line):
         ))
     except KeyError:
         Channel.send("Haven't seen %s." % Info.args[0])
-    
+
 def on_PRIVMSG(connection, line):
     """
     Logs this speach.
@@ -65,8 +65,8 @@ def on_PRIVMSG(connection, line):
         #new connection etc.
         seen[connection.name] = {Info.channel: {Info.nick: {"msg":Info.message, "time":time.time()}}}
     seen.save()
-    
-    
+
+
 def init(connection):
     connection.hooker.register_hook("on_PRIVMSG", on_PRIVMSG)
 

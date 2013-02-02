@@ -16,7 +16,7 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with MegBot.  If not, see <http://www.gnu.org/licenses/>.
-#   
+#
 ##
 
 from datetime import date
@@ -64,6 +64,6 @@ def main(connection, line):
     else:
         output_string = output_string
     Channel.send(output_string)
-    
+
 
 help = "Discordian Date, only return current date for now"

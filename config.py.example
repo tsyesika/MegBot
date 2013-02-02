@@ -18,7 +18,7 @@ networks = {
         "trigger":".",
         "NSPassword":"",
         "commands":[],
-        "modes":["B"],
+        "modes":"+B",
         "active":True,
         "channels":["#bots"]
     },
@@ -33,18 +33,10 @@ networks = {
         "ssl":False,
         "NSPassword":"pass",
         "commands":[],
-        "modes":["b"],
+        "modes":"-i+w",
         "channels":[],
         "active":False #optional (if set to false will disable this network from connecting.)
     }
-}
-
-permissions = {
-    "~":"founder",
-    "&":"sop",
-    "@":"aop",
-    "%":"hop",
-    "+":"vop"
 }
 
 paths = {

@@ -154,8 +154,8 @@ def main(connection, line):
             source = google.read()
             total = re.findall("<div id=currency_converter_result>(.+?)<span class=bld>(.+?)</span>", source)[0][1]
             Channel.send("%s %s = %s %s" % (a, currancy_switch[tpart[0]], total.split(" ")[0], currancy_switch[tpart[1]]))
-            return 
-    
+            return
+
     google = urllib2.Request("http://google.com/m?q=%s" % fixurl(exp))
     google.add_header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_6; en-gb) AppleWebKit/533.19.4 (KHTML, like Gecko) Version/5.0.3")
     google = urllib2.urlopen(google)
@@ -170,5 +170,5 @@ def main(connection, line):
         Channel.send("%s" % a)
     except:
         Channel.send("Math Error: ?")
-        
+
 help = "Uses google to do calculations or conversions"

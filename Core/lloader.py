@@ -18,7 +18,7 @@
 """This will load all the libraries from the directory specified in the config
 file. If no directory is specified it'll assume the libraries are in the default
 location of "Libraries". The libraries are then loaded. The plugin will always
-return type dict ({}). This might be empty if no libraries exist or an invalid 
+return type dict ({}). This might be empty if no libraries exist or an invalid
 call is made.
 """
 

@@ -15,15 +15,20 @@
 #   along with MegBot.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-""" This will take a valid plugin and the raw IRC line (which caused the 
+""" This will take a valid plugin and the raw IRC line (which caused the
     call to the plugin and pull out the args. Once the arguments have been
     pulled out it'll make a valid call to the plugin (in a thread so not to
     lock up the bot on plugins which take a long time to execute). The bot
-    will stop a plugin's execution if it takes too long. 
+    will stop a plugin's execution if it takes too long.
 """
 
 import time
 import threading
+
+class KillableThread(threading.Thread):
+    def kill_meh(self):
+        """Raises an (hopefully) uncatchable SystemExit exceptoin"""
+        raise SystemExit
 
 def main(connection, line, plugin):
     """ This executes and manages plugin calls.
@@ -46,7 +51,7 @@ def main(connection, line, plugin):
 
 def call(connection, line, hashable_line, plugin_name):
     """ Makes a call to a plugin (if needed) """
-    
+
     # This checks that megbot is actually in the channel first.
     # If it isn't we'll just return out.
     if line[2] not in connection.channels:
@@ -57,13 +62,13 @@ def call(connection, line, hashable_line, plugin_name):
     # Lets get the plugin we're going to deal with.
     plugin = connection.plugins[plugin_name]
 
-    
+
     # We need to add the Info and Channel libraries to the plugin.
     plugin.Info = connection.libraries["IRCObjects"].Info(line)
     plugin.Channel = connection.channels[line[2]]
-    
+
     # Now lets make a thread for the plugin to run in.
-    thread = threading.Thread(target=plugin.main,
+    thread = KillableThread(target=plugin.main,
                               args=(connection, line)
                              )
     connection.times[hashable_line] = [thread, time.time(), plugin_name]
@@ -75,12 +80,9 @@ def clear(connection):
     """ Clears the plugins that have timed out or finished """
     purge = []
     for plugincall in connection.times:
-        if (connection.times[plugincall][1] - time.time()) > 5:
-            pass
-            # There doesn't appear to be a clean way of killing a thread stuck
-            # in an infinite loop or just taking its sweet fucking time
-            #connection.times[plugincall] - destroy me
-        elif not connection.times[plugincall][0].isAlive():
+        if not connection.times[plugincall][0].isAlive():
             purge.append(connection.times[plugincall])
+        elif (connection.times[plugincall][1] - time.time()) > 30:
+            connection.times[plugincall][0].kill_meh()
     for process in purge:
         del connection.times[plugincall]

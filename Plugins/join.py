@@ -18,7 +18,7 @@
 def main(connection, line):
     if not Info.args:
         # Being called by bot.
-        return 
+        return
     if "Channel" in dir():
         Channel.send("Please specify a channel to join.")
         return

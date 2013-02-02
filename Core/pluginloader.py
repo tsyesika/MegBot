@@ -17,7 +17,7 @@
 
 """This is to load plugins, if you leave plugin as the default (None)
 it will go out and try and load them all. It doesn't return anything.
-Instead of returning anything it adds the plugins directly onto the 
+Instead of returning anything it adds the plugins directly onto the
 connection by access through the connection parameter passed to main.
 """
 
@@ -27,7 +27,7 @@ import os
 
 def main(connection, plugin=None):
     """
-    This will load plugins, if plugin is left as the default (None) then 
+    This will load plugins, if plugin is left as the default (None) then
     it will look in Plugins/ (or what's specified in the config under
     the dict path). if it's specified it will only load that specific plugin.
     This will also add the Server, Helper and Web instances to the bots
@@ -41,12 +41,12 @@ def main(connection, plugin=None):
         connection.Server = connection.server
         if "init" in dir(connection.plugins[plugin]):
             connection.plugins[plugin].init(connection)
-        
+
     else:
         for plugfi in glob.glob(connection.config.paths["plugin"] + "*.py"):
             name = os.path.splitext(os.path.basename(plugfi))[0]
             connection.plugins[name] = imp.load_source(name, plugfi)
-            
+
             plugin = connection.plugins[name]
 
             plugin.Server = connection.server

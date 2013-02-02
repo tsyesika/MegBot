@@ -16,7 +16,7 @@
 ##
 
 import urllib2
-    
+
 DEFINITIONS = {
     "F":"female",
     "M":"male",
@@ -28,7 +28,7 @@ def main(connection, line):
     if not Info.args:
         Channel.send("Please specify a name.")
         return
-        
+
     name = Info.args[0]
 
     reply = urllib2.urlopen("http://api.megworld.co.uk/Name-Gender/gender.php?name=%s" % name)

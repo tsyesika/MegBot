@@ -63,7 +63,7 @@ class Store():
             return key in self.data
         else:
             raise AttributeError
-        
+
     def append(self, value):
         if self.__type == type([]):
             return self.data.append(value)

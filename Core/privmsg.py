@@ -24,28 +24,28 @@ A valid call to this would be
 
     main(<connection>, "#channel", "message to send")
 
-Todo: Stop this splitting up words and possibly place an elipsis (...) 
-        on the end of messages to indecate the next one is meant to go 
+Todo: Stop this splitting up words and possibly place an elipsis (...)
+        on the end of messages to indecate the next one is meant to go
         together (maybe prefix the next one also with ...).
 """
 
 def main(connection, channel, message):
     """ Sends a PRIVMSG """
     # Todo, stop it chopping words up.
-    
+
     pre_message = "PRIVMSG %s :" % (channel)
 
-    # Max length of message can be 510 
+    # Max length of message can be 510
     # (512 inc. \r\n so 510 as raw adds those).
     # See section 2.3 of RFC1459
-    
+
     max_length = 510 - len(pre_message)
     messages = []
     for i in range(0, len(message), max_length):
         messages.append(message[i:i+max_length])
-    
+
     # now send to raw.
     for message in messages:
-        connection.core["Coreraw"].main(connection, "%s%s" % 
-                                                             (pre_message, 
+        connection.core["Coreraw"].main(connection, "%s%s" %
+                                                             (pre_message,
                                                                  message))
