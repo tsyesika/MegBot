@@ -45,6 +45,9 @@ class Elem():
         elif self.value == "*":
             return operand1 * operand2
         elif self.value == "/":
+            if operand2.value == 0:
+                Channel.send("You can't divide by 0 >.<")
+                raise ZeroDivisionError()
             return operand1 / operand2
         elif self.value == "^":
             return operand1 ** operand2
@@ -62,7 +65,7 @@ def display(value):
         if 0j == answer.imag:
             answer = float(answer.real)
         else:
-            bws = "Answer: %s + %s" % (answer.real, answer.imag)
+            bws = "Answer: %s ± %s" % (answer.real, answer.imag)
             bws = bws[:-1] + "i"
             Channel.send(bws)
             return
