@@ -28,7 +28,6 @@ class MathsError(Exception):
 class Elem():
     OPERAND = 0 # lets use this as an operand ID
     OPERATOR = 1 # lets use this as the operator ID
-    MFUNC = 2 # this is used for maths functins (sqrt, log, etc...)
     def __init__(self, value, value_type):
         self.value = value
 
@@ -59,7 +58,15 @@ class Elem():
 def display(value):
     """ Displays the value """
     answer = value
-    if int(value) == value:
+    if type(answer) == type(complex()):
+        if 0j == answer.imag:
+            answer = float(answer.real)
+        else:
+            bws = "Answer: %s + %s" % (answer.real, answer.imag)
+            bws = bws[:-1] + "i"
+            Channel.send(bws)
+            return
+    if int(answer) == answer:
         answer = int(value)
     Channel.send("Answer: %s" % answer)
 
@@ -125,21 +132,46 @@ def main(conneciton, info):
             val = Elem(item, Elem.OPERATOR)
         # mathmatical functions?
         elif item.startswith("sqrt"):
-            val = Elem(item, Elem.MFUNC)
+            val = item.replace("sqrt(", "")
+            val = val.replace(")", "")
+            val = cmath.sqrt(float(val))
+            val = Elem(val, Elem.OPERAND)
         elif item.startswith("log"):
-            val = Elem(item, Elem.MFUNC)
+            val = item.replace("log(", "")
+            val = val.replace(")", "")
+            if "," in val:
+                v, e = val.split(",")
+                val = cmath.log(float(v), float(e))
+            else:
+                val = cmath.log(float(val))
+            val = Elem(val, Elem.OPERAND)
         elif item.startswith("lg"):
             # log to the base 2?
-            val = Elem(item, Elem.MFUNC)
+            val = item.replace("lg(", "")
+            val = val.replace(")", "")
+            val = cmath.log(float(val), 2)
+            val = Elem(val, Elem.OPERAND)
         elif item.startswith("ln"):
             # log the base e?
-            val = Elem(item, Elem.MFUNC)
+            val = item.replace("ln(", "")
+            val = val.replace(")", "")
+            val = cmath.ln(float(val))
+            val = Elem(val, Elem.OPERAND)
         elif item.startswith("tan"):
-            val = Elem(item, Elem.MFUNC)
+            val = item.replace("tan(", "")
+            val = val.replace(")", "")
+            val = cmath.tan(float(val))
+            val = Elem(val, Elem.OPERAND)
         elif item.startswith("cos"):
-            val = Elem(item, Elem.MFUNC)
+            val = item.replace("cos(", "")
+            val = val.replace(")", "")
+            val = cmath.cos(float(val))
+            val = Elem(val, Elem.OPERAND)
         elif item.startswith("sin"):
-            val = Elem(item, Elem.MFUNC)
+            val = item.replace("sin(", "")
+            val = val.replace(")", "")
+            val = cmath.sin(float(val))
+            val = Elem(val, Elem.OPERAND)
         # lets have a few constants eh?
         elif "pi" == item or "π" == item:
             val = Elem(cmath.pi, Elem.OPERAND)
@@ -152,7 +184,9 @@ def main(conneciton, info):
         # assume nothing has gone pair shaped.
         equation.append(val)
 
-    if equation[0].type == Elem.OPERATOR:
+    if len(equation) == 1 and Elem.OPERAND == equation[0].type:
+        display(equation[0].value)
+    elif equation[0].type == Elem.OPERATOR:
         # pn
         prefix(equation)
     elif equation[-1].type == Elem.OPERATOR:
