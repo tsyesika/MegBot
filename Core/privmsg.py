@@ -16,20 +16,11 @@
 ##
 
 """This will send a privmsg to the IRCd.
-This will send a privmsg to the IRCd, it'll handle messages
-that are too long and would be truncated by the IRC by splitting them
-up and sending them as seporate messages.
-
-A valid call to this would be
-
-    main(<connection>, "#channel", "message to send")
-
-Todo: Stop this splitting up words and possibly place an elipsis (...)
-        on the end of messages to indecate the next one is meant to go
-        together (maybe prefix the next one also with ...).
+It'll handle messages that are too long and would be truncated by the IRC by
+splitting them up and sending them as separate messages if you ask it nicely.
 """
 
-def main(connection, channel, message):
+def main(connection, channel, message, split_it=False):
     """ Sends a PRIVMSG """
     # Todo, stop it chopping words up.
 
@@ -38,14 +29,20 @@ def main(connection, channel, message):
     # Max length of message can be 510
     # (512 inc. \r\n so 510 as raw adds those).
     # See section 2.3 of RFC1459
+    if split_it:
+        max_length = 510 - len(pre_message)
+        messages = []
+        for i in range(0, len(message), max_length):
+            messages.append(message[i:i+max_length])
 
-    max_length = 510 - len(pre_message)
-    messages = []
-    for i in range(0, len(message), max_length):
-        messages.append(message[i:i+max_length])
-
-    # now send to raw.
-    for message in messages:
+        # now send to raw.
+        for message in messages:
+            connection.core["Coreraw"].main(connection, "%s%s" %
+                                                                 (pre_message,
+                                                                     message))
+    else:
+        if (len(pre_message) + len(message)) > 510:
+            print "[ERRORLINE] Next PRIVMSG will get truncated!"
         connection.core["Coreraw"].main(connection, "%s%s" %
                                                              (pre_message,
                                                                  message))

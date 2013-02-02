@@ -313,12 +313,15 @@ class L_Channel(Standard):
         self.recently_sent = []
         self.recently_recved = []
 
-
-    def send(self, message):
-        self.connection.core["Coreprivmsg"].main(self.connection, self.name, message)
+    def __update_recently(self, message):
         self.recently_sent.append(message)
         if len(self.recently_sent) <= 5:
             self.recently_sent.pop(0)
+
+    def send(self, message):
+        """Send PRIVMSG to channel"""
+        self.connection.core["Coreprivmsg"].main(self.connection, self.name, message, True)
+        self.__update_recently(message)
 
     def notice(self, message):
         """Send NOTICE to channel"""
