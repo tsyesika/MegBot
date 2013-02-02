@@ -320,6 +320,9 @@ class L_Channel(Standard):
         if len(self.recently_sent) <= 5:
             self.recently_sent.pop(0)
 
+    def notice(self, message):
+        """Send NOTICE to channel"""
+        self.connection.core["Corenotice"].main(self.connection, self.name, message)
 
     def on_JOIN(self, connection, message):
         nick = message[0][1:].split("!")[0]
