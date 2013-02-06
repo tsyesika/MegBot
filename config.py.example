@@ -51,6 +51,9 @@ paths = {
 plugin_options = {
     "translate":{
         "default_language":"en"
+    },
+    "8ball":{
+        "replies": ["sure", "yerp", "no", "nope", "I'm not sure", "I'm too tired right now, ask later."]
     }
 }
 

@@ -49,6 +49,11 @@ def main(connection, plugin=None):
 
             plugin = connection.plugins[name]
 
+            try:
+                plugin.Config = connection.config.plugin_options[name]
+            except KeyError:
+                plugin.Config = None
+
             plugin.Server = connection.server
             plugin.Helper = connection.libraries["IRCObjects"].L_Helper()
             plugin.Web = connection.libraries["IRCObjects"].L_Web(connection)

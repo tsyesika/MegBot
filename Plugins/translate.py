@@ -38,7 +38,7 @@ def main(connection, line):
                 langpair = ("auto", Info.args[0])
                 ltranslate = "+".join(Info.args[1:])
             else:
-                langpair = ("auto", connection.config.plugin_options["translate"]["default_language"])
+                langpair = ("auto", Config["default_language"])
                 ltranslate = "+".join(Info.args)
         try:
             # Bug detection faulty
