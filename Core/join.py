@@ -46,5 +46,4 @@ def on_JOIN(connection, line, hooked=True):
             connection.channels[channel] = {}
 
         connection.channels[channel] = channel_inst
-        }
         connection.channels[channel].__setuphooks__(connection)
