@@ -45,12 +45,6 @@ def on_JOIN(connection, line, hooked=True):
         if not channel in connection.channels:
             connection.channels[channel] = {}
 
-        connection.channels[channel] = {
-                "Channel":channel_inst
+        connection.channels[channel] = channel_inst
         }
-        connection.channels[channel]["Channel"].__setuphooks__(connection)
-
-        for level in connection.config.permissions:
-            level = connection.config.permissions[level]
-            if not level in connection.channels[channel]:
-                connection.channels[channel][level] = []
+        connection.channels[channel].__setuphooks__(connection)

@@ -50,8 +50,6 @@ class Hooker(object):
     def __init__(self):
         self.register_hook('on_376', load_source("on_376",
                                                  "Core/on_376.py").main)
-        self.register_hook('on_MODE', load_source("on_MODE",
-                                                  "Core/on_MODE.py").main)
         self.register_hook('on_422', load_source("on_376",
                                                  "Core/on_376.py").main)
         self.register_hook('on_QUIT', load_source("on_QUIT",
