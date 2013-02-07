@@ -31,7 +31,10 @@ and not stale information from when the bot joined the channel.
 def main(connection, line):
     """When a mode is set"""
     mode = line[3][1:]
-    channel = line[2][1:]
+    channel = line[2] # we store them with the hash(s) :)
+    if "#" != channel[0]:
+        # not a channel, we not fussed.
+        return
     for v1, m in enumerate(mode):
         if m in ["a", "o", "q", "h", "v"]:
             if len(line) <= 3:
@@ -47,4 +50,4 @@ def main(connection, line):
             elif m == "v":
                 connection.channels[channel]["vop"].append(nick)
             elif m == "q":
-                connection.channel[channel]["founder"].append(nick)
+                connection.channels[channel]["founder"].append(nick)

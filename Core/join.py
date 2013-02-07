@@ -29,10 +29,28 @@ not:
 
 def main(connection, channel):
     """ Joins channel specified """
+    on_JOIN(connection, channel, False)
+    connection.core["Coreraw"].main(connection, "JOIN %s" % channel)
+
+def on_JOIN(connection, line, hooked=True):
+    """ Called when a channel is joined """
+    if hooked:
+        channel = line[2]
+    else:
+        channel = line
 
     if connection.libraries:
         channel_inst = connection.libraries["IRCObjects"].L_Channel(connection,
                                                                     channel)
-        connection.channels[channel] = channel_inst
-        connection.channels[channel].__setuphooks__(connection)
-    connection.core["Coreraw"].main(connection, "JOIN %s" % channel)
+        if not channel in connection.channels:
+            connection.channels[channel] = {}
+
+        connection.channels[channel] = {
+                "Channel":channel_inst
+        }
+        connection.channels[channel]["Channel"].__setuphooks__(connection)
+
+        for level in connection.config.permissions:
+            level = connection.config.permissions[level]
+            if not level in connection.channels[channel]:
+                connection.channels[channel][level] = []
