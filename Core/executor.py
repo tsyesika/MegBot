@@ -65,7 +65,7 @@ def call(connection, line, hashable_line, plugin_name):
 
     # We need to add the Info and Channel libraries to the plugin.
     plugin.Info = connection.libraries["IRCObjects"].Info(line)
-    plugin.Channel = connection.channels[line[2]]["Channel"]
+    plugin.Channel = connection.channels[line[2]]
 
     # Now lets make a thread for the plugin to run in.
     thread = KillableThread(target=plugin.main,

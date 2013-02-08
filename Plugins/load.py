@@ -57,8 +57,7 @@ def main(connection, line):
     else:
         Channel.send("You need to enter a plugin to reload/load")
         return
-
-    print "Debug: %s" %  name
+        
     if not os.path.isfile(name):
         Channel.send("Can't find plugin %s. Sorry." % name)
         return
