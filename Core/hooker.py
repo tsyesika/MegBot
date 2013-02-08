@@ -47,6 +47,16 @@ class Hooker(object):
     """Deals with the MegBot hooks system"""
     __hooks = {}
 
+    def copy(self, orig):
+        """ Produces a deep copy of orig """
+        new = []
+        for elem in orig:
+            if type(elem) == type([]):
+                new.append(self.copy(elem))
+            else:
+                new.append(elem)
+        return new
+
     def __init__(self):
         self.register_hook('on_376', load_source("on_376",
                                                  "Core/on_376.py").main)
@@ -56,18 +66,21 @@ class Hooker(object):
                                                   "Core/on_QUIT.py").main)
         self.register_hook('on_JOIN', load_source("on_QUIT",
                                                   "Core/join.py").on_JOIN)
+    
     def hook(self, bot, act, line):
         """Hooks plugins, etc..."""
-        print "[IN] %s" % " ".join(line)
+        fmsg = " ".join(line)
+        print "[IN] %s" % fmsg
 
-        act = 'on_'+act
+        act = 'on_%s' % act
         if act not in self.__hooks.keys():
             return
         try:
-            for callback in self.__hooks[act]:
+            hooks = self.copy(self.__hooks[act])
+            for callback in hooks:
                 callback(bot, line)
         except:
-            print "[ERRORLINE] %s" % " ".join(line)
+            print "[ERRORLINE] %s" % fmsg
             traceback.print_exc()
 
     def register_hook(self, hook, callback):
