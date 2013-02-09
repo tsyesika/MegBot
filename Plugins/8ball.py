@@ -18,9 +18,9 @@
 import random
 
 def main(connection, line):
-	if not Info.args:
-		Channel.send("You got a question for me?")
+    if not Info.args:
+        Channel.send("You got a question for me?")
     else:
-    	Channel.send(random.choice(Config["replies"]))
+        Channel.send(random.choice(Config["replies"]))
 
 help = "Randomly chooses an option to a question you ask."
