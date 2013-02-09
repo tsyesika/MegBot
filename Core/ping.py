@@ -32,4 +32,4 @@ The argument after PONG should always be what the server sent us.
 def main(connection, message):
     """Handles the PINGS"""
     if message[0] == "PING":
-        connection.core["Coreraw"].main(connection, "PONG %s" % message[1])
+    	connection.core["Coreraw"].main(connection, "PONG %s" % message[1])

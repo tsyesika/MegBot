@@ -26,8 +26,12 @@ from glob import glob
 from os import path
 from imp import load_source
 
-def main(connection):
+def main(connection, lname=None):
     """
+    If lname is specified (library name) then
+    it'll look for that library and if it's found the loaded
+    library. (will return None if it fails or {})
+
     Loads the libraries from Library/ (or what's specified in the config
     under the path dict.
     Returns a dict {library_name : <library instance>}
@@ -44,6 +48,14 @@ def main(connection):
             lpath = "libraries/"
         else:
             return {}
+    if lname:
+        # Okay we want to load just 1 library
+        lpath = "%s%s.py" % (lpath, lname)
+        if os.path.isfile(lpath):
+            return load_source(lname, lpath)
+        else:
+            return None
+
     for plugin in glob(lpath + "*.py"):
         fixed = plugin.replace(lpath, "").replace(".py", "")
         libraries[fixed] = load_source(fixed, plugin)

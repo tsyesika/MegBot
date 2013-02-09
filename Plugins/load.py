@@ -38,43 +38,76 @@ def main(connection, line):
     if not Info.args:
         Channel.send("You must give a plugin name")
         return
+    
     # Lets look for flags
     # -c = core
     # -l = library
     # -C = config
+    name = find_name(Info.args)
+    
     if "-c" in Info.args:
-        # Okay - core plugins
-        name = "Core/%s.py" % find_name(Info.args)
+        # Okay - core plugins because this is tied closely into
+        # MegBot we will struggle not having two copies of this code
+        # there for it is going to live here and in MegBot.
+        # please update both places if you change it.
+        fname = "Core%s" % name
+        if "coreplugins" in connection.config.paths:
+            cpath = connection.config.paths["coreplugins"]
+        else:
+            cpath = "Core/"
+        cpath = "%s%s.py" % (cpath, name)
+        if os.path.isfile(cpath):
+            plugin = imp.load_source(
+                            "Core%s" % fname,
+                            cpath
+                            )
+            connection.core[fname] = plugin
+        else:
+            Channel.send("Can't find core plugin %s." % name)
+            return
+
     elif "-l" in Info.args:
         # okay - libraries
-        name = "Libraries/%s.py" % find_name(Info.args)
+        plugin = connection.core["Corelloader"].main(
+                                                connection,
+                                                name
+                                                )
+        if plugin:
+            Channel.send("Oh no, something went wrong!")
+            return
+        connection.libraries[name] = plugin
+
     elif "-C" in Info.args:
         # okay - config
-        name = "config.py"
-    elif find_name(Info.args):
-        # Must be a normal plugin
-        name = "Plugins/%s.py" % find_name(Info.args)
+        if os.path.isfile('config.py'):
+            try:
+                plugin = imp.load_source('config', 'config.py')
+            except:
+                Channel.send("Oh no, something went wrong!")
+        else:
+            Channel.send("Oh no, I can't seem to find your config?")
+            return
+        connection.config = plugin
+        connection.settings = plugin.networks[connection.name]
+
+    elif name:
+        plugin = connection.core["Corepluginloader"].main(
+                                                        connection,
+                                                        name
+                                                       )
+        if not plugin[0]:
+            Channel.send(plugin[1])
+        else:
+            Channel.send("Plugin %s has been reloaded" % name)
     else:
+        # this is probably where complete reloading should be.
         Channel.send("You need to enter a plugin to reload/load")
         return
-        
-    if not os.path.isfile(name):
-        Channel.send("Can't find plugin %s. Sorry." % name)
-        return
 
-    plugin_name = name.split("/")[-1].replace(".py", "")
-    # Due to clashes we need to prepend "Core" onto core plugin names.
-    if "-c" in Info.args:
-        plugin_name = "Core%s" % plugin_name
-    try:
-        plugin = imp.load_source(plugin_name, name)
-    except:
-        Channel.send("There was a problem loading %s. Check the syntax?" % (plugin_name))
-        return
     # Helper, Web & Server needs setting to all plugins. (Channel is set per call).
     if "-l" in Info.args:
         # Libraries.
-        if plugin_name == "IRCObjects":
+        if name == "IRCObjects":
             connection.server = plugin.L_Server(connection)
             for p in connection.plugins.keys():
                 p = connection.plugins[p]
@@ -84,22 +117,16 @@ def main(connection, line):
                 p.Format = plugin.L_Format
             # Okay all done.
         # Lets set the library in the bot
-        connection.libraries[plugin_name] = plugin
-        Channel.send("Library %s has been reloaded." % (plugin_name))
+        connection.libraries[name] = plugin
+        Channel.send("Library %s has been reloaded." % (name))
     elif "-C" in Info.args:
         # config.
         # Has the nick changed?
-        if connection.config["nick"] != plugin.networks[connection.name]["nick"]:
-            Server.raw("NICK %s" % plugin.networks[connection.name]["nick"])
-        connection.config = plugin.networks[connection.name]
-        connection.settings = plugin
+        Server.raw("NICK %s" % connection.settings["nick"])
         Channel.send("Config has been reloaded.")
     elif "-c" in Info.args:
         # core
-        connection.core[plugin_name] = plugin
-        Channel.send("Core plugin %s has been reloaded" % plugin_name[4:])
-    else:
-        connection.plugins[plugin_name] = plugin
-        Channel.send("Plugin %s has been reloaded" % plugin_name)
+        connection.core[name] = plugin
+        Channel.send("Core plugin %s has been reloaded" % name[4:])
 
 help = "Loads or reloads a plugin"

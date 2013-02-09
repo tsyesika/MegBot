@@ -45,6 +45,8 @@ class Bot(object):
             try:
                 os.mkdir(path, 0775)
             except:
+                # this will cause a lot of errors in the future
+                # if these don't exist we ought to bail out.
                 pass
 
         if run:

@@ -36,11 +36,17 @@ def main(connection, plugin=None):
         if "unload" in dir(connection.plugins[plugin]):
             connection.plugins[plugin].unload(connection)
         plugin_path = connection.config.paths["plugin"] + plugin + ".py"
-        loaded_plugin = imp.load_source(plugin, plugin_path)
-        connection.plugins[plugin] = loaded_plugin
-        connection.Server = connection.server
-        if "init" in dir(connection.plugins[plugin]):
-            connection.plugins[plugin].init(connection)
+        if not os.path.isfile(plugin_path):
+            return (False, "Can't find plugin")
+        try:
+            loaded_plugin = imp.load_source(plugin, plugin_path)
+            connection.plugins[plugin] = loaded_plugin
+            connection.Server = connection.server
+            if "init" in dir(connection.plugins[plugin]):
+                connection.plugins[plugin].init(connection)
+            return (True, "")
+        except:
+            return (False, "Oh no, something went wrong")
 
     else:
         for plugfi in glob.glob(connection.config.paths["plugin"] + "*.py"):
@@ -48,11 +54,6 @@ def main(connection, plugin=None):
             connection.plugins[name] = imp.load_source(name, plugfi)
 
             plugin = connection.plugins[name]
-
-            try:
-                plugin.Config = connection.config.plugin_options[name]
-            except KeyError:
-                plugin.Config = None
 
             plugin.Server = connection.server
             plugin.Helper = connection.libraries["IRCObjects"].L_Helper()

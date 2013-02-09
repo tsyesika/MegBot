@@ -86,7 +86,6 @@ def main(connection, command):
     # if it has we know the user is trying to execute a plugin.
     # First triggers could be bigger than 1 character so lets get
     # the length of the trigger.
-
     trigger = connection.settings["trigger"]
     trigger_length = len(trigger)
 
