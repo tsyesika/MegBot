@@ -26,9 +26,6 @@ import imp
 import os
 import traceback
 
-
-
-
 def main(connection, plugin=None):
     """
     This will load plugins, if plugin is left as the default (None) then
@@ -37,7 +34,7 @@ def main(connection, plugin=None):
     This will also add the Server, Helper and Web instances to the bots
     """
     if plugin:
-        if "unload" in dir(connection.plugins[plugin]):
+        if plugin in connection.plugins and "unload" in dir(connection.plugins[plugin][0]):
             connection.plugins[plugin][0].unload(connection)
         plugin_path = connection.config.paths["plugin"] + plugin + ".py"
         if not os.path.isfile(plugin_path):
@@ -53,8 +50,8 @@ def main(connection, plugin=None):
             loaded_plugin = imp.load_source(plugin, plugin_path)
             connection.plugins[plugin] = (loaded_plugin, mtime)
             connection.Server = connection.server
-            if "init" in dir(connection.plugins[plugin]):
-                connection.plugins[plugin].init(connection)
+            if "init" in dir(connection.plugins[plugin][0]):
+                connection.plugins[plugin][0].init(connection)
             return (True, "")
         except:
             return (False, "Oh no, something went wrong,", traceback.format_exc())
@@ -62,10 +59,15 @@ def main(connection, plugin=None):
     else:
         for plugfi in glob.glob(connection.config.paths["plugin"] + "*.py"):
             name = os.path.splitext(os.path.basename(plugfi))[0]
-            connection.plugins[name] = (imp.load_source(name, plugfi), os.stat(plugfi).st_mtime)
+
+            result = main(connection, name)
+            if not result[0]:
+                if len(result) == 3:
+                    print "[ErrorLine] Plugin load failed."
+                    print result[2]
+                continue
 
             plugin = connection.plugins[name][0]
-
             plugin.Server = connection.server
             plugin.Helper = connection.libraries["IRCObjects"].L_Helper()
             plugin.Web = connection.libraries["IRCObjects"].L_Web(connection)

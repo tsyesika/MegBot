@@ -159,6 +159,6 @@ def main(connection, line):
     elif "-c" in Info.args:
         # core
         connection.core[name] = plugin
-        Channel.send("Core plugin %s has been reloaded" % name[4:])
+        Channel.send("Core plugin %s has been reloaded" % name)
 
 help = "Loads or reloads a plugin"
