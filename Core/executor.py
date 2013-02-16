@@ -60,7 +60,7 @@ def call(connection, line, hashable_line, plugin_name):
     # Turn line back into a string so we have something hash
 
     # Lets get the plugin we're going to deal with.
-    plugin = connection.plugins[plugin_name]
+    plugin = connection.plugins[plugin_name][0]
 
 
     # We need to add the Info and Channel libraries to the plugin.

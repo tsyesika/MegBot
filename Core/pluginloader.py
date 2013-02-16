@@ -34,13 +34,20 @@ def main(connection, plugin=None):
     """
     if plugin:
         if "unload" in dir(connection.plugins[plugin]):
-            connection.plugins[plugin].unload(connection)
+            connection.plugins[plugin][0].unload(connection)
         plugin_path = connection.config.paths["plugin"] + plugin + ".py"
         if not os.path.isfile(plugin_path):
             return (False, "Can't find plugin")
         try:
+            mtime = os.stat(plugin_path).st_mtime
+            
+            # check if it's the same copy?
+            if plugin in connection.plugins and connection.plugins[plugin][1] == mtime:
+                return (False, "Plugin already loaded.")
+
+            # load the plugin
             loaded_plugin = imp.load_source(plugin, plugin_path)
-            connection.plugins[plugin] = loaded_plugin
+            connection.plugins[plugin] = (loaded_plugin, mtime)
             connection.Server = connection.server
             if "init" in dir(connection.plugins[plugin]):
                 connection.plugins[plugin].init(connection)
@@ -51,13 +58,13 @@ def main(connection, plugin=None):
     else:
         for plugfi in glob.glob(connection.config.paths["plugin"] + "*.py"):
             name = os.path.splitext(os.path.basename(plugfi))[0]
-            connection.plugins[name] = imp.load_source(name, plugfi)
+            connection.plugins[name] = (imp.load_source(name, plugfi), os.stat(plugfi).st_mtime)
 
-            plugin = connection.plugins[name]
+            plugin = connection.plugins[name][0]
 
             plugin.Server = connection.server
             plugin.Helper = connection.libraries["IRCObjects"].L_Helper()
             plugin.Web = connection.libraries["IRCObjects"].L_Web(connection)
             plugin.Format = connection.libraries["IRCObjects"].L_Format
             if "init" in dir(connection.plugins[name]):
-                connection.plugins[name].init(connection)
+                connection.plugins[name][0].init(connection)

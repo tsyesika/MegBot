@@ -110,7 +110,7 @@ def main(connection, line):
         if name == "IRCObjects":
             connection.server = plugin.L_Server(connection)
             for p in connection.plugins.keys():
-                p = connection.plugins[p]
+                p = connection.plugins[p][0]
                 p.Web = plugin.L_Web(connection)
                 p.Server = connection.server
                 p.Helper = plugin.L_Helper()
