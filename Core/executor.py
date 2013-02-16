@@ -83,10 +83,32 @@ def call(connection, line, hashable_line, plugin_name):
 def clear(connection):
     """ Clears the plugins that have timed out or finished """
     purge = []
+
+    if "timeout" in dir(connection.config):
+        try:
+            timeout = int(connection.config.timeout)
+        except:
+            timeout = 30 #default
+    else:
+        timout = 30 # default
+
     for plugincall in connection.times:
+        plugin_name = connection.times[plugincall][2]
+        po = connection.config.plugin_options
+        if plugin_name in po:
+            if "timeout" in po[plugin_name]:
+                try:
+                    ptout = int(po[plugin_name]["timeout"])
+                except:
+                    ptout = timeout
+            else:
+                ptout = timeout
+        else:
+            ptout = timeout
+        print "[debug] %s" % ptout
         if not connection.times[plugincall][0].isAlive():
             purge.append(connection.times[plugincall])
-        elif (connection.times[plugincall][1] - time.time()) > 30:
+        elif (connection.times[plugincall][1] - time.time()) > ptout:
             connection.times[plugincall][0].kill_meh()
     for process in purge:
         del connection.times[plugincall]
