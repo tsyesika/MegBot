@@ -24,6 +24,10 @@ connection by access through the connection parameter passed to main.
 import glob
 import imp
 import os
+import traceback
+
+
+
 
 def main(connection, plugin=None):
     """
@@ -53,7 +57,7 @@ def main(connection, plugin=None):
                 connection.plugins[plugin].init(connection)
             return (True, "")
         except:
-            return (False, "Oh no, something went wrong")
+            return (False, "Oh no, something went wrong,", traceback.format_exc())
 
     else:
         for plugfi in glob.glob(connection.config.paths["plugin"] + "*.py"):

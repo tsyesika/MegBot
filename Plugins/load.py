@@ -45,7 +45,39 @@ def main(connection, line):
     # -C = config
     name = find_name(Info.args)
     
-    if "-c" in Info.args:
+    if "-a" in Info.args:
+        # reload everything (if it's needed)
+        stats = {
+            "Failed":0,
+            "Success":0
+        }
+        for plugin in connection.plugins:
+            result = connection.core["Corepluginloader"].main(
+                                                    connection,
+                                                    plugin
+                                                    )
+            if result[0]:
+                stats["Success"] += 1
+            elif len(result) == 3:
+                stats["Failed"] += 1
+                print "[ErrorLine] Plugin loaded:"
+                print result[2]
+
+        if stats["Success"] and stats["Failed"]:
+            Channel.send("Successfully reloaded %s plugins, %s plugins failed to load (due to errors)"
+                            % (stats["Success"], stats["Failed"]))
+        elif stats["Success"]:
+            Channel.send("Successfully reloaded %s plugins."  % stats["Success"])
+        elif stats["Failed"]:
+            Channel.send("No plugins were reloaded, %s plugins failed to load (due to a problem)"
+                                % stats["Failed"])
+        else:
+            # nothing was done
+            Channel.send("No plugins needed reloading.")
+        return
+
+
+    elif "-c" in Info.args:
         # Okay - core plugins because this is tied closely into
         # MegBot we will struggle not having two copies of this code
         # there for it is going to live here and in MegBot.
