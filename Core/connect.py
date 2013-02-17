@@ -31,6 +31,12 @@ from time import sleep
 def main(connection):
     """ Connects to irc (by setting up socket and passing info to ircd) """
 
+    # Make a socket, we also wanna check if it's IPV6
+    if connection.settings["ipv6"]:
+        connection.sock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+    else:
+        connection.sock = socket.socket()
+
     if connection.settings["ssl"]:
         # The import here is because some systems don't ship it,
         # we only care about them not doing if they're using ssl

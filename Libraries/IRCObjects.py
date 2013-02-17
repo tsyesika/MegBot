@@ -25,7 +25,7 @@ import urllib
 
 from Data.HTMLEnterties import *
 
-class Standard():
+class Standard(object):
     """ Never instantiate """
     def __setuphooks__(self, connection):
         """ Sets up hooks for the class
@@ -45,6 +45,7 @@ class Info(Standard):
             self.nick = ""
             self.action = ""
             self.raw = ""
+            self.message = ""
             self.channel = ""
             self.plugin_name = ""
             self.trigger = ""
