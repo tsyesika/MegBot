@@ -37,8 +37,8 @@ def main(connection, lname=None):
     Returns a dict {library_name : <library instance>}
     """
     libraries = {}
-    if "libraries" in connection.config.paths.keys():
-        lpath = connection.config.paths["libraries"]
+    if "libraries" in connection.config[u"paths"]:
+        lpath = connection.config[u"paths"][u"libraries"]
         if not path.isdir(lpath):
             return {}
     else:

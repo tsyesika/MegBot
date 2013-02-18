@@ -63,8 +63,8 @@ def call(connection, command, plugin_name):
     # We need to add the Info and Channel libraries to the plugin.
     plugin.Info = command
     plugin.Channel = connection.channels[command.channel]
-    if plugin_name in connection.config.plugin_options:
-        plugin.Config = connection.config.plugin_options[plugin_name]
+    if plugin_name in connection.config[u"plugin_options"]:
+        plugin.Config = connection.config[u"plugin_options"][plugin_name]
     else:
         plugin.Config = {}
 
@@ -81,9 +81,10 @@ def clear(connection):
     """ Clears the plugins that have timed out or finished """
     purge = []
 
-    if "timeout" in dir(connection.config):
+    if "timeout" in connection.config:
         try:
-            timeout = int(connection.config.timeout)
+            timeout = int(connection.config["timeout"])
+            connection.config["timeout"] = timeout
         except:
             timeout = 30 #default
     else:
@@ -91,7 +92,7 @@ def clear(connection):
 
     for plugincall in connection.times:
         plugin_name = connection.times[plugincall][2]
-        po = connection.config.plugin_options
+        po = connection.config[u"plugin_options"]
         if plugin_name in po:
             if "timeout" in po[plugin_name]:
                 try:

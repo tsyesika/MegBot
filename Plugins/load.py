@@ -86,8 +86,8 @@ def main(connection):
         # there for it is going to live here and in MegBot.
         # please update both places if you change it.
         fname = "Core%s" % name
-        if "coreplugins" in connection.config.paths:
-            cpath = connection.config.paths["coreplugins"]
+        if "coreplugins" in connection.config[u"paths"]:
+            cpath = connection.config[u"paths"][u"coreplugins"]
         else:
             cpath = "Core/"
         cpath = "%s%s.py" % (cpath, name)
@@ -123,7 +123,7 @@ def main(connection):
             Channel.send("Oh no, I can't seem to find your config?")
             return
         connection.config = plugin
-        connection.settings = plugin.networks[connection.name]
+        connection.settings = plugin[u"networks"][connection.name]
 
     elif name:
         plugin = connection.core["Corepluginloader"].main(

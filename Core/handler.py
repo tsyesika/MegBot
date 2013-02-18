@@ -15,29 +15,7 @@
 #   along with MegBot.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-"""This is handles all hooks, a hook is something which is called
-but not by a direct user call. If a developer wants their code called
-when a ping occurs, privmsg, join, part, etc... you use a hook. You can
-only have one hook per function (i.e. you can't have the same function
-called multiple times by a single line), this is ensured by the use of sets.
-
-To register a hook you would use the register_hook method, unregistering you
-call the unregister_hook method. To call all the hooks you make a call to hook
-this will parse out the second element in the list (list[1]) and look
-for all hooks which call on that.
-
-The hooks should be registered with the prefix on_<hook> e.g. to
-register on a PRVIMSG you would make a call to reigster:
-
-    reigster_hook("on_PRIVMSG", <function>)
-
-the capitalisation on the hook is important, the on_ should
-be all lowercase with an uppercase hook (on_UPPERCASE).
-The same is true for unregister_hook.
-
-Hooks are not automatically unregistered, the onus is on the developer once
-a hook is registerd for them to unregister it before their code is
-unloaded/reloaded.
+"""
 """
 
 import traceback
@@ -118,10 +96,9 @@ class IRCEvent(Event):
 
 class Handler():
     __events = {}
-
-    def setConnection(self, connection):
+    def __init__(self, connection):
         self.connection = connection
-
+        
     def register_event(self, event):
         """ registers an event """
         if not event.eventType in self.__events:

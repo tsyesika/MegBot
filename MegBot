@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 ##
-#This file is part of MegBot.
+#   This file is part of MegBot.
 #
 #   MegBot is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -23,26 +23,25 @@ from thread import start_new_thread
 from time import sleep
 from imp import load_source
 from glob import glob
-
+from Configuration import configuration
 class Bot(object):
-    def __init__(self, name, hooker, handler, plugins, config, run=True):
+    def __init__(self, name, plugins, config, run=True):
         """Initalises bot"""
         self.name = name
         self.config = config
-        self.settings = config.networks[name]
+        self.settings = config["networks"][name]
         self.running = False
         self.channels = {}
         self.core = plugins
-        self.hooker = hooker
-        self.handler = handler
-        self.handler.setConnection(self)
+        self.hooker = self.core["Corehooker"].Hooker()
+        self.handler = self.core["Corehandler"].Handler(self)
         self.core["Coreconnect"].main(self)
 
-        # Some of the directories in config.py won't be created in git,
+        # Some of the directories in config.json won't be created in git,
         # so let's try and create them.
         # We'll assume a user who has set custom directory tree has
         # created them :P
-        for path in self.config.paths.values():
+        for path in self.config[u"paths"].values():
             try:
                 os.mkdir(path, 0775)
             except:
@@ -85,33 +84,26 @@ class Bot(object):
             except:
                 pass
             self.__init__(self.name,
-                    self.hooker,
                     self.core,
                     self.config,
                     False)
 
 if __name__ == "__main__":
-    try:
-        global_config = load_source("config", "config.py")
-    except IOError:
-        print "Could not find \"config.py\", maybe you forgot to copy and edit the example config?"
-        sys.exit()
     coreplugins = {}
     for c in glob("Core/*.py"):
         # Thanks to webpigeon (https://github.com/xray7224/MegBot/issues/3)
         name = "Core%s" % os.path.splitext(os.path.basename(c))[0]
         coreplugins[name] = load_source(name, c)
+        coreplugins[name]
     bots = {}
-    for network in global_config.networks.keys():
-        if not "active" in global_config.networks[network].keys() or (
-                global_config.networks[network]["active"]):
+    for network in configuration["networks"]:
+        if not "active" in configuration["networks"][network].keys() or (
+                configuration["networks"][network]["active"]):
             bots[network] = start_new_thread(
                                             Bot,
                                             (network,
-                                            coreplugins["Corehooker"].Hooker(),
-                                            coreplugins["Corehandler"].Handler(),
                                             coreplugins,
-                                            global_config))
+                                            configuration))
     try:
         while True:
             sleep(2)

@@ -29,6 +29,8 @@ a valid responce should be:
 The argument after PONG should always be what the server sent us.
 """
 
+eventID = "PingEvent"
+
 def main(connection, command):
     """Handles the PINGS"""
     if not command.args:

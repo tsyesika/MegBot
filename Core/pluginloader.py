@@ -36,7 +36,7 @@ def main(connection, plugin=None):
     if plugin:
         if plugin in connection.plugins and "unload" in dir(connection.plugins[plugin][0]):
             connection.plugins[plugin][0].unload(connection)
-        plugin_path = connection.config.paths["plugin"] + plugin + ".py"
+        plugin_path = connection.config[u"paths"][u"plugin"] + plugin + ".py"
         if not os.path.isfile(plugin_path):
             return (False, "Can't find plugin")
         try:
@@ -57,7 +57,7 @@ def main(connection, plugin=None):
             return (False, "Oh no, something went wrong,", traceback.format_exc())
 
     else:
-        for plugfi in glob.glob(connection.config.paths["plugin"] + "*.py"):
+        for plugfi in glob.glob(connection.config[u"paths"][u"plugin"] + "*.py"):
             name = os.path.splitext(os.path.basename(plugfi))[0]
 
             result = main(connection, name)

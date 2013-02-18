@@ -1,0 +1,44 @@
+{
+    "networks": {
+        "MegNet": {
+            "NSPassword": "",
+            "active": true,
+            "address": "irc.megworld.co.uk",
+            "channels": [
+                "#bots"
+            ],
+            "commands": [],
+            "ident": "MegBot",
+            "ipv6": false,
+            "modes": "+B",
+            "nick": "MegTest1",
+            "port": 9000,
+            "realname": "MegBot",
+            "ssl": true,
+            "trigger": ","
+        }
+    },
+    "paths": {
+        "coreplugins": "Core/",
+        "data": "Data/",
+        "databases": "Databases/",
+        "libraries": "Libraries/",
+        "logs": "Logging/",
+        "plugin": "Plugins/"
+    },
+    "plugin_options": {
+        "8ball": {
+            "replies": [
+                "sure",
+                "yerp",
+                "no",
+                "nope",
+                "I'm not sure",
+                "I'm too tired right now, ask later."
+            ]
+        },
+        "translate": {
+            "default_language": "en"
+        }
+    }
+}
