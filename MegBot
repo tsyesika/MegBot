@@ -25,7 +25,7 @@ from imp import load_source
 from glob import glob
 
 class Bot(object):
-    def __init__(self, name, hooker, plugins, config, run=True):
+    def __init__(self, name, hooker, handler, plugins, config, run=True):
         """Initalises bot"""
         self.name = name
         self.config = config
@@ -34,6 +34,7 @@ class Bot(object):
         self.channels = {}
         self.core = plugins
         self.hooker = hooker
+        self.eventhandler = handler
         self.core["Coreconnect"].main(self)
 
         # Some of the directories in config.py won't be created in git,
@@ -107,6 +108,7 @@ if __name__ == "__main__":
                                             Bot,
                                             (network,
                                             coreplugins["Corehooker"].Hooker(),
+                                            coreplugins["Corehandler"].Handler(),
                                             coreplugins,
                                             global_config))
     try:

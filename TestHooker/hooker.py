@@ -58,31 +58,6 @@ class IRCEvent(Event):
 		return True
 
 
-class Info():
-    def __init__(self, line=None):
-        if line == None:
-            self.nick = ""
-            self.action = ""
-            self.raw = ""
-            self.message = ""
-            self.channel = ""
-            self.plugin_name = ""
-            self.trigger = ""
-            self.args = []
-            return
-
-        line = line.split()
-
-        # Lets pull things out.
-        self.nick = line[0].split("!")[0][1:]
-        self.action = line[1]
-        self.raw = line
-        self.message = "%s %s" % (line[3][1:], " ".join(line[4:]))
-        self.channel = line[2]
-        self.plugin_name = line[3][2:]
-        self.trigger = line[3][1]
-        self.args = line[4:]
-
 class Handler():
 	__events = {}
 

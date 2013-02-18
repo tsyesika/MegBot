@@ -61,7 +61,7 @@ HTML_Enterties = {
             "&#170;":u"ª",
             "&#171;":u"«",
             "&#172;":u"¬",
-            "&#173;":u"", # Doesn't exit? - soft-hyphen
+            "&#173;":u"", # Doesn't exist? - soft-hyphen
             "&#174;":u"®",
             "&#176;":u"°",
             "&#177;":u"±",

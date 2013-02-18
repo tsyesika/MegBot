@@ -1,18 +1,18 @@
 ##
-#   This file is part of MegBot.
+# This file is part of MegBot.
 #
-#   MegBot is free software: you can redistribute it and/or modify
-#   it under the terms of the GNU General Public License as published by
-#   the Free Software Foundation, either version 3 of the License, or
-#   (at your option) any later version.
+# MegBot is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 #
-#   MegBot is distributed in the hope that it will be useful,
-#   but WITHOUT ANY WARRANTY; without even the implied warranty of
-#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#   GNU General Public License for more details.
+# MegBot is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
 #
-#   You should have received a copy of the GNU General Public License
-#   along with MegBot.  If not, see <http://www.gnu.org/licenses/>.
+# You should have received a copy of the GNU General Public License
+# along with MegBot. If not, see <http://www.gnu.org/licenses/>.
 ##
 
 """This is handles all hooks, a hook is something which is called
@@ -29,7 +29,7 @@ for all hooks which call on that.
 The hooks should be registered with the prefix on_<hook> e.g. to
 register on a PRVIMSG you would make a call to reigster:
 
-    reigster_hook("on_PRIVMSG", <function>)
+reigster_hook("on_PRIVMSG", <function>)
 
 the capitalisation on the hook is important, the on_ should
 be all lowercase with an uppercase hook (on_UPPERCASE).
