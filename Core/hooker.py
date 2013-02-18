@@ -66,6 +66,8 @@ class Hooker(object):
                                                   "Core/on_QUIT.py").main)
         self.register_hook('on_JOIN', load_source("on_QUIT",
                                                   "Core/join.py").on_JOIN)
+        self.register_hook('on_396', load_source("on_396",
+                                          "Core/on_396.py").main)
     
     def hook(self, bot, act, line):
         """Hooks plugins, etc..."""
