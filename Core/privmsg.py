@@ -30,7 +30,11 @@ def main(connection, channel, message, split_it=False):
     # (512 inc. \r\n so 510 as raw adds those).
     # See section 2.3 of RFC1459
     if split_it:
-        max_length = 510 - len(pre_message)
+        #nickmask has a trailing space for a reason :)
+        nickmask = "%s!%s@%s " % (connection.settings["nick"],
+                                connection.settings["ident"],
+                                connection.settings["hostname"])
+        max_length = 510 - len(nickmask + pre_message)
         messages = []
         for i in range(0, len(message), max_length):
             messages.append(message[i:i+max_length])
