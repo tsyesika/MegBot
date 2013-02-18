@@ -553,3 +553,9 @@ class L_Server(Standard):
 
     def oper(self, user, password):
         self.raw("OPER %s %s" % (user, password))
+
+    def away(self, reason=None):
+        if reason == None:
+            self.raw(":%s AWAY" % self.nick)
+        else:
+            self.raw("AWAY :%s" % reason)
