@@ -14,13 +14,14 @@ networks = {
         "nick":"MegTest",
         "ident":"MegBot",
         "realname":"MegBot",
-        "ipv6":False,
-        "ssl":True,
+        "hostname":"hostname", # optional
+        "ipv6":False, # optional
+        "ssl":True, # optional
         "trigger":".",
-        "NSPassword":"",
-        "commands":[],
-        "modes":"+B",
-        "active":True,
+        "NSPassword":"", # optional
+        "commands":[], # optional
+        "modes":"+B", # optional
+        "active":True, #optional (if set to false will disable this network from connecting.)
         "channels":["#bots"]
     },
     "Freenode":{
@@ -30,13 +31,7 @@ networks = {
         "ident":"",
         "realname":"",
         "trigger":"",
-        "ipv6":False,
-        "ssl":False,
-        "NSPassword":"pass",
-        "commands":[],
-        "modes":"-i+w",
-        "channels":[],
-        "active":False #optional (if set to false will disable this network from connecting.)
+        "channels":[]
     }
 }
 

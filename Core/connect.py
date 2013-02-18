@@ -26,60 +26,151 @@ Todo: Have a reconnection limit support?
 
 
 import socket
+import sys
+import traceback
 from time import sleep
+
+def setupConnection(connection, address, port, ipv6=None):
+    if None == ipv6:
+        ipv6 = True
+
+    if ipv6:
+        connection.sock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+    else:
+        # these are actually the default but it's more clear if we specify.
+        connection.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    connection.sock.connect((address, port))
+
+def SSLWrapper(sock):
+    try:
+        import ssl
+        return ssl.wrap_socket(sock)
+    except:
+        print "[ErrorLine] No 'ssl' module, please install it."
+    
+    try:
+        sock.close()
+    except:
+        pass
+    
+    sys.exit()
+
+def SendInfo(connection, nick, ident, realname, host=None):
+    if not host:
+        host = socket.gethostname()
+        # be a good little bot and save it back
+        connection.settings["hostname"] = host
+    connection.core["Coreraw"].main(connection, "NICK %s" % (nick))
+    connection.core["Coreraw"].main(connection, "USER %s %s %s: %s"
+            %   (
+                nick, ident, host, realname
+                )
+        )
+
+def ReadConfig(connection):
+    timeout = 10 # default, 10 seconds.
+    hostname = None
+    critError = []
+    if "hostname" in connection.settings.keys():
+        hostname = connection.settings["hostname"]
+
+    if "timeout" in connection.settings.keys():
+        timeout = connection.settings["timeout"]
+    elif "timeout" in dir(connection.config):
+        timeout = connection.config.timeout
+
+    if "address" in connection.settings:
+        address = connection.settings["address"]
+    else:
+        print "You need to specify an address to connect to."
+        sys.exit()
+
+    if "ipv6" in connection.settings:
+        ipv6 = connection.settings["ipv6"]
+    else:
+        ipv6 = None # this will cause it to prefer ipv6 but fail to ipv4
+
+    if "ssl" in connection.settings:
+        ssl = connection.settings["ssl"]
+    else:
+        ssl = None # laaa people likes ze insecure
+
+    if "port" in connection.settings:
+        try:
+            port = connection.settings["port"]
+        except ValueError:
+            cirtError.append("Invalid port number: %s" % connection.settings["port"])
+    else:
+        cirtError.append("You need to specify a port.")
+    
+    if "nick" in connection.settings:
+        nickname = connection.settings["nick"]
+    else:
+        critError.append("You need to specify an nickname.")
+
+    if "ident" in connection.settings:
+        ident = connection.settings["ident"]
+    else:
+        critError.append("You need to specify an ident.")
+
+    if "realname" in connection.settings:
+        realname = connection.settings["realname"]
+    else:
+        cirtError.append("You need to specify a realname.")
+
+    if critError:
+        print "[ErrorLine] The following errors with your config:"
+        for error in critError:
+            print "    %s" % error
+        print "Because of above erros the bot %s won't start."
+        print "Please fix the errors above."
+        sys.exit()
+
+    return {
+        "address":address,
+        "port":port,
+        "nick":nickname,
+        "ident":ident,
+        "realname":realname,
+        "timeout":timeout,
+        "hostname":hostname,
+        "ipv6":ipv6,
+        "ssl":ssl
+    }
+
 
 def main(connection):
     """ Connects to irc (by setting up socket and passing info to ircd) """
 
-    # Make a socket, we also wanna check if it's IPV6
-    if connection.settings["ipv6"]:
-        connection.sock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
-    else:
-        connection.sock = socket.socket()
-
-    if connection.settings["ssl"]:
-        # The import here is because some systems don't ship it,
-        # we only care about them not doing if they're using ssl
-        # If they do want ssl and it's not here, a exception should
-        # be raised and handled further up the code base.
-
-        import ssl
-        connection.sock = ssl.wrap_socket(connection.sock)
-
     connected = False
+    IPCycle = [False, True] # done change the order
+    config = ReadConfig(connection)
+    ipv6 = config["ipv6"]
+    attempts = 0
 
     while not connected:
         try:
-            connection.sock.connect((connection.settings["address"],
-                                     connection.settings["port"]))
+            setupConnection(connection, config["address"], config["port"], ipv6)
             connected = True
-
         except socket.error:
-            # We want to wait here. Hitting the server too much
-            # isn't a good idea, if they haven't specified a
-            # network specific timeout or a global one we'll use
-            # 10 seconds as it's a sensible time.
+            traceback.print_exc()
+            if None == config["ipv6"]:
+                # We haven't specified ipv6 so by default we've tried ipv6.
+                # that could have caused this, lets try ipv4
+                ipv6 = IPCycle[0]
+                IPCycle.append(IPCycle.pop(0))
+                if not attempts:
+                    # we ought not to wait around.
+                    continue
+            # lets not hammer the server
+            sleep(config["timeout"])
 
-            timeout = 10 # default, 10 seconds.
+    if config["ssl"]:
+        connection.sock = SSLWrapper(connection.sock)
 
-            if "timeout" in connection.settings.keys():
-                timeout = connection.settings["timeout"]
-            elif "timeout" in dir(connection.config):
-                timeout = connection.config.timeout
+    SendInfo(connection, config["nick"], config["port"], config["realname"], config["hostname"])
 
-            sleep(timeout)
-
-    connection.core["Coreraw"].main(connection,
-                                    "NICK %s" % (
-                                                connection.settings["nick"]
-                                                )
-                                    )
-    connection.core["Coreraw"].main(connection,
-                                    "USER %s %s * :%s" %
-                                        (
-                                        connection.settings["nick"],
-                                        connection.settings["ident"],
-                                        connection.settings["realname"]
-                                        )
-                                   )
     connection.running = True
+
+
