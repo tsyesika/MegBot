@@ -71,4 +71,4 @@ def main(connection, command):
     ##
     # Remove .split() when #36 is done
     ##
-    connection.core["Coreexecutor"].main(connection, command.raw.split(), command.plugin_name)
+    connection.core["Coreexecutor"].main(connection, command, command.plugin_name)

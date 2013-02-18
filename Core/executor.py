@@ -30,7 +30,7 @@ class KillableThread(threading.Thread):
         """Raises an (hopefully) uncatchable SystemExit exceptoin"""
         raise SystemExit
 
-def main(connection, line, plugin):
+def main(connection, command, plugin):
     """ This executes and manages plugin calls.
     This will kill the plugins execution after
     <x> numver of seconds to prevent lockup due to
@@ -42,30 +42,27 @@ def main(connection, line, plugin):
     else:
         clear(connection)
 
-    hashable_line = " ".join(line)
-
     # I think this will stop repeat calls to the same plugin from the same user?
     # Maybe? M
-    if not hashable_line in connection.times.keys():
-        call(connection, line, hashable_line, plugin)
+    if not command.message in connection.times.keys():
+        call(connection, command, plugin)
 
-def call(connection, line, hashable_line, plugin_name):
+def call(connection, command, plugin_name):
     """ Makes a call to a plugin (if needed) """
 
     # This checks that megbot is actually in the channel first.
     # If it isn't we'll just return out.
-    if line[2] not in connection.channels:
+    if not command.channel in connection.channels:
         return
 
     # Turn line back into a string so we have something hash
-
     # Lets get the plugin we're going to deal with.
     plugin = connection.plugins[plugin_name][0]
 
 
     # We need to add the Info and Channel libraries to the plugin.
-    plugin.Info = connection.libraries["IRCObjects"].Info(" ".join(line))
-    plugin.Channel = connection.channels[line[2]]
+    plugin.Info = command
+    plugin.Channel = connection.channels[command.channel]
     if plugin_name in connection.config.plugin_options:
         plugin.Config = connection.config.plugin_options[plugin_name]
     else:
@@ -75,10 +72,10 @@ def call(connection, line, hashable_line, plugin_name):
     thread = KillableThread(target=plugin.main,
                               args=(connection,)
                              )
-    connection.times[hashable_line] = [thread, time.time(), plugin_name]
+    connection.times[command.message] = [thread, time.time(), plugin_name]
 
     # And finally, we need to start it.
-    connection.times[hashable_line][0].start()
+    connection.times[command.message][0].start()
 
 def clear(connection):
     """ Clears the plugins that have timed out or finished """
