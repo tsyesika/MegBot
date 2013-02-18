@@ -90,7 +90,7 @@ def clear(connection):
         except:
             timeout = 30 #default
     else:
-        timout = 30 # default
+        timeout = 30 # default
 
     for plugincall in connection.times:
         plugin_name = connection.times[plugincall][2]
