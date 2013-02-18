@@ -15,6 +15,9 @@
 #   along with MegBot.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+""" Loads a plugin, config, core plugin or library """
+
+
 import imp, os
 
 def find_name(args):
@@ -27,7 +30,7 @@ def find_name(args):
         return args[0]
     return find_name(args[1:])
 
-def main(connection, line):
+def main(connection):
     """
     Handles plugin reloading for Core, Libraries, Config and normal user plugins.
     This will handle flags within the IRC. If also the libraries are being reloaded the

@@ -34,7 +34,7 @@ def FormTime(time):
             output += time[char_index]
     return output
 
-def main(connection, line):
+def main(connection):
     if not Info.args:
         nick = Info.nick
     else:

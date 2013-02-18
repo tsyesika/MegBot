@@ -23,7 +23,7 @@ DEFINITIONS = {
     "U":"unisex"
 }
 
-def main(connection, line):
+def main(connection):
     # Find name
     if not Info.args:
         Channel.send("Please specify a name.")

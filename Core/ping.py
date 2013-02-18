@@ -29,7 +29,10 @@ a valid responce should be:
 The argument after PONG should always be what the server sent us.
 """
 
-def main(connection, message):
+def main(connection, command):
     """Handles the PINGS"""
-    if message[0] == "PING":
-        connection.core["Coreraw"].main(connection, "PONG %s" % message[1])
+    if not message.args:
+    	# huh, what? :S
+    	# we probably should be logging this.
+    	return
+    connection.core["Coreraw"].main(connection, "PONG %s" % message.args[0])

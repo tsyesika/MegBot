@@ -15,7 +15,9 @@
 #   along with MegBot.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-def main(bot, line):
+""" Displays a help message or a list of available commands """
+
+def main(connection):
     if not Info.args:
         # Generic list of plugins.
         cout = ""

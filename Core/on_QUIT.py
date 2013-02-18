@@ -21,12 +21,12 @@ the bots 'running' attribute to false, this will trigger the connection
 loop to re-initate the connection.
 """
 
-def main(connection, line):
+def main(connection, command):
     """
     This will tell the bot to reconnect by setting a variable
     inside the bot to be False, this will cause it to run through the reconnection.:
     """
-    if line[0].split("!")[0][1:] == connection.settings["nick"]:
+    if command.nick == connection.settings["nick"]:
         # Bot quit.
         # initate reconnect.
         connection.running = False

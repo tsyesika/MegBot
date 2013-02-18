@@ -37,7 +37,7 @@ def day_num(day):
     else:
         return str(day) + 'th'
 
-def main(connection, line):
+def main(connection):
     today = date.today()
     is_leap_year = calendar.isleap(today.year)
     day_of_year = today.timetuple().tm_yday

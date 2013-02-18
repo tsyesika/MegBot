@@ -26,7 +26,7 @@ aliases = {
     "cst":"texas"
 }
 
-def main(connection, line):
+def main(connection):
     #Checks to see if timezone is set :P
     try:
         userzones = store.Store("TimeData")

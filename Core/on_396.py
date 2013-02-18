@@ -19,5 +19,5 @@
 Sets the hostname (as some mask it).
 """
 
-def main(connection, line):
-	connection.settings["hostname"] = line[3]
+def main(connection, command):
+	connection.settings["hostname"] = command.raw.split()[3]

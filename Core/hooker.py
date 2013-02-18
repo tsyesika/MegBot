@@ -69,20 +69,20 @@ class Hooker(object):
         self.register_hook('on_396', load_source("on_396",
                                           "Core/on_396.py").main)
     
-    def hook(self, bot, act, line):
+    def hook(self, bot, command):
         """Hooks plugins, etc..."""
-        fmsg = " ".join(line)
-        print "[IN] %s" % fmsg
+        print "[IN] %s" % command.raw
 
-        act = 'on_%s' % act
+        act = 'on_%s' % command.action
         if act not in self.__hooks.keys():
             return
+        
         try:
             hooks = self.copy(self.__hooks[act])
             for callback in hooks:
-                callback(bot, line)
+                callback(bot, command)
         except:
-            print "[ERRORLINE] %s" % fmsg
+            print "[ErrorLine] %s" % command.raw
             traceback.print_exc()
 
     def register_hook(self, hook, callback):

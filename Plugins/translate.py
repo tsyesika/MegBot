@@ -22,7 +22,7 @@ SUPPORTED_LANGS = ["en", "de", "cy", "af", "sq", "ar", "hy", "az", "eu", "be", "
             "pl", "pt", "ro", "ru", "sr", "sk", "sl", "es", "sw", "sv", "ta", "te", "th", "tr", "uk", "ur", "vi", "yi"]
 
 # This is the default language if no language is specified (languages which can be default languages are in SUPPORTED_LANGS)
-def main(connection, line):
+def main(connection):
     if not Info.args:
         Channel.send("Please supply lang|lang <text to translate> or languages")
         return

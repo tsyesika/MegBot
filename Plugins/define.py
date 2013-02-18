@@ -20,7 +20,7 @@ import urllib2, re
 
 USER_AGENT = "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_6; en-us) AppleWebKit/533.19.4 (KHTML, like Gecko) Version/5.0.3"
 
-def main(connection, line):
+def main(connection):
     if not Info.args:
         Channel.send("Please supply the word you want to be defined.")
         return

@@ -15,7 +15,7 @@
 #   along with MegBot.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-def main(connection, line):
+def main(connection):
     if not Info.args:
         Server.part(Info.channel)
         return

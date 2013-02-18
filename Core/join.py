@@ -32,12 +32,12 @@ def main(connection, channel):
     on_JOIN(connection, channel, False)
     connection.core["Coreraw"].main(connection, "JOIN %s" % channel)
 
-def on_JOIN(connection, line, hooked=True):
+def on_JOIN(connection, command, hooked=True):
     """ Called when a channel is joined """
     if hooked:
-        channel = line[2]
+        channel = command.channel
     else:
-        channel = line
+        channel = command
 
     if connection.libraries:
         channel_inst = connection.libraries["IRCObjects"].L_Channel(connection,

@@ -17,7 +17,7 @@
 
 import urllib2, json
 
-def main(connection, line):
+def main(connection):
     if not Info.args:
         user = Info.nick
     else:

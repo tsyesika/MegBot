@@ -21,7 +21,7 @@ import urllib2, time
 import xml.etree.ElementTree as etree
 import Libraries.store as store
 
-def main(connection, line):
+def main(connection):
     """
     Uses the Yahoo API with the (so far) undocumented Weoid API MegWorld provides.
     This will check the spelling of the entered place, look up it's Weoid and then the weather for said place.

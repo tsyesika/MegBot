@@ -18,7 +18,7 @@
 import urllib2, re, traceback
 from urllib import quote
 
-def main(connection, line):
+def main(connection):
     if not Info.args:
         Channel.send("Please supply the word you want to be defined.")
         return

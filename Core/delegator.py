@@ -43,65 +43,32 @@ def main(connection, command):
     if not command:
         return
 
-    # Strip trailing whitespace and then split along spaces. We want to be able
-    # to put the message back together later, including messages that contain
-    # continuous multiple spaces.
-    # See Python documentation on S.split() versus S.split(" ")
-    command = command.rstrip().split(" ")
+    # can we make this better?
+    command = connection.libraries["IRCObjects"].Info(command)
 
-    # We need to know the length for some inital crude validation
-    # since like split we need locations we'll calculate it once.
-    command_length = len(command)
-
-    # Lets hand off to ping in case it's a PING message.
-    connection.core["Coreping"].main(connection, command)
-
-    # Okay, if it's short than length one it's ether a ping (which
-    # has been handled now) or it's malformed in which case we don't
-    # want to do anything more with it so we'll end here.
-    if command_length <= 1:
-        return
+    if "PING" == command.action:
+        # Lets hand off to ping in case it's a PING message.
+        connection.core["Coreping"].main(connection, command)
 
     # Okay, we'll now see if any hooks wish to be called on it.
-    connection.hooker.hook(connection, command[1], command)
+    connection.hooker.hook(connection, command)
 
-    # Now we just need to handle plugin calls, these will always be
-    # like ["nick!ident@host", "PRIVMSG", "#channel", ":message"]
-    # so minimum length will be 4 for a valid message.
-    # any messages less than or equal to 3 in length or if the
-    # type isn't a PRIVMSG then we can ignore the command
-
-    if command_length <= 3 or command[1] != "PRIVMSG":
+    if not command.message:
         return
 
-    # Now we'll check the line isn't blank
-    # a blank line will look like:
-    # ["nick!ident@host", "PRIVMSG", "#channel", ":"]
-    # if it's blank we can throw it away.
-
-    if command[3] == ":":
-        return
-
-    # Okay now we need to test that the trigger has been used
-    # if it has we know the user is trying to execute a plugin.
-    # First triggers could be bigger than 1 character so lets get
-    # the length of the trigger.
     trigger = connection.settings["trigger"]
-    trigger_length = len(trigger)
-
-    # if they didn't use the trigger, we can do nothing.
-
-    if command[3][1:trigger_length+1] != trigger:
+    if command.trigger != trigger:
         return
 
     # Okay so at this point we can say they are trying to call a plugin.
     # first thing's first is we need to check the plugin actually exists
 
-    plugin = command[3][trigger_length+1:]
-    if plugin not in connection.plugins:
+    if command.plugin_name not in connection.plugins:
         return
 
     # last thing we need to do is delegate off to the executor core plugin
     # this will put the plugin into a thread and execute it.
-
-    connection.core["Coreexecutor"].main(connection, command, plugin)
+    ##
+    # Remove .split() when #36 is done
+    ##
+    connection.core["Coreexecutor"].main(connection, command.raw.split(), command.plugin_name)

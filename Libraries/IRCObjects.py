@@ -40,27 +40,102 @@ class Standard(object):
                     connection.hooker.register_hook(anm, eval("self.%s" % anm))
 
 class Info(Standard):
-    def __init__(self, line):
+    def __init__(self, line=None):
+
         if line == None:
+            # Make an empty Info.
             self.nick = ""
+            self.ident = ""
+            self.hostname = ""
+            self.nickmask = tuple()
+            self.parsed = tuple()
             self.action = ""
             self.raw = ""
             self.message = ""
             self.channel = ""
             self.plugin_name = ""
+            self.ctcp = False
             self.trigger = ""
             self.args = []
             return
 
+        ##
+        # REMOVE me when this is being used properly.
+        # (on close of #36)
+        ##
+
+
         # Lets pull things out.
-        self.nick = line[0].split("!")[0][1:]
-        self.action = line[1]
         self.raw = line
-        self.message = "%s %s" % (line[3][1:], " ".join(line[4:]))
-        self.channel = line[2]
-        self.plugin_name = line[3][2:]
-        self.trigger = line[3][1]
-        self.args = line[4:]
+        self.parsed = self.parseIRC(line)
+        
+        if self.parsed and len(self.parsed) == 6:
+            self.nickmask, self.action, self.channel, self.trigger, self.plugin_name, self.args = self.parsed
+        elif self.parsed:
+            self.nickmask, self.action, self.args = self.parsed
+            self.channel, self.trigger, self.plugin_name = ("", "", "")
+        else:
+            return self.__init__(None)
+
+        # Gets elements from nickmask
+        if self.nickmask:
+            self.nick, self.ident, self.hostname = self.nickmask
+        else:
+            self.nick, self.ident, self.hostname = ("", "", "")
+
+        self.message = "%s%s %s" % (self.trigger, self.plugin_name, " ".join(self.args))
+
+    def parseHostMask(self, nickmask):
+        """ Parses the nickmask """
+        if len(nickmask) <= 1:
+            # can happen =[
+            return ("", "", "")
+
+        if "@" in nickmask:
+            nickmask, host = nickmask.split("@", 1)
+        else:
+            host = ""
+
+        if "!" in nickmask:
+            nickname, ident = nickmask.split("!", 1)
+            if ":" == nickname[0]:
+                # why is this happening?
+                nickname = nickname[1:]
+        else:
+            nickname, ident = ("", "")
+
+        return nickname, ident, host
+
+    def parseIRC(self, message):
+        """ Parses out IRC message (in accordance with RFC """
+        if not message:
+            # empty message, sod off.
+            return ()
+
+        if ":" == message[0]:
+            # We can expect a hostmak now.
+            hostmask, message = message.split(" ", 1)
+            hostmask = self.parseHostMask(hostmask)
+        else:
+            hostmask = ""
+
+        if ":" in message:
+            args = message.split(":", 1)[1]
+            trigger = args[0]
+            args = args.split(" ")
+            plugin_name = args[0][1:]
+
+        else:
+            args = []
+            trigger = ""
+            plugin_name = ""
+
+        message = message.split()
+
+        if len(message) >= 3:
+            return (hostmask, message[0], message[1], trigger, plugin_name, args[1:])
+        else:
+            return (hostmask, message[0], args)
 
 class L_Helper(Standard):
     def StripHTML(self, message):
@@ -328,10 +403,9 @@ class L_Channel(Standard):
         """Send NOTICE to channel"""
         self.connection.core["Corenotice"].main(self.connection, self.name, message)
 
-    def on_JOIN(self, connection, message):
-        nick = message[0][1:].split("!")[0]
-        self.nicks.append(nick)
-        self.normals.append(nick)
+    def on_JOIN(self, connection, command):
+        self.nicks.append(command.nick)
+        self.normals.append(command.nick)
 
 
     def set_topic(self, topic):
@@ -364,7 +438,10 @@ class L_Channel(Standard):
             self.connection.server.raw("MODE %s %s" % (self.name, mode))
 
 
-    def on_MODE(self, connection, message):
+    def on_MODE(self, connection, command):
+        ## please re-write me O_o
+        message = command.raw.split(" ")
+
         mode = message[3]
         if len(message) > 4:
             nick = message[4]
@@ -412,24 +489,27 @@ class L_Channel(Standard):
                 func(m)
 
 
-    def on_TOPIC(self, connection, message):
-        new_topic = " ".join(message[4:])[1:]
+    def on_TOPIC(self, connection):
+        new_topic = command.message
         self.topic = new_topic
 
 
-    def on_PRIVMSG(self, connection, message):
-        self.recently_recved.append(" ".join(message[4:]))
+    def on_PRIVMSG(self, connection, command):
+        self.recently_recved.append(command.message)
         if len(self.recently_recved) > 5:
             self.recently_recved.pop(0)
 
 
-    def on_353(self, connection, message):
+    def on_353(self, connection, command):
+        ## looks buggy as hell, please fix.
+        message = command.raw
+
         try:
             message = message[message.index(self.name)+1:]
         except ValueError:
             # Sometimes we get called for the wrong channel
             return
-        message[0] = message[0][1:] # ":" is put on the front of this.
+        message = message[0][1:] # ":" is put on the front of this.
         for n in message:
             self.nicks.append(n)
             if n[0] in ["&", "@", "~"]:
@@ -442,7 +522,10 @@ class L_Channel(Standard):
                 self.normals.append(n)
 
 
-    def on_332(self, connection, message):
+    def on_332(self, connection, command):
+        ## same as above, fix it!!!
+        message = command.raw.split(" ")
+
         try:
             message = " ".join(message[message.index(self.name)+1:])[1:]
         except ValueError:
@@ -495,42 +578,9 @@ class L_Server(Standard):
         # need to figure out a way to unregister any still active hooks.
 
 
-    def on_266(self, connection, message):
-        number = message[-3]
-        try:
-            self.users = int(number)
-        except:
-            pass
 
-
-    def on_251(self, connection, message):
-        number = message[-2]
-        try:
-            self.servers = int(number)
-        except:
-            pass
-
-
-    def on_254(self, connection, message):
-        number = message[-3]
-        try:
-            self.channels = int(number)
-        except:
-            pass
-
-
-    def on_252(self, connection, message):
-        number = message[-3]
-        try:
-            self.ops = int(number)
-        except:
-            pass
-
-
-    def on_372(self, connection, message):
-        self.motd.append(" ".join(message[4:]))
-        if self.motd[-1][-2:] == "\r\n":
-            self.motd[-1] = self.motd[:-2]
+    def on_372(self, connection, command):
+        self.motd.append(command.message[2:]) # for some reason they start with :-
 
 
     def nick(self, nick):
