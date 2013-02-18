@@ -31,8 +31,8 @@ The argument after PONG should always be what the server sent us.
 
 def main(connection, command):
     """Handles the PINGS"""
-    if not message.args:
+    if not command.args:
     	# huh, what? :S
     	# we probably should be logging this.
     	return
-    connection.core["Coreraw"].main(connection, "PONG %s" % message.args[0])
+    connection.core["Coreraw"].main(connection, "PONG %s" % command.args[0])
