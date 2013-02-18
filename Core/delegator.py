@@ -50,8 +50,12 @@ def main(connection, command):
         # Lets hand off to ping in case it's a PING message.
         connection.core["Coreping"].main(connection, command)
 
-    # Okay, we'll now see if any hooks wish to be called on it.
+    # Okay, we'll now see if any hooks wish to be called on it. - old system
     connection.hooker.hook(connection, command)
+
+    # Make an event (new events/hook system)
+    event = connection.core["Corehandler"].IRCEvent(command)
+    connection.handler.event(event)
 
     if not command.message:
         return

@@ -60,9 +60,9 @@ class Event():
         
         self.postInit(item, callback)
 
-    def event(self, event):
+    def event(self, connection, event):
         if self.check(event):
-            self.callback(event.item)
+            self.callback(connection, event.item)
 
     def preCheck(self, event):
         pass
@@ -88,24 +88,39 @@ class IRCEvent(Event):
 
     def check(self, event):
         # this really should be improved >.<
-        for attr in dir(event.item):
-            if attr.startswith("__"):
+        self.preCheck(event)
+        self.cresult = True
+        
+        # to give us a type of a mock func
+        def mock():
+            pass
+
+        ## need to check for all the attributes on Info object.
+        remote = event.item
+        citems = []
+        for item in dir(remote):
+            if item.startswith("__"):
+                # pass on magical methods/attributes
                 continue
-            try:
-                remote = eval("event.item.%s" % attr)
-                local = eval("self.item.%s" % attr)
-                if remote and local:
-                    if not remote == local:
-                        return False 
-            except:
-                return False
-        return True
+            attr = eval("remote.%s" % item)
+            if type(attr) == type(mock):
+                # pass on funcs
+                continue
+
+            citems.append((attr, eval("self.item.%s" % item)))
+
+        if item in citems:
+            if item[0] != item[1]:
+                self.cresult = False
+
+        self.postCheck(event)
+        return self.cresult
 
 class Handler():
     __events = {}
 
-    def __init__(self):
-        pass
+    def setConnection(self, connection):
+        self.connection = connection
 
     def register_event(self, event):
         """ registers an event """
@@ -127,4 +142,4 @@ class Handler():
         """ passes an event off to all registered events """
         if event.eventType in self.__events:
             for e in self.__events[event.eventType]:
-                e.event(event)
+                e.event(self.connection, event)

@@ -197,7 +197,6 @@ class L_Helper(Standard):
             t = f-t
         else:
             t = time.time()-t
-        print t
         # Work out time passed.
         if t < 60:
             return "Less than a minute"

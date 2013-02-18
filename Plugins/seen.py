@@ -67,9 +67,17 @@ def on_PRIVMSG(connection, info):
 
 
 def init(connection):
-    connection.hooker.register_hook("on_PRIVMSG", on_PRIVMSG)
+    eventID = 'seenEvent'
+    info = connection.libraries["IRCObjects"].Info()
+
+    # this will peform an event on privmsg.
+    info.action = "PRIVMSG"
+    event = connection.core["Corehandler"].IRCEvent(info, on_PRIVMSG, eventID)
+    connection.handler.register_event(event)
+
 
 def unload(connection):
-    connection.hooker.unregister_hook("on_PRIVMSG", on_PRIVMSG)
+    eventID = 'seenEvent'
+    connection.handler.unregister_event(eventID)
 
 help = "Tells you the last time a specified nick spoke."

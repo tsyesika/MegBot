@@ -34,7 +34,8 @@ class Bot(object):
         self.channels = {}
         self.core = plugins
         self.hooker = hooker
-        self.eventhandler = handler
+        self.handler = handler
+        self.handler.setConnection(self)
         self.core["Coreconnect"].main(self)
 
         # Some of the directories in config.py won't be created in git,
