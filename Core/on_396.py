@@ -20,4 +20,4 @@ Sets the hostname (as some mask it).
 """
 
 def main(connection, line):
-	connection.settins["hostname"] = line[3]
+	connection.settings["hostname"] = line[3]
