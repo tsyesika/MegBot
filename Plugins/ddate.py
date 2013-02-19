@@ -51,19 +51,19 @@ def main(connection):
     season = season % 4
     year = today.year + 1166
     output = "Today is %s, the %s day of %s in the YOLD %d."
-    output = output  % (DAYS[dayindex], day_num(day), SEASONS[season], year)
+    ndate = (DAYS[dayindex], day_num(day), SEASONS[season], year)
 
     if is_leap_year and today.month == 2 and today.day == 29:
-        output_string = "Today is St. Tib's Day, YOLD %d" % year
+        output = "Today is St. Tib's Day, YOLD %d" % year
     elif today.month == 3 and today.day == 25:
-        output = output + "Don't Panic! Celebrate: Towel Day!"
+        output = (output % ndate) + " Don't Panic! Celebrate Towel Day!"
     elif day == 5:
-        output = output + "Celebrate: %s!" % APOSTLEHOLIDAYS[season]
+        output = (output % ndate) + " Celebrate %s!" % APOSTLEHOLIDAYS[season]
     elif day == 50:
-        output = output + "Celebrate: %s!" % SEASONHOLIDAYS[season]
+        output = (output % ndate) + " Celebrate %s!" % SEASONHOLIDAYS[season]
     else:
-        output_string = output_string
-    Channel.send(output_string)
+        output = output  % ndate
+    Channel.send(output)
 
 
 help = "Discordian Date, only return current date for now"
