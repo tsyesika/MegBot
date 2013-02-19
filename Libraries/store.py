@@ -2,11 +2,15 @@
 # Storage library
 ##
 
-import os, config, json
+import os
+import json
 
 class Store(object):
     def __init__(self, name, data=None):
-        self.fpath = config.paths["databases"]
+        # This is to prevent circular deps in imports
+        from Configuration import configuration as config
+
+        self.fpath = config["paths"]["databases"]
         if self.fpath[-1] != "/":
             self.fpath += "/" + name
         else:
