@@ -39,6 +39,6 @@ def main(connection):
     except:
         definition = "Sorry, can't find a definiton"
         traceback.print_exc()
-    Channel.send(Helper.StripHTML(definition))
+    Channel.send(Helper.ConvertHTMLReversed(Helper.StripHTML(definition)))
 
 help = "Tries to pull a definition from urbandictionary.com"
