@@ -21,9 +21,9 @@ def main(connection):
     if not Info.args:
         # Generic list of plugins.
         cout = ""
-        amount = len(bot.plugins.keys())-1
+        amount = len(connection.plugins.keys())-1
         done = False
-        for i, plugin_name in enumerate(bot.plugins.keys()):
+        for i, plugin_name in enumerate(connection.plugins.keys()):
             done = True
             if i == amount:
                 cout += " & " + plugin_name
@@ -35,14 +35,14 @@ def main(connection):
             Channel.send("%s: It seems no plugins are loaded, please speak to the bot admin." % Info.nick)
     else:
         plugin = Info.args[0]
-        if plugin in bot.plugins.keys():
-            if "help" in dir(bot.plugins[plugin]):
-                if type(bot.plugins[plugin].help) == type(range):
+        if plugin in connection.plugins.keys():
+            if "help" in dir(connection.plugins[plugin]):
+                if type(connection.plugins[plugin].help) == type(range):
                     # It's a function
-                    bots.plugins[plugin].help(bot, Info)
-                elif type(bot.plugins[plugin].help) == type(""):
+                    connection.plugins[plugin].help(connection, Info)
+                elif type(connection.plugins[plugin].help) == type(""):
                     # It's a string
-                    Channel.send("%s: %s" % (Info.nick, bot.plugins[plugin].help))
+                    Channel.send("%s: %s" % (Info.nick, connection.plugins[plugin].help))
             else:
                 Channel.send("%s: Can't find any help for %s." % (Info.nick, plugin))
         else:
