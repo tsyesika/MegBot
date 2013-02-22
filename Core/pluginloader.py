@@ -59,7 +59,8 @@ def main(connection, plugin=None):
     else:
         for plugfi in glob.glob(connection.config[u"paths"][u"plugin"] + "*.py"):
             name = os.path.splitext(os.path.basename(plugfi))[0]
-
+            if name == '__init__':
+                continue
             result = main(connection, name)
             if not result[0]:
                 if len(result) == 3:
