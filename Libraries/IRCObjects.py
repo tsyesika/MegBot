@@ -22,8 +22,7 @@ import platform
 import os
 import urllib2
 import urllib
-
-from Data.HTMLEnterties import *
+import HTMLParser
 
 class Standard(object):
     """ Never instantiate """
@@ -138,10 +137,12 @@ class Info(Standard):
             return (hostmask, message[0], args)
 
 class L_Helper(Standard):
+    def __init__(self):
+        self.HTMLTagRe = re.compile(r'<[^<]+?>')
+        self.HTMLParser = HTMLParser.HTMLParser()
     def StripHTML(self, message):
         """ This strips the HTML off a specific message """
-        p = re.compile(r'<.*?>')
-        return p.sub("", message)
+        return self.HTMLTagRe.sub("", message)
 
 
     def ConvertHTMLReversed(self, message):
@@ -151,11 +152,7 @@ class L_Helper(Standard):
         (http://www.w3schools.com/tags/ref_entities.asp)
         """
 
-        # convert it to unicode
-        message = message.decode("utf-8")
-        for item in HTML_Enterties.keys():
-            message = message.replace(item, HTML_Enterties[item])
-        return message
+        return self.HTMLParser.unescape(message)
 
 
     def TimeZoneCorrect(self, t, pre_timezone, post_timezone):
@@ -260,14 +257,14 @@ class L_Helper(Standard):
 class L_Web(Standard):
     def __init__(self, connection):
         self.title = ""
+        self.HTMLTagRe = re.compile(r'<[^<]+?>')
 
     def StripHTML(self, text):
         """
         Strips HTML (also in Helper - subject to change).
         text is a string, will return it without any html elements.
         """
-        p = re.compile(r'<.*?>')
-        return p.sub("", text)
+        return self.HTMLTagRe.sub("", text)
 
 
     def WebSafeString(self, string):
