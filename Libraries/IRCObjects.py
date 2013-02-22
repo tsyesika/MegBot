@@ -53,7 +53,6 @@ class Info(Standard):
             self.message = ""
             self.channel = ""
             self.plugin_name = ""
-            self.ctcp = False
             self.trigger = ""
             self.args = []
             return

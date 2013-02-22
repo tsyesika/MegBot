@@ -20,6 +20,7 @@
 
 import traceback
 from imp import load_source
+from types import *
 
 class Event():
     eventType = "Generic"
@@ -68,27 +69,23 @@ class IRCEvent(Event):
         # this really should be improved >.<
         self.preCheck(event)
         self.cresult = True
-        
-        # to give us a type of a mock func
-        def mock():
-            pass
 
         ## need to check for all the attributes on Info object.
         remote = event.item
         citems = []
-        for item in dir(remote):
+        for item in dir(self.item):
             if item.startswith("__"):
                 # pass on magical methods/attributes
                 continue
-            attr = eval("remote.%s" % item)
-            if type(attr) == type(mock):
-                # pass on funcs
+            attr = eval("self.item.%s" % item)
+            if not attr or type(attr) == MethodType:
+                # pass on functions and empty values
                 continue
 
-            citems.append((attr, eval("self.item.%s" % item)))
+            citems.append((attr, eval("remote.%s" % item)))
 
-        if item in citems:
-            if item[0] != item[1]:
+        for pear in citems:
+            if pear[0] != pear[1]:
                 self.cresult = False
 
         self.postCheck(event)
