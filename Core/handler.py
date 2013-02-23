@@ -78,7 +78,7 @@ class IRCEvent(Event):
                 # pass on magical methods/attributes
                 continue
             attr = eval("self.item.%s" % item)
-            if not attr or type(attr) == MethodType:
+            if not attr or type(attr) in [FunctionType, MethodType, UnboundMethodType]:
                 # pass on functions and empty values
                 continue
 

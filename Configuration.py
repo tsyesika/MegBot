@@ -23,6 +23,7 @@ import sys
 import os
 import json
 from Libraries.store import Store
+from types import *
 
 class Configuration(Store):
     FILE = "config.json"
@@ -30,7 +31,7 @@ class Configuration(Store):
     def __init__(self):
         self.fpath = self.FILE
         self.mockConfigItem = ConfigItem(self, {})
-        self._type = type({})
+        self._type = DictType
 
         if not os.path.isfile(self.fpath):
             print "[ErrorLine] You need to move config.json.example to %s" % self.fpath
@@ -44,7 +45,7 @@ class Configuration(Store):
         self.data = data
         for item in self.data:
             item_type = type(item)
-            if item_type == type({}) or item_type == type([]):
+            if item_type == DictType or item_type == ListType:
                 # make it a ConfigItem
                 self.data[item] = ConfigItem(self, self.data[item])
 
@@ -65,7 +66,7 @@ class ConfigItem(Store):
         self.data = item
         for item in self.data:
             item_type = type(item)
-            if item_type == type({}) or item_type == type([]):
+            if item_type == DictType or item_type == ListType:
                 # make it a ConfigItem
                 self.data[item] = ConfigItem(self, self.data[item])
 

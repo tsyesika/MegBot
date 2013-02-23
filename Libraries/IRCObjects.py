@@ -23,6 +23,7 @@ import os
 import urllib2
 import urllib
 import HTMLParser
+from types import *
 
 class Standard(object):
     """ Never instantiate """
@@ -183,7 +184,7 @@ class L_Helper(Standard):
         f = from an offset, defaults to time.time() (now), must be a float.
         """
 
-        if type(t) == type("") and parse:
+        if type(t) in StringTypes and parse:
             t = time.strptime(t, parse)
             t = time.mktime(t)
         else:

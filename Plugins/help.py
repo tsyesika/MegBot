@@ -15,6 +15,8 @@
 #   along with MegBot.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from types import *
+
 """ Displays a help message or a list of available commands """
 
 def main(connection):
@@ -37,10 +39,10 @@ def main(connection):
         plugin = Info.args[0]
         if plugin in connection.plugins.keys():
             if "help" in dir(connection.plugins[plugin]):
-                if type(connection.plugins[plugin].help) == type(range):
+                if type(connection.plugins[plugin].help) in [FunctionType, MethodType, UnboundMethodType]:
                     # It's a function
                     connection.plugins[plugin].help(connection, Info)
-                elif type(connection.plugins[plugin].help) == type(""):
+                elif type(connection.plugins[plugin].help) in StringTypes:
                     # It's a string
                     Channel.send("%s: %s" % (Info.nick, connection.plugins[plugin].help))
             else:

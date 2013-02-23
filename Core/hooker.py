@@ -15,6 +15,8 @@
 # along with MegBot. If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from types import *
+
 """This is handles all hooks, a hook is something which is called
 but not by a direct user call. If a developer wants their code called
 when a ping occurs, privmsg, join, part, etc... you use a hook. You can
@@ -51,7 +53,7 @@ class Hooker(object):
         """ Produces a deep copy of orig """
         new = []
         for elem in orig:
-            if type(elem) == type([]):
+            if type(elem) == ListType:
                 new.append(self.copy(elem))
             else:
                 new.append(elem)

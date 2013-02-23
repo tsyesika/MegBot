@@ -17,6 +17,7 @@
 ##
 
 import cmath
+from types import *
 
 base = 10 
 
@@ -61,7 +62,7 @@ class Elem():
 def display(value):
     """ Displays the value """
     answer = value
-    if type(answer) == type(complex()):
+    if type(answer) == ComplexType:
         if 0j == answer.imag:
             answer = float(answer.real)
         else:
