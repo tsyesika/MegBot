@@ -30,10 +30,7 @@ import sys
 import traceback
 from time import sleep
 
-def setupConnection(connection, address, port, ipv6=None):
-    if None == ipv6:
-        ipv6 = True
-
+def setupConnection(connection, address, port, ipv6=True):
     if ipv6:
         connection.sock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
     else:
