@@ -63,9 +63,9 @@ def call(connection, command, plugin_name):
     # We need to add the Info and Channel libraries to the plugin.
     plugin.Info = command
     plugin.Channel = connection.channels[command.channel]
-    if plugin_name in connection.config[u"plugin_options"]:
+    try:
         plugin.Config = connection.config[u"plugin_options"][plugin_name]
-    else:
+    except KeyError:
         plugin.Config = {}
 
     # Now lets make a thread for the plugin to run in.
