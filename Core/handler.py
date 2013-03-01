@@ -21,8 +21,10 @@
 import traceback
 from imp import load_source
 from types import *
+from threading import Timer
 
 class Event():
+    """Generic event class, doesn't do much without subclassing"""
     eventType = "Generic"
 
     def preInit(self, item, callback):
@@ -63,7 +65,34 @@ class Event():
             return True
         return False
 
+    def deInit(self):
+        pass
+
+class TimedEvent(Event):
+    """Timed event
+
+    Creates a thread that sleeps for seconds, if the event is not unregistered
+    then callback is called with args
+    """
+    eventType = "TIME"
+
+    def __init__(self, seconds, callback=None, eid=None, args=[]):
+        super(Event, self).__init__(seconds, callback, eid)
+
+        self.thread = Timer(seconds, callback, args)
+
+    def deInit(self):
+        self.thread.cancel()
+
+    def event(self):
+        """Dummy method, just to override parent's method"""
+        pass
+
 class IRCEvent(Event):
+    """This is an IRC event
+
+    No one knows how these things work. Just make a guess and hope.
+    """
     eventType = "IRC"
 
     def check(self, event):
@@ -111,6 +140,8 @@ class Handler():
             for e in self.__events[s]:
                 if not e.destoryable(eid):
                     new[s].add(event)
+                else:
+                    e.deInit()
         self.__events = new 
 
     def event(self, event):
