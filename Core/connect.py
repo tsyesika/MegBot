@@ -31,6 +31,7 @@ import traceback
 from time import sleep
 
 def setupConnection(connection, address, port, ipv6=True):
+    """ Sets up socket and then connects """
     if ipv6:
         connection.sock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
     else:
@@ -40,12 +41,14 @@ def setupConnection(connection, address, port, ipv6=True):
     connection.sock.connect((address, port))
 
 def SSLWrapper(sock):
+    """ Wraps a socket in ssl - requires pythons ssl module """
     try:
         import ssl
         return ssl.wrap_socket(sock)
     except:
         print "[ErrorLine] No 'ssl' module, please install it."
     
+    # only if it's failed (as successful call would have return by now)
     try:
         sock.close()
     except:
@@ -54,6 +57,7 @@ def SSLWrapper(sock):
     sys.exit()
 
 def SendInfo(connection, nick, ident, realname, host=None):
+    """ Sends the info such as NICK and USER to ircd """
     if not host:
         host = socket.gethostname()
         # be a good little bot and save it back
@@ -66,6 +70,7 @@ def SendInfo(connection, nick, ident, realname, host=None):
         )
 
 def ReadConfig(connection):
+    """ Reads all the config needed to connect """
     timeout = 10 # default, 10 seconds.
     hostname = None
     critError = []
