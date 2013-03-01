@@ -23,9 +23,9 @@
 """
 
 import time
-import threading
+from threading import Thread
 
-class KillableThread(threading.Thread):
+class KillableThread(Thread):
     def kill_meh(self):
         """Raises an (hopefully) uncatchable SystemExit exceptoin"""
         raise SystemExit
