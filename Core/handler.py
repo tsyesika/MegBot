@@ -32,6 +32,7 @@ class Event():
         pass
 
     def __init__(self, item, callback=None, eid=None):
+        self.preInit(item, callback)
 
         self.item = item
         self.callback = callback
