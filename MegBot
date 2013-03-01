@@ -111,10 +111,14 @@ if __name__ == "__main__":
 
     coreplugins = {}
     for c in glob("Core/*.py"):
+        # this needs to be moved a generic loading which occurs in each Bot
+        # lloader and pluginloader also need some of their internals moved there        
+
         # Thanks to webpigeon (https://github.com/xray7224/MegBot/issues/3)
         name = "Core%s" % os.path.splitext(os.path.basename(c))[0]
         coreplugins[name] = load_source(name, c)
         coreplugins[name]
+
     bots = {}
     for network in configuration["networks"]:
         if not "active" in configuration["networks"][network].keys() or (
