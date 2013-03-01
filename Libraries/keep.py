@@ -16,9 +16,13 @@
 #   also along with MegBot.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-import time, hashlib, os, socket
+import time
+import hashlib
+import os
+import socket
+import types
 
-def closure(keeper):
+def mock_closure(keeper):
     """ Fake closure which is used when
     non if given
     """
@@ -37,10 +41,11 @@ class Keeper():
 
         self.item = item
         self.time = time.time()
-        self.id = hashlib.sha256(self.item.__str__ + os.urandom(10))
+        # this doesn't need to be secure but it does need to be fast.
+        self.id = hashlib.sha1(self.item.__str__ + os.urandom(10))
         self.expire = expire
         if closure == None:
-            self.closure = closure
+            self.closure = mock_closure
         else:
             self.closure = closure
 
@@ -71,10 +76,11 @@ class Keeper():
             try:
                 self.item.close()
             except socket.error:
-                # They could have closed it
+                # what happened, should i be catching this? :s
+                # closing a closed socket doesn't cause an exception
                 pass
 
-        elif type(self.item) == file:
+        elif type(self.item) == types.FileType:
             # Okay so it's a file
             self.closure(self)
 
