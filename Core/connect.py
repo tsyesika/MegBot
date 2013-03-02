@@ -44,20 +44,22 @@ def SSLWrapper(sock, verify):
     """ Wraps a socket in ssl - requires pythons ssl module """
     try:
         import ssl
-		if not verify:
-			# not verifying, just wrap and return
-			return ssl.wrap_socket(sock)
+        if not verify:
+            # not verifying, just wrap and return
+            return ssl.wrap_socket(sock)
 
-		# okay now verifying.
-		if not os.path.isfile("Data/cert.pem"):
-			print "[ErrorLine] Data/cert.pem file doesn't exit, can't verify"
-			sys.exit()
+        # okay now verifying.
+        if not os.path.isfile("Data/cert.pem"):
+            print "[ErrorLine] Data/cert.pem file doesn't exit, can't verify"
+            sys.exit()
 
-		return ssl.wrap_socket(sock, certfile="Data/cert.pem", cert_reqs=ssl.CERT_REQUIRED)
+        return ssl.wrap_socket(sock, ca_certs="Data/cert.pem", cert_reqs=ssl.CERT_REQUIRED)
 
-    except:
+    except ImportError:
         print "[ErrorLine] No 'ssl' module, please install it."
-    
+    except:
+        print "[ErrorLine] SSL error:"
+        traceback.print_exc()
     # only if it's failed (as successful call would have return by now)
     try:
         sock.close()
@@ -102,15 +104,15 @@ def ReadConfig(connection):
         ipv6 = connection.settings["ipv6"]
     else:
         ipv6 = None # this will cause it to prefer ipv6 but fail to ipv4
-	
-	ssl_verify = False
+    
+    ssl_verify = False
 
     if "ssl" in connection.settings:
         ssl = connection.settings["ssl"]
-		
-		# Okay do they care about varification
-		if "ssl_verify" in connection.settings:
-			ssl_verify = connection.settings["ssl_verify"]
+        
+        # Okay do they care about varification
+        if "ssl_verify" in connection.settings:
+            ssl_verify = connection.settings["ssl_verify"]
 
     else:
         ssl = None # laaa people likes ze insecure
@@ -156,7 +158,7 @@ def ReadConfig(connection):
         "hostname":hostname,
         "ipv6":ipv6,
         "ssl":ssl,
-		"ssl_verify":ssl_verify
+        "ssl_verify":ssl_verify
     }
 
 

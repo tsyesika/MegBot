@@ -92,7 +92,7 @@ if __name__ == "__main__":
     # since there is no good logging and/or way of talking to the
     # bot this is set to not ready as it shouldn't be used
     DaemonNotReady = True    
-    if "-d" in sys.args and not DaemonNotReady:
+    if "-d" in sys.argv and not DaemonNotReady:
         print "[Warning] Daemon mode isn't ready yet - see https://github.com/xray7224/MegBot/issues/31"
         # add a ticket number?
         sys.exit() # they can start me again if they still want to run me
