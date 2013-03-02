@@ -97,7 +97,7 @@ if __name__ == "__main__":
         # add a ticket number?
         sys.exit() # they can start me again if they still want to run me
 
-    if "-d" in sys.args and DaemonNotReady:
+    if "-d" in sys.argv and DaemonNotReady:
         # daemon process
         try:
             pid = os.fork()
