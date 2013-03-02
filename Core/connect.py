@@ -24,7 +24,7 @@ Todo: Have a reconnection limit support?
         (i.e. after 10 tries it'll give up.)
 """
 
-
+import os
 import socket
 import sys
 import traceback
@@ -40,11 +40,21 @@ def setupConnection(connection, address, port, ipv6=True):
 
     connection.sock.connect((address, port))
 
-def SSLWrapper(sock):
+def SSLWrapper(sock, verify):
     """ Wraps a socket in ssl - requires pythons ssl module """
     try:
         import ssl
-        return ssl.wrap_socket(sock)
+		if not verify:
+			# not verifying, just wrap and return
+			return ssl.wrap_socket(sock)
+
+		# okay now verifying.
+		if not os.path.isfile("Data/cert.pem"):
+			print "[ErrorLine] Data/cert.pem file doesn't exit, can't verify"
+			sys.exit()
+
+		return ssl.wrap_socket(sock, certfile="Data/cert.pem", cert_reqs=ssl.CERT_REQUIRED)
+
     except:
         print "[ErrorLine] No 'ssl' module, please install it."
     
@@ -92,9 +102,16 @@ def ReadConfig(connection):
         ipv6 = connection.settings["ipv6"]
     else:
         ipv6 = None # this will cause it to prefer ipv6 but fail to ipv4
+	
+	ssl_verify = False
 
     if "ssl" in connection.settings:
         ssl = connection.settings["ssl"]
+		
+		# Okay do they care about varification
+		if "ssl_verify" in connection.settings:
+			ssl_verify = connection.settings["ssl_verify"]
+
     else:
         ssl = None # laaa people likes ze insecure
 
@@ -138,7 +155,8 @@ def ReadConfig(connection):
         "timeout":timeout,
         "hostname":hostname,
         "ipv6":ipv6,
-        "ssl":ssl
+        "ssl":ssl,
+		"ssl_verify":ssl_verify
     }
 
 
@@ -169,7 +187,7 @@ def main(connection):
             sleep(config["timeout"])
 
     if config["ssl"]:
-        connection.sock = SSLWrapper(connection.sock)
+        connection.sock = SSLWrapper(connection.sock, config["ssl_verify"])
 
     SendInfo(connection, config["nick"], config["port"], config["realname"], config["hostname"])
 
