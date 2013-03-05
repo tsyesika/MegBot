@@ -42,11 +42,27 @@ def main(connection, command):
 
 def on_PING(connection, info):
     """ Responds to a ping """
+
+    # stop the timer
+    connection.handler.unregister_event(eventID)
+
+    # respond to ping
     connection.core["Coreraw"].main(connection, "PONG %s" % info.args[0])
+
+    # reset the timer
+    timer = connection.core["Corehandler"].TimedEvent(600, connection_died, eventID, [connection])
+    connection.handler.register_event(timer)
 
 def load(connection, info):
     eventInfo = connection.libraries["IRCObjects"].Info()
     eventInfo.action = "PING"
     
     event = connection.handler.IRCEvent(eventInfo, on_PING, eventID)
-    connection.handler.register_event(event)
+    connectiion.handler.register_event(event)
+
+    timer = connection.core["Corehandler"].TimedEvent(1200, connection_died, eventID, [connection])
+    connection.handler.register_event(timer)
+
+
+def connection_died(connection):
+    connection.running = False
