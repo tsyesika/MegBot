@@ -80,6 +80,7 @@ class TimedEvent(Event):
         super(Event, self).__init__(seconds, callback, eid)
 
         self.thread = Timer(seconds, callback, args)
+        self.thread.start()
 
     def deInit(self):
         self.thread.cancel()
