@@ -19,7 +19,7 @@ import random
 
 def main(connection):
     if not Info.args:
-        Channel.send("You got a question for me?")
+        Channel.action("slaps %s" % Info.nick)
     else:
         Channel.send(random.choice(Config["replies"]))
 

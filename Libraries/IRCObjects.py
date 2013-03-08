@@ -399,6 +399,10 @@ class L_Channel(Standard):
         """Send NOTICE to channel"""
         self.connection.core["Corenotice"].main(self.connection, self.name, message)
 
+    def action(self, message):
+        """Send a /me (CTCP ACTION)"""
+        self.connection.core["Corectcp"].request(self.connection, self.name, message, "ACTION")
+
     def on_JOIN(self, connection, command):
         self.nicks.append(command.nick)
         self.normals.append(command.nick)

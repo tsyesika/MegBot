@@ -27,6 +27,9 @@
         "logs": "Logging/",
         "plugin": "Plugins/"
     },
+    "ctcp_options": {
+        "version": "MegBot 0.6 http://github.com/xray7224/MegBot"
+    },
     "plugin_options": {
         "__DEFAULTS__": {
             "timeout": 30
