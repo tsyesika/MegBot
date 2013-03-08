@@ -47,9 +47,14 @@ def main(connection):
             google = urllib2.urlopen(google)
             source = google.read()
             langtran = re.findall("lass=\"s1\">(.+?)</a>.*>&gt;</a><a href=\"http://translate.google.com/m.*\" class=\"s1\">(.+?)</a></div><br><div dir=\"ltr\" class=\"t0\">", source)[0]
-            result = re.findall("=\"ltr\" class=\"t0\">(.+?)</div>", source)[0].decode("utf-8")
-            Channel.send(Helper.ConvertHTMLReversed(Helper.StripHTML("%s: %s[%s to %s]%s %s" % (Info.nick, Format.bold, langtran[0], langtran[1], Format.bold, result))))
-        except:
+            result = re.findall("=\"ltr\" class=\"t0\">(.+?)</div>", source)[0]
+
+            output = "%s: %s[%s to %s]%s %s" % (Info.nick, Format.bold, langtran[0], langtran[1], Format.bold, result)
+            output = Helper.StripHTML(output)
+            output = Helper.ConvertHTMLReversed(output)
+            Channel.send(output)
+
+        except Exception:
             traceback.print_exc()
 
 help = "Uses google to try and translate a specified piece of text. <from>|<to> <text>. Leave language pair blank to have auto detect."
