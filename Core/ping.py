@@ -35,9 +35,9 @@ def main(connection, command):
     """Handles the PINGS"""
     # this is deprecated, should be removed.
     if not command.args:
-    	# huh, what? :S
-    	# we probably should be logging this.
-    	return
+        # huh, what? :S
+        # we probably should be logging this.
+        return
     connection.core["Coreraw"].main(connection, "PONG %s" % command.args[0])
 
 def on_PING(connection, info):
@@ -53,7 +53,7 @@ def on_PING(connection, info):
     timer = connection.core["Corehandler"].TimedEvent(600, connection_died, eventID, [connection])
     connection.handler.register_event(timer)
 
-def load(connection, info):
+def load(connection):
     eventInfo = connection.libraries["IRCObjects"].Info()
     eventInfo.action = "PING"
     
