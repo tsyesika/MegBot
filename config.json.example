@@ -28,6 +28,9 @@
         "plugin": "Plugins/"
     },
     "plugin_options": {
+        "__DEFAULTS__": {
+            "timeout": 30
+        },
         "8ball": {
             "replies": [
                 "sure",

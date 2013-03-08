@@ -23,7 +23,7 @@ from imp import load_source
 from types import *
 from threading import Timer
 
-class Event():
+class Event(object):
     """Generic event class, doesn't do much without subclassing"""
     eventType = "Generic"
 
@@ -77,7 +77,7 @@ class TimedEvent(Event):
     eventType = "TIME"
 
     def __init__(self, seconds, callback=None, eid=None, args=[]):
-        super(Event, self).__init__(seconds, callback, eid)
+        super(TimedEvent, self).__init__(seconds, callback, eid)
 
         self.thread = Timer(seconds, callback, args)
         self.thread.start()
@@ -122,7 +122,7 @@ class IRCEvent(Event):
         self.postCheck(event)
         return self.cresult
 
-class Handler():
+class Handler(object):
     __events = {}
     def __init__(self, connection):
         self.connection = connection
@@ -140,7 +140,7 @@ class Handler():
             new[s] = set()
             for e in self.__events[s]:
                 if not e.destoryable(eid):
-                    new[s].add(event)
+                    new[s].add(e)
                 else:
                     e.deInit()
         self.__events = new 

@@ -22,13 +22,13 @@
     will stop a plugin's execution if it takes too long.
 """
 
-import time
 from threading import Thread
 
 class KillableThread(Thread):
     def kill_meh(self):
         """Raises an (hopefully) uncatchable SystemExit exceptoin"""
-        raise SystemExit
+        if not self.is_alive():
+            raise SystemExit
 
 def main(connection, command, plugin):
     """ This executes and manages plugin calls.
@@ -37,14 +37,14 @@ def main(connection, command, plugin):
     plugins executing and excess RAM useage and CPU time.
     """
 
-    if "times" not in dir(connection):
-        connection.times = {}
+    if "running_plugins" not in dir(connection):
+        connection.running_plugins = {}
     else:
         clear(connection)
 
     # I think this will stop repeat calls to the same plugin from the same user?
     # Maybe? M
-    if not command.message in connection.times.keys():
+    if not command.message in connection.running_plugins.keys():
         call(connection, command, plugin)
 
 def call(connection, command, plugin_name):
@@ -64,48 +64,36 @@ def call(connection, command, plugin_name):
     plugin.Info = command
     plugin.Channel = connection.channels[command.channel]
     try:
-        plugin.Config = connection.config[u"plugin_options"][plugin_name]
+        config = connection.config[u"plugin_options"][plugin_name]
     except KeyError:
-        plugin.Config = {}
+        config = {}
+    finally:
+        plugin.Config = connection.config[u"plugin_options"]["__DEFAULTS__"]
+        plugin.Config.update(config)
 
     # Now lets make a thread for the plugin to run in.
     thread = KillableThread(target=plugin.main,
                               args=(connection,)
                              )
-    connection.times[command.message] = [thread, time.time(), plugin_name]
 
-    # And finally, we need to start it.
-    connection.times[command.message][0].start()
+    # Start the plugin
+    thread.start()
+
+    timer = connection.core["Corehandler"].TimedEvent(plugin.Config["timeout"],
+                                                        thread.kill_meh,
+                                                        command.message)
+
+    connection.handler.register_event(timer)
+    connection.running_plugins[command.message] = thread 
 
 def clear(connection):
     """ Clears the plugins that have timed out or finished """
     purge = []
 
-    if "timeout" in connection.config:
-        try:
-            timeout = int(connection.config["timeout"])
-            connection.config["timeout"] = timeout
-        except:
-            timeout = 30 #default
-    else:
-        timeout = 30 # default
+    for command in connection.running_plugins:
+        if not connection.running_plugins[command].is_alive():
+            connection.handler.unregister_event(command)
+            purge.append(command)
 
-    for plugincall in connection.times:
-        plugin_name = connection.times[plugincall][2]
-        po = connection.config[u"plugin_options"]
-        if plugin_name in po:
-            if "timeout" in po[plugin_name]:
-                try:
-                    ptout = int(po[plugin_name]["timeout"])
-                except:
-                    ptout = timeout
-            else:
-                ptout = timeout
-        else:
-            ptout = timeout
-        if not connection.times[plugincall][0].isAlive():
-            purge.append(connection.times[plugincall])
-        elif (connection.times[plugincall][1] - time.time()) > ptout:
-            connection.times[plugincall][0].kill_meh()
-    for process in purge:
-        del connection.times[plugincall]
+    for command in purge:
+        del connection.running_plugins[command]
