@@ -41,9 +41,11 @@ def main(connection, channel, message, split_it=False):
 
         # now send to raw.
         for message in messages:
-            connection.core["Coreraw"].main(connection, "%s%s" %
-                                                                 (pre_message,
-                                                                     message))
+            # I have no idea why I need to do this, but whatever
+            message = pre_message.decode("utf-8") + message.decode("utf-8")
+            message = message.encode("utf-8")
+            connection.core["Coreraw"].main(connection, message)
+
     else:
         if (len(pre_message) + len(message)) > 510:
             print "[ERRORLINE] Next PRIVMSG will get truncated!"
