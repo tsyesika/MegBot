@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 ##
 #   This file is part of MegBot.
 #
@@ -16,9 +15,11 @@
 #   along with MegBot.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from imp import load_source
 import glob
 import os
+import types
+
+from imp import load_source
 
 class LoaderError(Exception):
     pass # place holder
@@ -26,16 +27,60 @@ class LoaderError(Exception):
 class Loader(object):
     _plugins = {}
     _path = ""
+    prefix = "" # prepened to the plugin name
+    suffix = "" # appended to the plugin name
 
-    def __init__(self):
+    def __init__(self, connection):
         """ Initialises the Loader """
-        pass            
+        self.connection = connection
 
     def load_plugin(self, name, plugin):
         """ Loads a specific plugin from a path """
         if not self._path:
             raise LoaderError("Path not defined")
-        return load_source(name, plugin)
+
+        self.deconstruct_plugin(name)
+        plugin = load_source(name, plugin)
+        self.construct_plugin(plugin)
+        return plugin
+
+    def construct_plugin(self, plugin):
+        """ This will construct a plugin if needed
+        returns False if no constructor was called
+        returns True if a constructor was called successfully
+        """
+        if not "init" in dir(plugin):
+            # no constructor exists
+            return False
+
+        if not type(plugin.init)in [types.FunctionType, types.MethodType]:
+            return False
+
+        # we have a constructor of the right type
+        plugin.init(self.connection)
+        return True
+
+    def deconstruct_plugin(self, name):
+        """ Calls deconstructor if needed
+        returns False if no deconstructor was called
+        returns True if a deconstructor was called successfully
+        """
+        if not name in self._plugins:
+            # didn't exist before
+            return False
+
+        if not "del" in dir(self._plugins[name]):
+            # doesn't have desconstructor
+            return False
+
+        if not type(self._plugins[name].delete) in [types.FunctionType, 
+                                                    types.MethodType]:
+            # isn't a function.
+            return False
+
+        # okay we got a function that's our deconstructor
+        self._plugins[name].delete(self.connection)
+        return True
 
     def load_plugins(self):
         """ Will load ALL the plugins in the path """
@@ -45,16 +90,18 @@ class Loader(object):
             self._plugins[name] = self.load_plugin(name, plugin)
         
         return self._plugins
-    
+
     def get_plugins(self):
         """ Gets all the plugins in the path """
         return glob.glob("%s/*.py" % self._path)
     
     def get_name(self, plugin):
         """ Gets a name from a file name """
-        return plugin.replace(".py", "")
+        plugin = plugin.replace(".py", "").split("/")[-1]
+        plugin = _self.prefix + plugin + _self.suffix
+        return plugin
 
-    def set_path(self, plugin):
+    def normalize_path(self, plugin):
         """ Sets the path """
         path = os.path.splitext(
             os.path.basename(plugin)
@@ -66,12 +113,56 @@ class Loader(object):
 
         self._path = path
         return self._path
+    def set_path(self, path):
+        """ Sets the path of the loader 
+        returns True if it succeeds
+        returns False if it fails
+        """
+        
+        self._path = path
+
+        if not os.path.isdir(self._path):
+            try:
+                os.mkdir(self._path, 0775)
+            except:
+                return False
+        
+        return True
 
 class CoreLoader(Loader):
-    
-    def set_path(self, plugin):
-        """ Sets the path (including 'Core') """
-        path = super(CoreLoader, self).set_path(plugin)
-        print(path)
-        self._path = "Core%s" % path
-        return self._path
+    _prefix = "Core"
+
+    def load_plugin(self, name, plugin):
+        """ Handles legacy - should be removed at some point """
+        plugin = super(CoreLoader, self).load_plugin(name, plugin)
+
+        if name in ["hooker", "handler"]:
+            setattr(self.connection, name, plugin)
+
+        return plugin
+
+class Master_Loader(object):
+    def __init__(self, connection, paths):
+        """ This will make loaders on connection for paths """
+        ## look for a way around this
+        # this is to retain order so library is forced first.
+        path_itr = paths.keys()
+        path_itr.remove("libraries")
+        path_itr.insert(0, "libraries")
+
+        for path in path_itr:
+            # is there a specialised loader.
+            name = "%s%sLoader" % (path[0].upper(), path[1:])
+            if name in dir() and eval(name) in [types.ClassType]:
+                _tmp_loader = eval(name)
+            else:
+                _tmp_loader = Loader
+
+            loader = _tmp_loader(connection)
+            loader.set_path(paths[path])
+            loader.load_plugins()
+            setattr(connection, "%s_loader" % path, loader)
+
+            # legacy
+            setattr(connection, path, loader._plugins)
+
