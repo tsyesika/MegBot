@@ -43,7 +43,9 @@ class Loader(object):
         for plugin in plugins:
             name = self.get_name(plugin)
             self._plugins[name] = self.load_plugin(name, plugin)
-
+        
+        return self._plugins
+    
     def get_plugins(self):
         """ Gets all the plugins in the path """
         return glob.glob("%s/*.py" % self._path)
@@ -56,7 +58,12 @@ class Loader(object):
         """ Sets the path """
         path = os.path.splitext(
             os.path.basename(plugin)
-        )
+        )[0]
+
+        if "/" == path[-1]:
+            # ends in / lets remove it.
+            path = path[:-1]
+
         self._path = path
         return self._path
 
@@ -65,5 +72,6 @@ class CoreLoader(Loader):
     def set_path(self, plugin):
         """ Sets the path (including 'Core') """
         path = super(CoreLoader, self).set_path(plugin)
+        print(path)
         self._path = "Core%s" % path
         return self._path
