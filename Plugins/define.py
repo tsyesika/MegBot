@@ -16,20 +16,30 @@
 #   along with MegBot.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-import urllib2, re, json
+import urllib2
+import re
+import json
 
 def main(connection):
     if not Info.args:
         Channel.send("Please supply the word you want to be defined.")
         return
+
     query_original = " ".join(Info.args)
     query_string = "+".join(Info.args)
-    request = urllib2.urlopen("http://api.duckduckgo.com/?q=define+%s&format=json" % query_string)
+
+    url = "http://api.duckduckgo.com/?q=define+%s&format=json" % query_string
+    request = urllib2.urlopen(url)
 
     output = json.loads(request.read())
+
     if output['AbstractText'] == '':
         Channel.send("Couldn't find a definition for %s" % query_original)
     else:
-        Channel.send("[%s] %s" % (Format.Bold(query_original), output['AbstractText']))
+        Channel.send("[%s] %s" % (
+            Format.Bold(query_original), 
+            output['AbstractText']
+            )
+        )
 
 help = "Use DuckDuckGo to define a word or phrase"
