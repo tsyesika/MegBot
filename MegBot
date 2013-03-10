@@ -19,40 +19,35 @@
 import socket
 import sys
 import os
+
 from thread import start_new_thread
 from time import sleep
 from imp import load_source
 from glob import glob
+
 from Configuration import configuration
+from Loader import Master_Loader
+
 class Bot(object):
-    def __init__(self, name, plugins, config, run=True):
+    def __init__(self, name, config, run=True):
         """Initalises bot"""
         self.name = name
         self.config = config
         self.settings = config["networks"][name]
         self.running = False
         self.channels = {}
-        self.core = plugins
-        self.hooker = self.core["Corehooker"].Hooker()
-        self.handler = self.core["Corehandler"].Handler(self)
-        self.core["Coreconnect"].main(self)
 
-        # Some of the directories in config.json won't be created in git,
-        # so let's try and create them.
-        # We'll assume a user who has set custom directory tree has
-        # created them :P
-        for path in self.config[u"paths"].values():
-            try:
-                os.mkdir(path, 0775)
-            except:
-                # this will cause a lot of errors in the future
-                # if these don't exist we ought to bail out.
-                pass
+        # load loaders - yeh i know.
+        Master_Loader(self, self.config[u"paths"]) # returns None.
+
+        # legacy
+        self.core = self.core_loader._plugins
+        self.libraries = self.libraries_loader._plugins
+
+        self.core["Coreconnect"].main(self)
 
         if run:
             self.plugins = {}
-            if "Corelloader" in self.core.keys() and run:
-                self.libraries = self.core["Corelloader"].main(self)
             self.server = self.libraries["IRCObjects"].L_Server(self)
             self.server.__setuphooks__(self)
             self.core["Corepluginloader"].main(self)
@@ -109,15 +104,6 @@ if __name__ == "__main__":
             sys.exit()
         
 
-    coreplugins = {}
-    for c in glob("Core/*.py"):
-        # this needs to be moved a generic loading which occurs in each Bot
-        # lloader and pluginloader also need some of their internals moved there        
-
-        # Thanks to webpigeon (https://github.com/xray7224/MegBot/issues/3)
-        name = "Core%s" % os.path.splitext(os.path.basename(c))[0]
-        coreplugins[name] = load_source(name, c)
-
     bots = {}
     for network in configuration["networks"]:
         if not "active" in configuration["networks"][network].keys() or (
@@ -125,7 +111,6 @@ if __name__ == "__main__":
             bots[network] = start_new_thread(
                                             Bot,
                                             (network,
-                                            coreplugins,
                                             configuration))
     try:
         while True:

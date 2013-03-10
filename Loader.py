@@ -27,8 +27,8 @@ class LoaderError(Exception):
 class Loader(object):
     _plugins = {}
     _path = ""
-    prefix = "" # prepened to the plugin name
-    suffix = "" # appended to the plugin name
+    _prefix = "" # prepened to the plugin name
+    _suffix = "" # appended to the plugin name
 
     def __init__(self, connection):
         """ Initialises the Loader """
@@ -98,7 +98,7 @@ class Loader(object):
     def get_name(self, plugin):
         """ Gets a name from a file name """
         plugin = plugin.replace(".py", "").split("/")[-1]
-        plugin = _self.prefix + plugin + _self.suffix
+        plugin = self._prefix + plugin + self._suffix
         return plugin
 
     def normalize_path(self, plugin):
@@ -136,9 +136,15 @@ class CoreLoader(Loader):
         """ Handles legacy - should be removed at some point """
         plugin = super(CoreLoader, self).load_plugin(name, plugin)
 
-        if name in ["hooker", "handler"]:
-            setattr(self.connection, name, plugin)
+        # remove the Core prefix
+        fmtname = name[4:]
 
+        if "handler" == fmtname: 
+            # new hook system
+            setattr(self.connection, fmtname, plugin.Handler(self.connection))
+        elif "hooker" == fmtname:
+            # old hook system
+            setattr(self.connection, fmtname, plugin.Hooker())
         return plugin
 
 class Master_Loader(object):
@@ -153,16 +159,17 @@ class Master_Loader(object):
         for path in path_itr:
             # is there a specialised loader.
             name = "%s%sLoader" % (path[0].upper(), path[1:])
-            if name in dir() and eval(name) in [types.ClassType]:
+            
+            try:
                 _tmp_loader = eval(name)
-            else:
+            except:
                 _tmp_loader = Loader
+            finally:
+                loader = _tmp_loader(connection)
 
-            loader = _tmp_loader(connection)
             loader.set_path(paths[path])
             loader.load_plugins()
             setattr(connection, "%s_loader" % path, loader)
 
             # legacy
             setattr(connection, path, loader._plugins)
-
