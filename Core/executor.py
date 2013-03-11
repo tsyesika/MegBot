@@ -22,13 +22,7 @@
     will stop a plugin's execution if it takes too long.
 """
 
-from threading import Thread
-
-class KillableThread(Thread):
-    def kill_meh(self):
-        """Raises an (hopefully) uncatchable SystemExit exceptoin"""
-        if not self.is_alive():
-            raise SystemExit
+from multiprocessing import Process
 
 def main(connection, command, plugin):
     """ This executes and manages plugin calls.
@@ -72,15 +66,14 @@ def call(connection, command, plugin_name):
         plugin.Config.update(config)
 
     # Now lets make a thread for the plugin to run in.
-    thread = KillableThread(target=plugin.main,
-                              args=(connection,)
-                             )
+    thread = Process(target=plugin.main, args=(connection,))
 
     # Start the plugin
+    #thread.daemon = True
     thread.start()
 
     timer = connection.core["Corehandler"].TimedEvent(plugin.Config["timeout"],
-                                                        thread.kill_meh,
+                                                        thread.terminate,
                                                         command.message)
 
     connection.handler.register_event(timer)
