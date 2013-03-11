@@ -32,6 +32,7 @@ The argument after PONG should always be what the server sent us.
 """
 
 eventID = "PingEvent"
+timeout = 600
 
 def main(connection, command):
     """Handles the PINGS"""
@@ -52,7 +53,7 @@ def on_PING(connection, info):
     connection.core["Coreraw"].main(connection, "PONG %s" % info.args[0])
 
     # reset the timer
-    timer = connection.core["Corehandler"].TimedEvent(600, connection_died, eventID, [connection])
+    timer = connection.core["Corehandler"].TimedEvent(timeout, connection_died, eventID, [connection])
     connection.handler.register_event(timer)
 
 def load(connection):
@@ -62,7 +63,7 @@ def load(connection):
     event = connection.handler.IRCEvent(eventInfo, on_PING, eventID)
     connectiion.handler.register_event(event)
 
-    timer = connection.core["Corehandler"].TimedEvent(1200, connection_died, eventID, [connection])
+    timer = connection.core["Corehandler"].TimedEvent(timeout, connection_died, eventID, [connection])
     connection.handler.register_event(timer)
 
 
