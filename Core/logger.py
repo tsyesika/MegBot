@@ -1,6 +1,6 @@
 import sys
 import logging
-from traceback importformat_exception
+from traceback import format_exception
 
 def log_uncaught_exceptions(*args):
     # stackoverflow 6234405

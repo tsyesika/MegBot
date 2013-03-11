@@ -20,7 +20,7 @@ it will go out and try and load them all. It doesn't return anything.
 Instead of returning anything it adds the plugins directly onto the
 connection by access through the connection parameter passed to main.
 """
-from traceback import format_exec()
+from traceback import format_exc
 import glob
 import imp
 import os
