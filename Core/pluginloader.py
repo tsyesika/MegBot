@@ -20,11 +20,11 @@ it will go out and try and load them all. It doesn't return anything.
 Instead of returning anything it adds the plugins directly onto the
 connection by access through the connection parameter passed to main.
 """
-
+from traceback import format_exec()
 import glob
 import imp
 import os
-import traceback
+import logging
 
 def main(connection, plugin=None):
     """
@@ -54,7 +54,7 @@ def main(connection, plugin=None):
                 connection.plugins[plugin][0].init(connection)
             return (True, "")
         except:
-            return (False, "Oh no, something went wrong,", traceback.format_exc())
+            return (False, "Oh no, something went wrong,", format_exc())
 
     else:
         for plugfi in glob.glob(connection.config[u"paths"][u"plugin"] + "*.py"):
@@ -64,8 +64,7 @@ def main(connection, plugin=None):
             result = main(connection, name)
             if not result[0]:
                 if len(result) == 3:
-                    print "[ErrorLine] Plugin load failed."
-                    print result[2]
+                    logging.error("Plugin load failed. %s", result[2])
                 continue
 
             plugin = connection.plugins[name][0]

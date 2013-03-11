@@ -27,7 +27,7 @@ Todo: Have a reconnection limit support?
 import os
 import socket
 import sys
-import traceback
+import logging
 from time import sleep
 
 def setupConnection(connection, address, port, ipv6=True):
@@ -50,16 +50,16 @@ def SSLWrapper(sock, verify):
 
         # okay now verifying.
         if not os.path.isfile("Data/cert.pem"):
-            print "[ErrorLine] Data/cert.pem file doesn't exit, can't verify"
+            logging.critical("Data/cert.pem file doesn't exit, can't verify")
             sys.exit()
 
         return ssl.wrap_socket(sock, ca_certs="Data/cert.pem", cert_reqs=ssl.CERT_REQUIRED)
 
     except ImportError:
-        print "[ErrorLine] No 'ssl' module, please install it."
-    except:
-        print "[ErrorLine] SSL error:"
-        traceback.print_exc()
+        logging.critical("No 'ssl' module, please install it.")
+    except IOError, e:
+        #ssl.SSLError is a subclass of IOError, so this should catch pretty much everything
+        logging.critical("SSL error: %s", e)
     # only if it's failed (as successful call would have return by now)
     try:
         sock.close()
@@ -97,7 +97,7 @@ def ReadConfig(connection):
     if "address" in connection.settings:
         address = connection.settings["address"]
     else:
-        print "You need to specify an address to connect to."
+        logging.critical("You need to specify an address to connect to.")
         sys.exit()
 
     if "ipv6" in connection.settings:
@@ -138,14 +138,14 @@ def ReadConfig(connection):
     if "realname" in connection.settings:
         realname = connection.settings["realname"]
     else:
-        cirtError.append("You need to specify a realname.")
+        critError.append("You need to specify a realname.")
 
     if critError:
-        print "[ErrorLine] The following errors with your config:"
-        for error in critError:
-            print "    %s" % error
-        print "Because of above erros the bot %s won't start."
-        print "Please fix the errors above."
+        msg = "The following errors with your config:\n   "
+        msg = msg + "\n   ".join(critError)
+        msg = msg + "\nBecause of above erros the bot %s won't start."
+        msg = msg + "\nPlease fix the errors above."
+        logging.critical(msg)
         sys.exit()
 
     return {
@@ -175,8 +175,8 @@ def main(connection):
         try:
             setupConnection(connection, config["address"], config["port"], ipv6)
             connected = True
-        except socket.error:
-            traceback.print_exc()
+        except socket.error, e:
+            logging.debug("Retrying connection.", e)
             if None == config["ipv6"]:
                 # We haven't specified ipv6 so by default we've tried ipv6.
                 # that could have caused this, lets try ipv4

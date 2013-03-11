@@ -15,7 +15,9 @@
 # along with MegBot. If not, see <http://www.gnu.org/licenses/>.
 ##
 
+import logging
 from types import *
+from imp import load_source
 
 """This is handles all hooks, a hook is something which is called
 but not by a direct user call. If a developer wants their code called
@@ -41,9 +43,6 @@ Hooks are not automatically unregistered, the onus is on the developer once
 a hook is registerd for them to unregister it before their code is
 unloaded/reloaded.
 """
-
-import traceback
-from imp import load_source
 
 class Hooker(object):
     """Deals with the MegBot hooks system"""
@@ -73,7 +72,7 @@ class Hooker(object):
     
     def hook(self, bot, command):
         """Hooks plugins, etc..."""
-        print "[IN] %s" % command.raw
+        logging.debug("[IN] %s", command.raw)
 
         act = 'on_%s' % command.action
         if act not in self.__hooks.keys():
@@ -83,9 +82,8 @@ class Hooker(object):
             hooks = self.copy(self.__hooks[act])
             for callback in hooks:
                 callback(bot, command)
-        except:
-            print "[ErrorLine] %s" % command.raw
-            traceback.print_exc()
+        except Exception, e:
+            logging.error("Plugin error: %s", e)
 
     def register_hook(self, hook, callback):
         """registers a new callback"""

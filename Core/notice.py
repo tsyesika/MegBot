@@ -15,6 +15,8 @@
 #   along with MegBot.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+import logging
+
 """This will send a notice to the IRCd."""
 
 def main(connection, channel, message):
@@ -26,5 +28,5 @@ def main(connection, channel, message):
     # (512 inc. \r\n so 510 as raw adds those).
     # See section 2.3 of RFC1459
     if len(message) > 510:
-        print "[ERRORLINE] Next NOTICE will get truncated!"
+        logging.warning("Next NOTICE will get truncated!")
     connection.core["Coreraw"].main(connection, message)

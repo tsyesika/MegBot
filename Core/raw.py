@@ -15,13 +15,15 @@
 #   along with MegBot.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+import logging
+
 """This is to send raw messages.
 This will automatically append \r\n unless specified.
 The plugin should be used to send unaltered messages directly
 to the IRCd. If you wish to send a PRIVMSG, JOIN, PART, etc...
 please consider using the core plugins available to do that.
 
-This plugin also will display the message on stdout (via print).
+This plugin also will display the message on stdout (via logging).
 the message will displayed with [OUT] in square breakets. The
 sendall is used instead of send in this plugin to avoid it simply
 being appended to the buffer. The 'sendall' method will send it even
@@ -40,6 +42,6 @@ def main(connection, message, sock=None, end="\r\n"):
     """ Sends a PRIVMSG """
     if not sock:
         sock = connection.sock
-    print "[OUT] %s" % message
+    logging.debug("[OUT] %s", message)
     sock.sendall("%s%s" % (message, end))
     return

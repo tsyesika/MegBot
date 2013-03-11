@@ -15,6 +15,8 @@
 #   along with MegBot.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+import logging
+
 """This will handle the server to bot pings (not CTCP pings).
 This will be called when the bot recives a ping, it checks it's
 valid (by checking the first element). The server ping will look
@@ -65,4 +67,5 @@ def load(connection):
 
 
 def connection_died(connection):
+    logging.warning("[OUT] Connect to %s timed out",connection.name)
     connection.running = False

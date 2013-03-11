@@ -15,6 +15,8 @@
 #   along with MegBot.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+import logging
+
 """This will send a privmsg to the IRCd.
 It'll handle messages that are too long and would be truncated by the IRC by
 splitting them up and sending them as separate messages if you ask it nicely.
@@ -48,7 +50,7 @@ def main(connection, channel, message, split_it=False):
 
     else:
         if (len(pre_message) + len(message)) > 510:
-            print "[ERRORLINE] Next PRIVMSG will get truncated!"
+            logging.warning("Next PRIVMSG will get truncated!")
         connection.core["Coreraw"].main(connection, "%s%s" %
                                                              (pre_message,
                                                                  message))

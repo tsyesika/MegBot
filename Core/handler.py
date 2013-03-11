@@ -18,7 +18,6 @@
 """
 """
 
-import traceback
 from imp import load_source
 from types import *
 from threading import Timer
