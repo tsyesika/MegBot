@@ -20,7 +20,7 @@
         }
     },
     "paths": {
-        "coreplugins": "Core/",
+        "core": "Core/",
         "data": "Data/",
         "databases": "Databases/",
         "libraries": "Libraries/",
