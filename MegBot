@@ -78,10 +78,7 @@ class Bot(object):
                 self.sock.close()
             except:
                 pass
-            self.__init__(self.name,
-                    self.core,
-                    self.config,
-                    False)
+            self.__init__(self.config, False)
 
 if __name__ == "__main__":
     # since there is no good logging and/or way of talking to the
