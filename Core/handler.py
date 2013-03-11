@@ -108,12 +108,12 @@ class IRCEvent(Event):
             if item.startswith("__"):
                 # pass on magical methods/attributes
                 continue
-            attr = eval("self.item.%s" % item)
+            attr = getattr(self.item, item)
             if not attr or type(attr) in [FunctionType, MethodType, UnboundMethodType]:
                 # pass on functions and empty values
                 continue
 
-            citems.append((attr, eval("remote.%s" % item)))
+            citems.append((attr, getattr(remote, item)))
 
         for pear in citems:
             if pear[0] != pear[1]:
