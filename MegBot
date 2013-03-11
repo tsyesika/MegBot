@@ -20,7 +20,7 @@ import socket
 import sys
 import os
 
-from thread import start_new_thread
+from threading import Thread, current_thread
 from time import sleep
 from imp import load_source
 from glob import glob
@@ -29,11 +29,11 @@ from Configuration import configuration
 from Loader import Master_Loader
 
 class Bot(object):
-    def __init__(self, name, config, run=True):
+    def __init__(self, config, run=True):
         """Initalises bot"""
-        self.name = name
+        self.name = current_thread().name
         self.config = config
-        self.settings = config["networks"][name]
+        self.settings = config["networks"][self.name]
         self.running = False
         self.channels = {}
 
@@ -108,10 +108,8 @@ if __name__ == "__main__":
     for network in configuration["networks"]:
         if not "active" in configuration["networks"][network].keys() or (
                 configuration["networks"][network]["active"]):
-            bots[network] = start_new_thread(
-                                            Bot,
-                                            (network,
-                                            configuration))
+            bots[network] = Thread(target=Bot, args=(configuration,), name=network)
+            bots[network].start()
     try:
         while True:
             sleep(2)
