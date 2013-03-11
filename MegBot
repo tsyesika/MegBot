@@ -79,7 +79,6 @@ class Bot(object):
             except:
                 pass
             self.__init__(self.name,
-                    self.core,
                     self.config,
                     False)
 
