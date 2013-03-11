@@ -8,7 +8,7 @@ MegBot is a highly flexible IRC bot. Written for python 2.7 under the GPL V3 sof
 
 - SSL Support
 - IPV6 support
-- Multithreaded (Multiple network support in a single process)
+- Concurrent network connections
 - Highly modular
 - Threaded
 - Plugin support
