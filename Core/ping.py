@@ -53,7 +53,11 @@ def on_PING(connection, info):
     timer = connection.core["Corehandler"].TimedEvent(600, connection_died, eventID, [connection])
     connection.handler.register_event(timer)
 
-def load(connection):
+def init(connection):
+
+    # currently this doesn't work due to handler not existing yet.
+    return
+
     eventInfo = connection.libraries["IRCObjects"].Info()
     eventInfo.action = "PING"
     
