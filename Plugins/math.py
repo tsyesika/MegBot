@@ -97,7 +97,39 @@ def postfix(equation):
 
 def prefix(equation):
     """ Handles prefix notation """
-    Channel.send("Sorry, we don't currently support infix notation."
+    stack = [equation[0]]
+    equation = equation[1:]
+    for elem in equation:
+        # okay this should be:
+        #   + 2 3 8 / 7 * 2
+        # build stack when we hit an operator pop 
+        # the previous operator off the stack (pos = 0)
+        # then evaluate up until the operator.
+        if elem.type == Elem.OPERAND:
+            stack.append(elem)
+        elif elem.type == Elem.OPERATOR:
+            # okay pull current op off
+            aop = stack.pop(0) # active operator
+            while len(stack) > 1:
+                item = aop.calculate(stack[0], stack[1])
+                item = Elem(item, Elem.OPERAND)
+                stack = [item] + stack[2:]
+            
+            if not stack:
+                Channel.send("Maths error (two operators together)")
+            
+            stack = [elem, stack[-1]]
+        else:
+            Channel.send("Maths error (stack: %s)" % stack)
+
+    # this is the last calculation
+    aop = stack.pop(0)
+    while len(stack) > 1:
+        item = aop.calculate(stack[0], stack[1])
+        item = Elem(item, Elem.OPERAND)
+        stack = [item] + stack[2:]
+
+    display(stack[0].value)
 
 def infix(equation):
     """ Handles infix notation """
