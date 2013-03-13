@@ -39,6 +39,8 @@ class Elem():
             raise TypeError(value_type)
     def calculate(self, operand1, operand2):
         """ Calculates operand1 <self> operand2 """
+        operand1 = operand1.value
+        operand2 = operand2.value
         if self.value == "+":
             return operand1 + operand2
         elif self.value == "-":
@@ -74,29 +76,28 @@ def display(value):
         answer = int(value)
     Channel.send("Answer: %s" % answer)
 
-def prefix(equation):
-    """ Handles PN maths """
-    Channel.send("Sorry, we don't currently support prefix (pn) notation")
-
 def postfix(equation):
     """ Handles RPN maths """
     stack = []
     for elem in equation:
-        # okay so if we've got two values in stack we expect
-        # an operator, if not, we expect a value to add to
-        # the stack
-        slen = len(stack)
-        if slen < 2 and elem.type == elem.OPERAND:
-            stack.append(elem.value)
-        elif slen == 2 and elem.type == elem.OPERATOR:
-            try:
-                stack = [elem.calculate(stack[0], stack[1])]
-            except MathsError:
-                return
+        # okay so the way we should be doing this is simply
+        # take operands until an operator, apply operator to all operands on the stack
+        if elem.type == Elem.OPERAND:
+            stack.append(elem)
+        elif elem.type == Elem.OPERATOR and stack:
+            # okay calculate all elements on stack
+            while len(stack) > 1:
+                item = elem.calculate(stack[0], stack[1])
+                item = Elem(item, Elem.OPERAND)
+                stack = [item] + stack[2:]
         else:
-            Channel.send("Maths error (Stack: %s, value: %s)" % (stack, elem.value))
+            Channel.send("Maths error, stack: %s" % stack)
             return
-    display(stack[0])
+    display(stack[-1].value)    
+
+def prefix(equation):
+    """ Handles prefix notation """
+    Channel.send("Sorry, we don't currently support infix notation."
 
 def infix(equation):
     """ Handles infix notation """
@@ -107,6 +108,8 @@ def main(conneciton):
     global base
     equation = []
     for item in Info.args:
+        if not item:
+            continue
         # okay it could be a number of things actually,
         # hex? 0x<val>
         # octal o<val> || º<value>
@@ -199,4 +202,5 @@ def main(conneciton):
     else:
         # assume infix
         infix(equation)
+
 help = "Uses google to do calculations or conversions"
