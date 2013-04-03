@@ -52,11 +52,11 @@ def main(connection):
     woeid = urllib2.urlopen("http://api.megworld.co.uk/WoeidLookup/lookup.php?format=xml&place=%s" % (new_spelling))
     woeid = etree.fromstring(woeid.read())
 
-    if int(woeid.find('Error').text) > 0:
+    if int(woeid.attrib["{http://www.yahooapis.com/v1/base.rng}total"]) == 0:
         Channel.send("Sorry, couldn't find that place.")
         return
 
-    woeid = woeid.find('Result/woeid').text
+    woeid = woeid.find('{http://where.yahooapis.com/v1/schema.rng}place/{http://where.yahooapis.com/v1/schema.rng}woeid').text
 
     try:
         cache = store.Store("WeatherCache")
@@ -94,17 +94,30 @@ def main(connection):
         # is sometimes "", so we do this:
         location = weather.find("channel/{http://xml.weather.yahoo.com/ns/rss/1.0}location")
         locate = []
-        for i in ["city", "region", "country"]:
-            tmp = location.get(i)
-            if tmp:
-                locate.append(tmp)
-        location = ", ".join(locate)
-        location = location.encode("utf-8") #quick hack in case of UNICODES :O
-        location = Format.Bold(location)
+        try:
+            for i in ["city", "region", "country"]:
+                tmp = location.get(i)
+                if tmp:
+                    locate.append(tmp)
+            location = ", ".join(locate)
+            location = location.encode("utf-8") #quick hack in case of UNICODES :O
+            location = Format.Bold(location)
+        except AttributeError:
+            location = None
+
 
         # Store weather in cache
-        cache[woeid] = (etree.tostring(condition), etree.tostring(wind), location, etree.tostring(atmos), current_time)
-        cache.save()
+        try:
+            cache[woeid] = (etree.tostring(condition), etree.tostring(wind), location, etree.tostring(atmos), current_time)
+            cache.save()
+        except Exception:
+            pass
+
+    # If any of these haven't been set, we have incomplete data
+    if None in [location, condition, wind, atmos]:
+        place = " ".join(Info.args)
+        Channel.send("Incomplete weather data recieved for %s (%s), please contact weather station" % (place, woeid))
+        return
 
     # Okay now we need to convert F to C & K
     celsius = int((float(condition.get("temp")) - 32) / (9 / 5.) + .5)
