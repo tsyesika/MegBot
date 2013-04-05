@@ -20,6 +20,7 @@ import socket
 import sys
 import os
 
+from signal import SIGHUP, signal
 from threading import Thread
 from time import sleep
 from imp import load_source
@@ -36,9 +37,10 @@ class Bot(object):
         self.settings = config["networks"][name]
         self.running = False
         self.channels = {}
+        self.thread = thread
 
         # allow the main thread to call us
-        thread["object"] = self
+        self.thread["object"] = self
         self.alive = True
 
         # load loaders - yeh i know.
@@ -84,6 +86,7 @@ class Bot(object):
                 pass
             self.__init__(self.name,
                     self.config,
+                    self.thread,
                     False)
 
 if __name__ == "__main__":
@@ -108,34 +111,31 @@ if __name__ == "__main__":
 
     bots = {}
 
-    def restart_connections:
+    def restart_connections(sig, frame):
         global bots
         # we get signal!
         print "[DEBUG] WE GET SIGNAL!"
-        new_bots = {}
         for network in bots:
-            connection = bots[network]
             if connection["thread"].is_alive():
-                connection["object"].alive = False
+                continue
 
-            new_connect = {}
-            new_args = connection["thread"]._Thread__args[:2]
-            new_args.append(net)
-            new_args = tuple(new_args)
-            new_connect["thread"] = Thread(target=Bot, args=new_args)
-            new_connect["object"] = None
+            new_connection = {}
+            new_connection["thread"] = Thread(target=Bot, args=(network, configuration, new_connection))
+            new_connection["object"] = None
 
-            new_connect["thread"].start()
-            new_bots[network] = new_connect
-
-        bots = new_bots
+            new_connection["thread"].start()
+            bots[network] = new_connection
 
     for network in configuration["networks"]:
         if not "active" in configuration["networks"][network].keys() or (
                 configuration["networks"][network]["active"]):
-            connection = {"thread": Thread(target=Bot, args=(network, configuration, net)), "object": None}
+            connection = {}
+            connection["thread"] = Thread(target=Bot, args=(network, configuration, connection))
+            connection["object"] = None
             connection["thread"].start()
             bots[network] = connection
+
+    signal(SIGHUP, restart_connections)
 
     try:
         while True:
