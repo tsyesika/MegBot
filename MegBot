@@ -119,7 +119,7 @@ if __name__ == "__main__":
             new_connection = {}
             new_connection["thread"] = Thread(target=Bot, args=(network, configuration, new_connection))
             new_connection["object"] = None
-
+            new_connection["thread"].daemon = True
             new_connection["thread"].start()
             bots[network] = new_connection
 
@@ -129,6 +129,7 @@ if __name__ == "__main__":
             connection = {}
             connection["thread"] = Thread(target=Bot, args=(network, configuration, connection))
             connection["object"] = None
+            connection["thread"].daemon = True
             connection["thread"].start()
             bots[network] = connection
 
