@@ -19,7 +19,7 @@
 import sys
 import os
 
-from signal import SIGHUP, signal
+from signal import SIGHUP, SIGTSTP, signal
 from threading import Thread
 from time import sleep
 
@@ -133,6 +133,7 @@ if __name__ == "__main__":
             bots[network] = connection
 
     signal(SIGHUP, restart_connections)
+    signal(SIGTSTP, restart_connections)
 
     try:
         while True:
