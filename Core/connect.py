@@ -57,13 +57,13 @@ def SSLWrapper(sock, verify):
 
     except ImportError:
         print "[ErrorLine] No 'ssl' module, please install it."
-    except:
+    except Exception:
         print "[ErrorLine] SSL error:"
         traceback.print_exc()
     # only if it's failed (as successful call would have return by now)
     try:
         sock.close()
-    except:
+    except Exception:
         pass
     
     sys.exit()

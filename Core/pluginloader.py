@@ -53,7 +53,7 @@ def main(connection, plugin=None):
             if "init" in dir(connection.plugins[plugin][0]):
                 connection.plugins[plugin][0].init(connection)
             return (True, "")
-        except:
+        except Exception:
             return (False, "Oh no, something went wrong,", traceback.format_exc())
 
     else:

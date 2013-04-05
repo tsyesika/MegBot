@@ -124,7 +124,7 @@ class Loader(object):
         if not os.path.isdir(self._path):
             try:
                 os.mkdir(self._path, 0775)
-            except:
+            except Exception:
                 return False
         
         return True
@@ -162,7 +162,7 @@ class Master_Loader(object):
             
             try:
                 _tmp_loader = eval(name)
-            except:
+            except Exception:
                 _tmp_loader = Loader
             finally:
                 loader = _tmp_loader(connection)

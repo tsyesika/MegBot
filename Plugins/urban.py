@@ -27,7 +27,7 @@ def main(connection):
     google.add_header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_6; en-us) AppleWebKit/533.19.4 (KHTML, like Gecko) Version/5.0.3")
     try:
         google = urllib2.urlopen(google)
-    except:
+    except Exception:
         Channel.send("Cannot access urbandictionary.com")
         return
     source = google.read()
@@ -36,7 +36,7 @@ def main(connection):
         definition = re.findall("<div class=\"definition\">(.+?)</div><div class=\"example\">(.+?)</div>", source)[0]
         definition = [re.sub("<.+?>", "", definition[0]), re.sub("<.+?>", "", definition[1])]
         definition = "%s: [%s] - %s %s %s" % (Info.nick, Format.Bold(name), definition[0].replace("&quot", "\""), Format.Bold("Example:"), definition[1].replace("&quot", "\""))
-    except:
+    except Exception:
         definition = "Sorry, can't find a definiton"
         traceback.print_exc()
     Channel.send(Helper.ConvertHTMLReversed(Helper.StripHTML(definition)))

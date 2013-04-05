@@ -83,7 +83,7 @@ class Hooker(object):
             hooks = self.copy(self.__hooks[act])
             for callback in hooks:
                 callback(bot, command)
-        except:
+        except Exception:
             print "[ErrorLine] %s" % command.raw
             traceback.print_exc()
 

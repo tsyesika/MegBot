@@ -284,7 +284,7 @@ class L_Web(Standard):
             g = urllib2.Request("http://google.com/search?q=%s" % self.WebSafeString(word))
             g.add_header("User-agent", "Mozilla/5.0 (iPhone; U; CPU iPhone OS 3_0 like Mac OS X; en-us) AppleWebKit/528.18 (KHTML, like Gecko) Version/4.0 Mobile/7A341 Safari/528.16")
             g = urllib2.urlopen(g)
-        except:
+        except Exception:
             return -1
         d = g.read()
         if d.find("Showing results for </span>")!=-1:

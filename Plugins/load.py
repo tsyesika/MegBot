@@ -117,7 +117,7 @@ def main(connection):
         if os.path.isfile('config.py'):
             try:
                 plugin = imp.load_source('config', 'config.py')
-            except:
+            except Exception:
                 Channel.send("Oh no, something went wrong!")
         else:
             Channel.send("Oh no, I can't seem to find your config?")
