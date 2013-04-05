@@ -101,7 +101,7 @@ if __name__ == "__main__":
             pid = os.fork()
             if pid > 0:
                 sys.exit(0)
-        except:
+        except Exception:
             # failed to daemonise
             print "[ErrorLine] Failed to daemonise - quitting."
             sys.exit()
