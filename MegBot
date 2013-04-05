@@ -20,7 +20,7 @@ import socket
 import sys
 import os
 
-from thread import start_new_thread
+from threading import Thread
 from time import sleep
 from imp import load_source
 from glob import glob
@@ -29,13 +29,17 @@ from Configuration import configuration
 from Loader import Master_Loader
 
 class Bot(object):
-    def __init__(self, name, config, run=True):
+    def __init__(self, name, config, thread, run=True):
         """Initalises bot"""
         self.name = name
         self.config = config
         self.settings = config["networks"][name]
         self.running = False
         self.channels = {}
+
+        # allow the main thread to call us
+        thread["object"] = self
+        self.alive = True
 
         # load loaders - yeh i know.
         Master_Loader(self, self.config[u"paths"]) # returns None.
@@ -64,19 +68,19 @@ class Bot(object):
         part of the bot
         """
 
-        while True:
-            while not self.running:
-                sleep(.1)
-            while self.running:
+        while self.alive:
+            while not self.running and self.alive:
+                sleep(1)
+            while self.running and self.alive:
                 try:
                     data = self.core["Coreparser"].main(self, [])
-                except:
+                except Exception:
                     self.running = False
                 for line in data.split("\r\n"):
                     self.core["Coredelegator"].main(self, line)
             try:
                 self.sock.close()
-            except:
+            except Exception:
                 pass
             self.__init__(self.name,
                     self.config,
@@ -85,7 +89,7 @@ class Bot(object):
 if __name__ == "__main__":
     # since there is no good logging and/or way of talking to the
     # bot this is set to not ready as it shouldn't be used
-    DaemonNotReady = True    
+    DaemonNotReady = True
     if "-d" in sys.argv and not DaemonNotReady:
         print "[Warning] Daemon mode isn't ready yet - see https://github.com/xray7224/MegBot/issues/31"
         # add a ticket number?
@@ -101,16 +105,38 @@ if __name__ == "__main__":
             # failed to daemonise
             print "[ErrorLine] Failed to daemonise - quitting."
             sys.exit()
-        
 
     bots = {}
+
+    def restart_connections:
+        global bots
+        # we get signal!
+        print "[DEBUG] WE GET SIGNAL!"
+        new_bots = {}
+        for network in bots:
+            connection = bots[network]
+            if connection["thread"].is_alive():
+                connection["object"].alive = False
+
+            new_connect = {}
+            new_args = connection["thread"]._Thread__args[:2]
+            new_args.append(net)
+            new_args = tuple(new_args)
+            new_connect["thread"] = Thread(target=Bot, args=new_args)
+            new_connect["object"] = None
+
+            new_connect["thread"].start()
+            new_bots[network] = new_connect
+
+        bots = new_bots
+
     for network in configuration["networks"]:
         if not "active" in configuration["networks"][network].keys() or (
                 configuration["networks"][network]["active"]):
-            bots[network] = start_new_thread(
-                                            Bot,
-                                            (network,
-                                            configuration))
+            connection = {"thread": Thread(target=Bot, args=(network, configuration, net)), "object": None}
+            connection["thread"].start()
+            bots[network] = connection
+
     try:
         while True:
             sleep(2)
