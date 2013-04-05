@@ -16,15 +16,12 @@
 #   along with MegBot.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-import socket
 import sys
 import os
 
 from signal import SIGHUP, signal
 from threading import Thread
 from time import sleep
-from imp import load_source
-from glob import glob
 
 from Configuration import configuration
 from Loader import Master_Loader
