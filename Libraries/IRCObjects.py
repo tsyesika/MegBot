@@ -118,7 +118,7 @@ class Info(Standard):
         else:
             hostmask = ""
 
-        if ":" in message:
+        if ":" in message and ":" != message[-1]:
             args = message.split(":", 1)[1]
             trigger = args[0]
             args = args.split(" ")
