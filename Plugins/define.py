@@ -34,12 +34,11 @@ def main(connection):
     output = json.loads(request.read())
 
     if output['AbstractText'] == '':
-        Channel.send("Couldn't find a definition for %s" % query_original)
+        Channel.send("Couldn't find a definition for %s", query_original)
     else:
-        Channel.send("[%s] %s" % (
+        Channel.send("[%s] %s",
             Format.Bold(query_original), 
             output['AbstractText']
-            )
         )
 
-help = "Use DuckDuckGo to define a word or phrase"
+help = u"Use DuckDuckGo to define a word or phrase"

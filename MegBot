@@ -22,6 +22,7 @@ import os
 from signal import SIGHUP, SIGTSTP, signal
 from threading import Thread
 from time import sleep
+import traceback
 
 from Configuration import configuration
 from Loader import Master_Loader
@@ -73,6 +74,7 @@ class Bot(object):
                 try:
                     data = self.core["Coreparser"].main(self, [])
                 except Exception:
+                    traceback.print_exc()
                     self.running = False
                 for line in data.split("\r\n"):
                     self.core["Coredelegator"].main(self, line)

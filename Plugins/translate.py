@@ -24,7 +24,7 @@ SUPPORTED_LANGS = ["en", "de", "cy", "af", "sq", "ar", "hy", "az", "eu", "be", "
 # This is the default language if no language is specified (languages which can be default languages are in SUPPORTED_LANGS)
 def main(connection):
     if not Info.args:
-        Channel.send("Please supply lang|lang <text to translate> or languages")
+        Channel.send(u"Please supply lang|lang <text to translate> or languages")
         return
     if Info.args[0] == "languages":
         pass
@@ -49,7 +49,7 @@ def main(connection):
             langtran = re.findall("lass=\"s1\">(.+?)</a>.*>&gt;</a><a href=\"http://translate.google.com/m.*\" class=\"s1\">(.+?)</a></div><br><div dir=\"ltr\" class=\"t0\">", source)[0]
             result = re.findall("=\"ltr\" class=\"t0\">(.+?)</div>", source)[0]
 
-            output = "%s: %s[%s to %s]%s %s" % (Info.nick, Format.bold, langtran[0], langtran[1], Format.bold, result)
+            output = u"%s: %s[%s to %s]%s %s" % (Info.nick, Format.bold, langtran[0], langtran[1], Format.bold, result)
             output = Helper.StripHTML(output)
             output = Helper.ConvertHTMLReversed(output)
             Channel.send(output)
@@ -57,4 +57,4 @@ def main(connection):
         except Exception:
             traceback.print_exc()
 
-help = "Uses google to try and translate a specified piece of text. <from>|<to> <text>. Leave language pair blank to have auto detect."
+help = u"Uses google to try and translate a specified piece of text. <from>|<to> <text>. Leave language pair blank to have auto detect."

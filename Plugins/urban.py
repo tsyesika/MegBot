@@ -20,7 +20,7 @@ from urllib import quote
 
 def main(connection):
     if not Info.args:
-        Channel.send("Please supply the word you want to be defined.")
+        Channel.send(u"Please supply the word you want to be defined.")
         return
     urbanterm = quote(' '.join(Info.args))
     google = urllib2.Request("http://www.urbandictionary.com/define.php?term=%s" % urbanterm)
@@ -28,17 +28,17 @@ def main(connection):
     try:
         google = urllib2.urlopen(google)
     except Exception:
-        Channel.send("Cannot access urbandictionary.com")
+        Channel.send(u"Cannot access urbandictionary.com")
         return
     source = google.read()
     try:
         name = re.findall("<td class='word'>\n(.+?)\n</td>", source)[0]
         definition = re.findall("<div class=\"definition\">(.+?)</div><div class=\"example\">(.+?)</div>", source)[0]
         definition = [re.sub("<.+?>", "", definition[0]), re.sub("<.+?>", "", definition[1])]
-        definition = "%s: [%s] - %s %s %s" % (Info.nick, Format.Bold(name), definition[0].replace("&quot", "\""), Format.Bold("Example:"), definition[1].replace("&quot", "\""))
+        definition = u"%s: [%s] - %s %s %s" % (Info.nick, Format.Bold(name), definition[0].replace("&quot", "\""), Format.Bold("Example:"), definition[1].replace("&quot", "\""))
     except Exception:
-        definition = "Sorry, can't find a definiton"
+        definition = u"Sorry, can't find a definiton"
         traceback.print_exc()
     Channel.send(Helper.ConvertHTMLReversed(Helper.StripHTML(definition)))
 
-help = "Tries to pull a definition from urbandictionary.com"
+help = u"Tries to pull a definition from urbandictionary.com"

@@ -33,7 +33,7 @@ def main(connection):
     - Speed improvements? (possibly add caching?)
     """
     if not Info.args:
-        Channel.send("Please specify a place")
+        Channel.send(u"Please specify a place")
         return
 
     # Checks the spelling of said place.
@@ -41,9 +41,9 @@ def main(connection):
     different = False
     if new_spelling != " ".join(Info.args):
         # They're different (lets add (corrected from onto it))
-        different = "(Changed from: %s)" % " ".join(Info.args)
+        different = u"(Changed from: %s)" % " ".join(Info.args)
     else:
-        different = ""
+        different = u""
 
     # Lets replace , with +
     new_spelling = Web.WebSafeString(new_spelling)
@@ -53,7 +53,7 @@ def main(connection):
     woeid = etree.fromstring(woeid.read())
 
     if int(woeid.attrib["{http://www.yahooapis.com/v1/base.rng}total"]) == 0:
-        Channel.send("Sorry, couldn't find that place.")
+        Channel.send(u"Sorry, couldn't find that place.")
         return
 
     woeid = woeid.find('{http://where.yahooapis.com/v1/schema.rng}place/{http://where.yahooapis.com/v1/schema.rng}woeid').text
@@ -116,7 +116,7 @@ def main(connection):
     # If any of these haven't been set, we have incomplete data
     if None in [location, condition, wind, atmos]:
         place = " ".join(Info.args)
-        Channel.send("Incomplete weather data recieved for %s (%s), please contact weather station" % (place, woeid))
+        Channel.send(u"Incomplete weather data recieved for %s (%s), please contact weather station", place, woeid)
         return
 
     # Okay now we need to convert F to C & K
@@ -127,7 +127,7 @@ def main(connection):
     kmph = int(int(wind.get("speed")) * 1.60934 + .5)
 
     # Send it all to the channel
-    output_fmt = "[%s] Condition: %s | Temp: %sC/%sF/%sK | Humidity: %s%% | Wind Speed %smph/%skmph %s"
-    Channel.send(output_fmt % (location, condition.get("text"), celsius, condition.get("temp"), kelvin, atmos.get("humidity"), wind.get("speed"), kmph, different))
+    Channel.send("[%s] Condition: %s | Temp: %sC/%sF/%sK | Humidity: %s%% | Wind Speed %smph/%skmph %s",
+     location, condition.get("text"), celsius, condition.get("temp"), kelvin, atmos.get("humidity"), wind.get("speed"), kmph, different)
 
-help = "Uses Yahoo's weather API to give you the weather for the location specified."
+help = u"Uses Yahoo's weather API to give you the weather for the location specified."

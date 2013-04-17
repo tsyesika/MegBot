@@ -64,12 +64,12 @@ def main(connection):
             if data:
                 name, cid, status, dent_time = prep_data(data)
             else:
-                Channel.send("Sorry, they haven't posted on identi.ca")
+                Channel.send(u"Sorry, they haven't posted on identi.ca")
                 return
     except Exception:
         traceback.print_exc()
-        Channel.send("An error has occured")
+        Channel.send(u"An error has occured")
         return
-    Channel.send("[%s] %s - %s %s ago - %s http://www.identi.ca/notice/%s" % (Format.Bold(name), status, Format.Bold("Approx:"), dent_time, Format.Bold("Link:"), cid))
+    Channel.send(u"[%s] %s - %s %s ago - %s http://www.identi.ca/notice/%s", Format.Bold(name), status, Format.Bold("Approx:"), dent_time, Format.Bold("Link:"), cid)
 
-help = "Gets the last dent from a specific user/group (or tries your nickname if non is given) from identi.ca (for group support use -g or -group)"
+help = u"Gets the last dent from a specific user/group (or tries your nickname if non is given) from identi.ca (for group support use -g or -group)"

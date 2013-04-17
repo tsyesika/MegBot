@@ -49,15 +49,14 @@ class Elem():
             return operand1 * operand2
         elif self.value == "/":
             if operand2.value == 0:
-                Channel.send("You can't divide by 0 >.<")
+                Channel.send(u"You can't divide by 0 >.<")
                 raise ZeroDivisionError()
             return operand1 / operand2
         elif self.value == "^":
             return operand1 ** operand2
         else:
             # what else?
-            Channel.send("Something has gone wrong! Sorry. (%s %s %s)"
-                    % (operand1, self.value, operand2))
+            Channel.send(u"Something has gone wrong! Sorry. (%s %s %s)", operand1, self.value, operand2)
             raise MathsError("%s %s %s" 
                         % (operand1, self.value, operand2))
 
@@ -68,13 +67,13 @@ def display(value):
         if 0j == answer.imag:
             answer = float(answer.real)
         else:
-            bws = "Answer: %s ± %s" % (answer.real, answer.imag)
+            bws = u"Answer: %s ± %s" % (answer.real, answer.imag)
             bws = bws[:-1] + "i"
             Channel.send(bws)
             return
     if int(answer) == answer:
         answer = int(value)
-    Channel.send("Answer: %s" % answer)
+    Channel.send(u"Answer: %s", answer)
 
 def postfix(equation):
     """ Handles RPN maths """
@@ -91,7 +90,7 @@ def postfix(equation):
                 item = Elem(item, Elem.OPERAND)
                 stack = [item] + stack[2:]
         else:
-            Channel.send("Maths error, stack: %s" % stack)
+            Channel.send(u"Maths error, stack: %s" % stack)
             return
     display(stack[-1].value)    
 
@@ -116,11 +115,11 @@ def prefix(equation):
                 stack = [item] + stack[2:]
             
             if not stack:
-                Channel.send("Maths error (two operators together)")
+                Channel.send(u"Maths error (two operators together)")
             
             stack = [elem, stack[-1]]
         else:
-            Channel.send("Maths error (stack: %s)" % stack)
+            Channel.send(u"Maths error (stack: %s)" % stack)
 
     # this is the last calculation
     aop = stack.pop(0)
@@ -133,7 +132,7 @@ def prefix(equation):
 
 def infix(equation):
     """ Handles infix notation """
-    Channel.send("Sorry, we don't currently support infix notation.")
+    Channel.send(u"Sorry, we don't currently support infix notation.")
 
 def main(conneciton):
     """ Calculates the answer to an equation """
@@ -235,4 +234,4 @@ def main(conneciton):
         # assume infix
         infix(equation)
 
-help = "Uses google to do calculations or conversions"
+help = u"Uses google to do calculations or conversions"

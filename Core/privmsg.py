@@ -42,8 +42,8 @@ def main(connection, channel, message, split_it=False):
         # now send to raw.
         for message in messages:
             # I have no idea why I need to do this, but whatever
-            message = pre_message.decode("utf-8") + message.decode("utf-8")
-            message = message.encode("utf-8")
+            message = pre_message + message
+            message = message
             connection.core["Coreraw"].main(connection, message)
 
     else:

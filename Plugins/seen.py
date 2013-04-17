@@ -23,11 +23,11 @@ def main(connection):
     Looks for the last time the user spoke and reports it.
     """
     if not Info.args:
-        Channel.send("Please specify a user")
+        Channel.send(u"Please specify a user")
         return
 
     if Info.args[0] == connection.settings["nick"]:
-        Channel.send("No I haven't seen myself, I'm all 1s and 0s")
+        Channel.send(u"No I haven't seen myself, I'm all 1s and 0s")
         return
 
     try:
@@ -37,11 +37,11 @@ def main(connection):
 
     try:
         record = seen[connection.name][Info.channel][unicode(Info.args[0])]
-        Channel.send("%s said \"%s\" %s" % (
-            Info.args[0],
-            record["msg"].strip(),
+        Channel.send(u"%s said \"%s\" %s", 
+            Info.args[0], 
+            record["msg"].strip(), 
             Helper.HumanTime(Helper.convertToTime(record["time"])).lower()
-        ))
+        )
     except KeyError:
         Channel.send("Haven't seen %s." % Info.args[0])
 
@@ -80,4 +80,4 @@ def unload(connection):
     eventID = 'seenEvent'
     connection.handler.unregister_event(eventID)
 
-help = "Tells you the last time a specified nick spoke."
+help = u"Tells you the last time a specified nick spoke."

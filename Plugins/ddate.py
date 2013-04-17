@@ -66,4 +66,4 @@ def main(connection):
     Channel.send(output)
 
 
-help = "Discordian Date, only return current date for now"
+help = u"Discordian Date, only return current date for now"

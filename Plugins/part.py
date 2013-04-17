@@ -20,6 +20,6 @@ def main(connection):
         Server.part(Info.channel)
         return
     Server.part(Info.args[0])
-    Channel.send("Parted from %s." % Info.args[0])
+    Channel.send(u"Parted from %s.", Info.args[0])
 
-help = "Parts from a specified channel"
+help = u"Parts from a specified channel"

@@ -41,5 +41,5 @@ def main(connection, message, sock=None, end="\r\n"):
     if not sock:
         sock = connection.sock
     print "[OUT] %s" % message
-    sock.sendall("%s%s" % (message, end))
+    sock.sendall(("%s%s" % (message, end)).encode("utf-8"))
     return

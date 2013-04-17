@@ -20,9 +20,9 @@ def main(connection):
         # Being called by bot.
         return
     if "Channel" in dir():
-        Channel.send("Please specify a channel to join.")
+        Channel.send(u"Please specify a channel to join.")
         return
     Server.join(Info.args[0])
-    Channel.send("%s joined." % Info.args[0])
+    Channel.send(u"%s joined.", Info.args[0])
 
-help = "Tries to join the specified channel."
+help = u"Tries to join the specified channel."

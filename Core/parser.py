@@ -43,13 +43,28 @@ Todo: handle in the unlikely situation the socket at our end is closed which
         the remote socket close (i.e. initiate a reconnect).
 """
 
+def decode(message, encodings=["utf-8"]):
+    """ Decodes message from server """
+    decoded = False
+    for encoding in encodings:
+        try:
+            encoding.decode(encoding)
+            decoded = True
+        except:
+            pass
+
+    if not decoded:
+        raise Exception("Can't decode '%s', encoding's tried: %s" % (message, encodings))
+
+    return message
+
 def main(connection, message=[]):
     """ Parses the text """
     message.append(connection.sock.recv(2048))
     if message[-1] == "":
         # Socket broken
         connection.running = False
-        return ""
+        return u""
     if message[-1][-2:] == "\r\n":
-        return "".join(message)
+        return decode("".join(message))
     return main(connection, message)

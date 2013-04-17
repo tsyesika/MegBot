@@ -47,17 +47,17 @@ class Info(Standard):
 
         if line == None:
             # Make an empty Info.
-            self.nick = ""
-            self.ident = ""
-            self.hostname = ""
+            self.nick = u""
+            self.ident = u""
+            self.hostname = u""
             self.nickmask = tuple()
             self.parsed = tuple()
-            self.action = ""
-            self.raw = ""
-            self.message = ""
-            self.channel = ""
-            self.plugin_name = ""
-            self.trigger = ""
+            self.action = u""
+            self.raw = u""
+            self.message = u""
+            self.channel = u""
+            self.plugin_name = u""
+            self.trigger = u""
             self.args = []
             return
 
@@ -75,7 +75,7 @@ class Info(Standard):
             self.nickmask, self.action, self.channel, self.trigger, self.plugin_name, self.args = self.parsed
         elif self.parsed:
             self.nickmask, self.action, self.args = self.parsed
-            self.channel, self.trigger, self.plugin_name = ("", "", "")
+            self.channel, self.trigger, self.plugin_name = (u"", u"", u"")
         else:
             return self.__init__(None)
 
@@ -83,7 +83,7 @@ class Info(Standard):
         if self.nickmask:
             self.nick, self.ident, self.hostname = self.nickmask
         else:
-            self.nick, self.ident, self.hostname = ("", "", "")
+            self.nick, self.ident, self.hostname = (u"", u"", u"")
 
         self.message = "%s%s %s" % (self.trigger, self.plugin_name, " ".join(self.args))
 
@@ -91,12 +91,12 @@ class Info(Standard):
         """ Parses the nickmask """
         if len(nickmask) <= 1:
             # can happen =[
-            return ("", "", "")
+            return (u"", u"", u"")
 
         if "@" in nickmask:
             nickmask, host = nickmask.split("@", 1)
         else:
-            host = ""
+            host = u""
 
         if "!" in nickmask:
             nickname, ident = nickmask.split("!", 1)
@@ -104,7 +104,7 @@ class Info(Standard):
                 # why is this happening?
                 nickname = nickname[1:]
         else:
-            nickname, ident = ("", "")
+            nickname, ident = (u"", u"")
 
         return nickname, ident, host
 
@@ -352,17 +352,30 @@ class L_Channel(Standard):
         if len(self.recently_sent) <= 5:
             self.recently_sent.pop(0)
 
-    def send(self, message):
+    def format_message(self, message, args):
+        """ Formats the message with args - ensuring everything is unicode """
+        if args:
+            args = tuple([unicode(arg) for arg in args])
+            message = unicode(message) % args
+        else:
+            message = unicode(message)
+
+        return message
+
+    def send(self, message, *args):
         """Send PRIVMSG to channel"""
+        message = self.format_message(message, args)
         self.connection.core["Coreprivmsg"].main(self.connection, self.name, message, True)
         self.__update_recently(message)
 
-    def notice(self, message):
+    def notice(self, message, *args):
         """Send NOTICE to channel"""
+        message = self.format_message(message, args)
         self.connection.core["Corenotice"].main(self.connection, self.name, message)
 
-    def action(self, message):
+    def action(self, message, *args):
         """Send a /me (CTCP ACTION)"""
+        message = self.format_message(message, args)
         self.connection.core["Corectcp"].request(self.connection, self.name, message, "ACTION")
 
     def on_JOIN(self, connection, command):
@@ -370,7 +383,8 @@ class L_Channel(Standard):
         self.normals.append(command.nick)
 
 
-    def set_topic(self, topic):
+    def set_topic(self, topic, *args):
+        message = self.format_message(message, args)
         self.topic = topic
         self.connection.server.raw("TOPIC %s :%s" % (self.name, topic))
 

@@ -23,4 +23,4 @@ def main(connection):
     else:
         Channel.send(random.choice(Config["replies"]))
 
-help = "Randomly chooses an option to a question you ask."
+help = u"Randomly chooses an option to a question you ask."

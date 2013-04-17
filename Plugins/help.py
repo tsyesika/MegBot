@@ -32,9 +32,9 @@ def main(connection):
             else:
                 cout += ", " + plugin_name
         if done:
-            Channel.send("%s: %s" % (Info.nick, cout[2:]))
+            Channel.send(u"%s: %s", Info.nick, cout[2:])
         else:
-            Channel.send("%s: It seems no plugins are loaded, please speak to the bot admin." % Info.nick)
+            Channel.send(u"%s: It seems no plugins are loaded, please speak to the bot admin.", Info.nick)
     else:
         plugin = Info.args[0]
         if plugin in connection.plugins.keys():
@@ -44,10 +44,10 @@ def main(connection):
                     connection.plugins[plugin].help(connection, Info)
                 elif type(connection.plugins[plugin].help) in StringTypes:
                     # It's a string
-                    Channel.send("%s: %s" % (Info.nick, connection.plugins[plugin].help))
+                    Channel.send(u"%s: %s", Info.nick, connection.plugins[plugin].help)
             else:
-                Channel.send("%s: Can't find any help for %s." % (Info.nick, plugin))
+                Channel.send(u"%s: Can't find any help for %s.", Info.nick, plugin)
         else:
-            Channel.send("%s: Can't find plugin %s." % (Info.nick, plugin))
+            Channel.send(u"%s: Can't find plugin %s.", Info.nick, plugin)
 
-help = "Displays a list of plugins or if a plugin is specified tries to get the help for that plugin"
+help = u"Displays a list of plugins or if a plugin is specified tries to get the help for that plugin"

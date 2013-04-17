@@ -47,5 +47,6 @@
         "translate": {
             "default_language": "en"
         }
-    }
+    },
+    "encodings": ["ISO8859-1"]
 }

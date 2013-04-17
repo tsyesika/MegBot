@@ -215,5 +215,5 @@ class Store(object):
         if os.path.isfile(self.fpath):
             os.remove(self.fpath)
         self._sfile = open(self.fpath, "w")
-        self._sfile.write(foutd)
+        self._sfile.write(foutd.encode("utf-8"))
         self._sfile.close()
