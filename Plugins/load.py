@@ -114,9 +114,11 @@ def main(connection):
 
     elif "-C" in Info.args:
         # okay - config
-        if os.path.isfile('config.py'):
+        if os.path.isfile('config.json'):
             try:
-                plugin = imp.load_source('config', 'config.py')
+                f = open("config.json", "r")
+                plugin = json.loads(f.read())
+                f.close()
             except Exception:
                 Channel.send("Oh no, something went wrong!")
         else:
