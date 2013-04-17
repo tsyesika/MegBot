@@ -37,7 +37,7 @@ def main(connection):
 
     try:
         record = seen[connection.name][Info.channel][unicode(Info.args[0])]
-        Channel.send("%s said \"%s\" about %s ago" % (
+        Channel.send("%s said \"%s\" %s" % (
             Info.args[0],
             record["msg"].strip(),
             Helper.HumanTime(Helper.convertToTime(record["time"])).lower()

@@ -171,25 +171,6 @@ class L_Helper(Standard):
         return self.HTMLParser.unescape(message)
 
 
-    def TimeZoneCorrect(self, t, pre_timezone, post_timezone):
-        """ This will convert from one timezone to another.
-        t = time.time() - seconds after the EPOC
-        pre_timezone = t is - +/-XXXX producable by time.strftime("%z")
-        post_timezone = t should be in - UTC", "BST", etc..
-                       producable by time.strftime("%Z")
-        """
-
-        utc = time.strptime(time.strftime("%b %d %H:%M:%S %Y ",
-                                          time.gmtime(t))+pre_timezone,
-                                          "%b %d %H:%M:%S %Y %Z")
-
-        # convert to post_timezone
-        et = time.strptime(time.strftime("%b %d %H:%M:%S %Y ",
-                                          utc)+post_timezone,
-                                         "%b %d %H:%M:%S %Y %Z")
-        return ime.mktime(et)
-
-
     def HumanTime(self, dt, now=False):
         """ This function will return a string which will give a useful
         offset for humans ("5 minutes ago", "6 months ago", etc...):
@@ -207,22 +188,30 @@ class L_Helper(Standard):
         if not isinstance(dt, datetime):
             raise TypeError("%s needs to be datetime instance")
         
-        delta = (dt - now)
+        delta = (now - dt)
         delta = delta.days * 24 * 60 * 60 + delta.seconds
         
         if delta < 0:
             delta = -delta
             future = True
 
-        for i, (seconds, text) in enumerate(self.time_units):
+        for i, (seconds, singular, plural) in enumerate(self.time_units):
             count = delta // seconds # // operator does floor divison
             if count != 0:
                 break
+        if i >= 8 and delta < 60:
+            if future:
+                return "soon"
+            else:
+                return "just now"
+        
+        # currently fixed to english
+        text = singular if count <= 1 else plural
 
         if future:
-            return "in %s " % (text % count)
+            return "in about %s" % (text % count)
         else:
-            return "%s ago" % (text % count)
+            return "about %s ago" % (text % count)
 
     def convertToTime(self, ts):
         """
@@ -231,7 +220,7 @@ class L_Helper(Standard):
         returns datetime.datetime
 
         """
-        if type(ts) in [types.StringType]:
+        if type(ts) in [StringType]:
             ts = float(ts)
         return datetime.fromtimestamp(ts)
 

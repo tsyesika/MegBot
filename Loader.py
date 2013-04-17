@@ -147,6 +147,17 @@ class CoreLoader(Loader):
             setattr(self.connection, fmtname, plugin.Hooker())
         return plugin
 
+class PluginLoader(Loader):
+    
+    def load_plugin(self, name, plugin):
+        plugin = super(PluginLoader, self).load_plugin(name, plugin)
+
+        plugin.Web = self.connection.libraries["IRCObjects"].L_Web(self.connection)
+        plugin.Helper = self.connection.libraries["IRCObjects"].L_Helper()
+        plugin.Format = self.connection.libraries["IRCObjects"].L_Format()
+
+        return plugin
+
 class Master_Loader(object):
     def __init__(self, connection, paths):
         """ This will make loaders on connection for paths """
