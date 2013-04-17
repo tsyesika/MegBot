@@ -67,7 +67,6 @@ def main(connection, command):
     # Okay so at this point we can say they are trying to call a plugin.
     # first thing's first is we need to check the plugin actually exists
 
-    print "[DEBUG] plugin_name: %s, connection.plugins: %s" % (ommand.plugin_name, connection.plugins.keys())
     if command.plugin_name not in connection.plugins:
         return
 
@@ -76,5 +75,4 @@ def main(connection, command):
     ##
     # Remove .split() when #36 is done
     ##
-    print "got here"
     connection.core["Coreexecutor"].main(connection, command, command.plugin_name)
