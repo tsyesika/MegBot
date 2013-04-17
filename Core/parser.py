@@ -66,5 +66,9 @@ def main(connection, message=[]):
         connection.running = False
         return u""
     if message[-1][-2:] == "\r\n":
-        return decode("".join(message))
+        encoding = ["utf-8"]
+        if "encoding" in connection.config and connection.config["encoding"]:
+            encoding += connection.config["encoding"]
+        return decode("".join(message), encoding)
+        
     return main(connection, message)
