@@ -40,7 +40,7 @@ def main(connection):
         Channel.send("%s said \"%s\" about %s ago" % (
             Info.args[0],
             record["msg"].strip(),
-            Helper.HumanTime(record["time"]).lower()
+            Helper.HumanTime(Helper.convertToTime(record["time"])).lower()
         ))
     except KeyError:
         Channel.send("Haven't seen %s." % Info.args[0])

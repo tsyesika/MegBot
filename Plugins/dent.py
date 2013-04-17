@@ -34,6 +34,17 @@ def FormTime(time):
             output += time[char_index]
     return output
 
+def prep_data(data):
+    name = data[0]["user"]["screen_name"]
+    cid = data[0]["id"]["text"]
+    status = data[0]["text"]
+    created = FormTime(str(data[0]["created_at"])) + " UTC"
+    
+    created = datetime.strptime(created, "%a %b %d %H:%M%S %Y %Z")
+    dent_time = Helper.HumanTime(created)
+    
+    return name, cid, status, dent_time
+
 def main(connection):
     if not Info.args:
         nick = Info.nick
@@ -45,21 +56,13 @@ def main(connection):
         data = json.loads(data)
         if data and not ("-g" in Info.args or "-group" in Info.args):
             # this is from the http://status.net/wiki/Twitter-compatible_API
-            name = data[0]["user"]["screen_name"]
-            cid = data[0]["id"]
-            status = data[0]["text"]
-            created = FormTime(str(data[0]["created_at"]))
-            dent_time = Helper.HumanTime("%s UTC" % created, "%a %b %d %H:%M:%S %Y %Z")
+            name, cid, status, dent_time = prep_data(data)
         else:
             data = urllib2.urlopen("http://identi.ca/api/statusnet/groups/timeline/%s.json" % nick)
             data = data.read()
             data = json.loads(data)
             if data:
-                name = data[0]["user"]["screen_name"]
-                cid = data[0]["id"]
-                status = data[0]["text"]
-                created = FormTime(str(data[0]["created_at"]))
-                dent_time = Helper.HumanTime("%s UTC" % created, "%a %b %d %H:%M:%S %Y %Z")
+                name, cid, status, dent_time = prep_data(data)
             else:
                 Channel.send("Sorry, they haven't posted on identi.ca")
                 return

@@ -23,7 +23,10 @@ import os
 import urllib2
 import urllib
 import HTMLParser
+from datetime import datetime
+
 from types import *
+
 
 class Standard(object):
     """ Never instantiate """
@@ -141,6 +144,18 @@ class L_Helper(Standard):
         self.HTMLTagRe = re.compile(r'<[^<]+?>')
         self.HTMLParser = HTMLParser.HTMLParser()
 
+        self.time_units = (
+            (60 * 60 * 24 * 365 * 1000000, "%d millennium", "%d millennia"), # millennia
+            (60 * 60 * 24 * 365 * 100, "%d century", "%d centuries"), # centuries
+            (60 * 60 * 24 * 365 * 10, "%d decade", "%d decades"), # decades
+            (60 * 60 * 24 * 365, "%d year", "%d years"), # years
+            (60 * 60 * 24 * 30, "%d month", "%d months"), # months
+            (60 * 60 * 24 * 7, "%d week", "%d weeks"), # weeks
+            (60 * 60 * 24, "%d day", "%d days"), # days
+            (60 * 60, "%d hour", "%d hours"), # hour
+            (60, "%d minute", "%d minutes"), # minute      
+        )
+
     def StripHTML(self, message):
         """ This strips the HTML off a specific message """
         return self.HTMLTagRe.sub("", message)
@@ -175,84 +190,50 @@ class L_Helper(Standard):
         return ime.mktime(et)
 
 
-    def HumanTime(self, t=time.time(), parse=None, f=None):
+    def HumanTime(self, dt, now=False):
         """ This function will return a string which will give a useful
         offset for humans ("5 minutes ago", "6 months ago", etc...):
-        t = time (float or string) froom time.time() or formatted (required)
-        parse = a string for formatting
-                    e.g. "%a %b %d %H:%M%S %Y %Z" (required if t is a str)
-
-        f = from an offset, defaults to time.time() (now), must be a float.
+        dt = datetime object
+        now = the time you want to compare against (defaults to the time the function is called)
+        
+        Inspired by django (https://github.com/django/django/blob/master/django/utils/timesince.py)
         """
+    
+        if False == now:
+            now = datetime.now()
+        
+        future = False
 
-        if type(t) in StringTypes and parse:
-            t = time.strptime(t, parse)
-            t = time.mktime(t)
+        if not isinstance(dt, datetime):
+            raise TypeError("%s needs to be datetime instance")
+        
+        delta = (dt - now)
+        delta = delta.days * 24 * 60 * 60 + delta.seconds
+        
+        if delta < 0:
+            delta = -delta
+            future = True
+
+        for i, (seconds, text) in enumerate(self.time_units):
+            count = delta // seconds # // operator does floor divison
+            if count != 0:
+                break
+
+        if future:
+            return "in %s " % (text % count)
         else:
-            t = float(t)
-        # Find out time passed from now/f.
-        if f:
-            t = f-t
-        else:
-            t = time.time()-t
-        # Work out time passed.
-        if t < 60:
-            return "Less than a minute"
-        elif (t / 60) <= 60:
-            # a hour
-            m = int(t/60.0 + .5) # .5 to avoid floor rounding.
-            if m <= 1:
-                return "A minute"
-            else:
-                return "%s minutes" % m
-        elif ((t / 60) / 60) <= 24:
-            # a day
-            h = int(t / 60.0 / 60.0 + 0.5)
-            if h <= 1:
-                return "A hour"
-            else:
-                return "%s hours" % h
-        elif (((t / 60) / 60) / 24) <= 7:
-            # a week
-            d = int(t / 60.0 / 60.0 / 24.0 + 0.5)
-            if d <= 1:
-                return "A day"
-            else:
-                return "%s days" % d
-        elif ((((t / 60) / 60) / 24) / 7) <= 4:
-            # a month (29 days, lowest except 28)
-            w = int(t / 60.0 / 60.0 / 24.0 / 7.0 + 0.5)
-            if w <= 1:
-                return "A week"
-            else:
-                return "%s weeks" % w
-        elif (((t / 60) / 60) / 24) <= 365 :
-            # a year
-            m = int(t / 60.0 / 60.0 / 24.0 / 7.0 / 4.0 + 0.5)
-            if m <= 1:
-                return "A month"
-            else:
-                return "%s months" % m
-        elif ((((t / 60) / 60) / 24) / 365) <= 10:
-            # a decade (decade - century)
-            y = int(t / 60.0 / 60.0 / 24.0 / 365.0 + 0.5)
-            if y <= 1:
-                return "A year"
-            else:
-                return "%s years" % y
-        elif ((((t / 60) / 60) / 24) / 365) <= 100:
-            # a century
-            d = int(t / 60.0 / 60.0 / 24.0 / 365.0 / 10 + 0.5)
-            if d <= 1:
-                return "A decade"
-            else:
-                return "%s decades" % y
-        else:
-            c = int(t / 60.0 / 60.0 / 24.0 / 365.0 / 100.0 + 0.5)
-            if c <= 1:
-                return "A century"
-            else:
-                return "%s centuries" % c
+            return "%s ago" % (text % count)
+
+    def convertToTime(self, ts):
+        """
+        This will convert a timestamp (ts) to a datetime object (what we use in MegBot)
+        ts = float - comes from time.time()
+        returns datetime.datetime
+
+        """
+        if type(ts) in [types.StringType]:
+            ts = float(ts)
+        return datetime.fromtimestamp(ts)
 
 
 class L_Web(Standard):

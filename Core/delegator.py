@@ -38,7 +38,6 @@ def main(connection, command):
     the function will return None as it'll delegate to other core
     modules or do nothing and return back.
     """
-
     # we don't want to do anything if the line is blank
     if not command:
         return
@@ -52,6 +51,7 @@ def main(connection, command):
 
     # Okay, we'll now see if any hooks wish to be called on it. - old system
     connection.hooker.hook(connection, command)
+
 
     # Make an event (new events/hook system)
     event = connection.core["Corehandler"].IRCEvent(command)
@@ -67,6 +67,7 @@ def main(connection, command):
     # Okay so at this point we can say they are trying to call a plugin.
     # first thing's first is we need to check the plugin actually exists
 
+    print "[DEBUG] plugin_name: %s, connection.plugins: %s" % (ommand.plugin_name, connection.plugins.keys())
     if command.plugin_name not in connection.plugins:
         return
 
@@ -75,4 +76,5 @@ def main(connection, command):
     ##
     # Remove .split() when #36 is done
     ##
+    print "got here"
     connection.core["Coreexecutor"].main(connection, command, command.plugin_name)

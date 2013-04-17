@@ -47,10 +47,9 @@ class Bot(object):
         self.core["Coreconnect"].main(self)
 
         if run:
-            self.plugins = {}
+            self.plugins = self.plugin_loader._plugins
             self.server = self.libraries["IRCObjects"].L_Server(self)
             self.server.__setuphooks__(self)
-            self.core["Corepluginloader"].main(self)
             self.run()
 
 
