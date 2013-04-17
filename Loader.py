@@ -129,12 +129,12 @@ class Loader(object):
         
         return True
 
-class CorepluginsLoader(Loader):
+class CoreLoader(Loader):
     _prefix = "Core"
 
     def load_plugin(self, name, plugin):
         """ Handles legacy - should be removed at some point """
-        plugin = super(CorepluginsLoader, self).load_plugin(name, plugin)
+        plugin = super(CoreLoader, self).load_plugin(name, plugin)
 
         # remove the Core prefix
         fmtname = name[4:]
@@ -154,9 +154,7 @@ class Master_Loader(object):
         # this is to retain order so library is forced first.
         path_itr = paths.keys()
         path_itr.remove("libraries")
-        path_itr.remove("coreplugins")
         path_itr.insert(0, "libraries")
-        path_itr.insert(1, "coreplugins")
 
         for path in path_itr:
             # is there a specialised loader.
@@ -171,8 +169,6 @@ class Master_Loader(object):
 
             loader.set_path(paths[path])
             loader.load_plugins()
-            if path == "coreplugins":
-                connection.core = loader._plugins
             setattr(connection, "%s_loader" % path, loader)
 
             # legacy
