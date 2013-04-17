@@ -40,11 +40,8 @@ class Bot(object):
         self.thread["object"] = self
         self.alive = True
 
-        # load loaders - yeh i know.
-        Master_Loader(self, self.config[u"paths"]) # returns None.
+        Master_Loader(self, self.config[u"paths"]) # returns None
 
-        # legacy
-        self.core = self.core_loader._plugins
         self.libraries = self.libraries_loader._plugins
 
         self.core["Coreconnect"].main(self)
