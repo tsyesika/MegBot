@@ -140,6 +140,7 @@ class L_Helper(Standard):
     def __init__(self):
         self.HTMLTagRe = re.compile(r'<[^<]+?>')
         self.HTMLParser = HTMLParser.HTMLParser()
+
     def StripHTML(self, message):
         """ This strips the HTML off a specific message """
         return self.HTMLTagRe.sub("", message)
@@ -257,15 +258,6 @@ class L_Helper(Standard):
 class L_Web(Standard):
     def __init__(self, connection):
         self.title = ""
-        self.HTMLTagRe = re.compile(r'<[^<]+?>')
-
-    def StripHTML(self, text):
-        """
-        Strips HTML (also in Helper - subject to change).
-        text is a string, will return it without any html elements.
-        """
-        return self.HTMLTagRe.sub("", text)
-
 
     def WebSafeString(self, string):
         """
