@@ -76,6 +76,7 @@ class Bot(object):
                 except Exception:
                     traceback.print_exc()
                     self.running = False
+                    break
                 for line in data.split("\r\n"):
                     self.core["Coredelegator"].main(self, line)
             try:

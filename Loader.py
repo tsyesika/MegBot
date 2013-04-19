@@ -18,6 +18,8 @@
 import glob
 import os
 import types
+import os
+import sys
 
 from imp import load_source
 
@@ -155,8 +157,20 @@ class PluginLoader(Loader):
         plugin.Web = self.connection.libraries["IRCObjects"].L_Web(self.connection)
         plugin.Helper = self.connection.libraries["IRCObjects"].L_Helper()
         plugin.Format = self.connection.libraries["IRCObjects"].L_Format()
+        plugin.String = self.connection.libraries["String"].String 
 
         return plugin
+
+class LibraryLoader(Loader):
+
+    def set_path(self, path):
+        """ 
+        Sets the path as normal and then appends it to sys.paths
+        So that you can import any of the libraries in the plugins
+        """
+        super(LibraryLoader, self).set_path(path)
+        sys.path.append(path)
+
 
 class Master_Loader(object):
     def __init__(self, connection, paths):
