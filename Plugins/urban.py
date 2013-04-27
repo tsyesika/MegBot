@@ -32,10 +32,9 @@ def main(connection):
         return
     source = google.read()
     try:
-        name = re.findall("<td class='word'>\n(.+?)\n</td>", source)[0]
-        definition = re.findall("<div class=\"definition\">(.+?)</div><div class=\"example\">(.+?)</div>", source)[0]
-        definition = [re.sub("<.+?>", "", definition[0]), re.sub("<.+?>", "", definition[1])]
-        definition = u"%s: [%s] - %s %s %s" % (Info.nick, Format.Bold(name), definition[0].replace("&quot", "\""), Format.Bold("Example:"), definition[1].replace("&quot", "\""))
+        name = String(re.findall("<td class='word'>\n<span>\n(.+?)\n</span>", source)[0])
+        definition = String(re.findall("<div class=\"definition\">(.+?)</div><div", source)[0])
+        definition = u"%s: [%s] - %s" % (Info.nick, Format.Bold(name), Helper.ConvertHTMLReversed(definition))
     except Exception:
         definition = u"Sorry, can't find a definiton"
         traceback.print_exc()
