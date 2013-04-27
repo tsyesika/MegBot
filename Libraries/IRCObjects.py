@@ -61,12 +61,6 @@ class Info(Standard):
             self.args = []
             return
 
-        ##
-        # REMOVE me when this is being used properly.
-        # (on close of #36)
-        ##
-
-
         # Lets pull things out.
         self.raw = line
         self.parsed = self.parseIRC(line)
