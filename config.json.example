@@ -25,7 +25,7 @@
         "databases": "Databases/",
         "libraries": "Libraries/",
         "logs": "Logging/",
-        "plugin": "Plugins/"
+        "plugins": "Plugins/"
     },
     "ctcp_options": {
         "version": "MegBot 0.6 http://github.com/xray7224/MegBot"

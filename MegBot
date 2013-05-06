@@ -44,14 +44,9 @@ class Bot(object):
         # load loaders - yeh i know.
         Master_Loader(self, self.config[u"paths"]) # returns None.
 
-        # legacy
-        self.core = self.core_loader._plugins
-        self.libraries = self.libraries_loader._plugins
-
         self.core["Coreconnect"].main(self)
 
         if run:
-            self.plugins = self.plugin_loader._plugins
             self.server = self.libraries["IRCObjects"].L_Server(self)
             self.server.__setuphooks__(self)
             self.run()

@@ -36,11 +36,11 @@ class Standard(object):
         the prefix on_ will be automatically registered with
         the hooker
         """
-        if "Corehooker" in connection.core.keys():
+        if "Corehooker" in connection.core:
             # Woot, we got ability to have hooks
-            for anm in dir(self):
-                if anm.startswith("on_"):
-                    connection.hooker.register_hook(anm, eval("self.%s" % anm))
+            for method in dir(self):
+                if method.startswith("on_"):
+                    connection.hooker.register_hook(method, eval("self.%s" % method))
 
 class Info(Standard):
     def __init__(self, line=None):
