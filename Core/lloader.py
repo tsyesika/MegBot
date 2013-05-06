@@ -22,41 +22,10 @@ return type dict ({}). This might be empty if no libraries exist or an invalid
 call is made.
 """
 
-from glob import glob
-from os import path
-from imp import load_source
-
-def main(connection, lname=None):
-    """
-    If lname is specified (library name) then
-    it'll look for that library and if it's found the loaded
-    library. (will return None if it fails or {})
-
-    Loads the libraries from Library/ (or what's specified in the config
-    under the path dict.
-    Returns a dict {library_name : <library instance>}
-    """
-    libraries = {}
-    if "libraries" in connection.config[u"paths"]:
-        lpath = connection.config[u"paths"][u"libraries"]
-        if not path.isdir(lpath):
-            return {}
+def main(connection, name="", force=False):
+    """ If name is specified then it'll look for that library to load """
+    
+    if name:
+        connection.libraries.load_plugin(name=name, force=force)
     else:
-        if path.isdir("Libraries"):
-            lpath = "Libraries/"
-        elif path.isdir("libraries"):
-            lpath = "libraries/"
-        else:
-            return {}
-    if lname:
-        # Okay we want to load just 1 library
-        lpath = "%s%s.py" % (lpath, lname)
-        if os.path.isfile(lpath):
-            return load_source(lname, lpath)
-        else:
-            return None
-
-    for plugin in glob(lpath + "*.py"):
-        fixed = plugin.replace(lpath, "").replace(".py", "")
-        libraries[fixed] = load_source(fixed, plugin)
-    return libraries
+        connection.libraries.load_plugins(force=force)
