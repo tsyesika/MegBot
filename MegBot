@@ -83,6 +83,23 @@ class Bot(object):
                     self.thread,
                     False)
 
+def restart_connections(sig, frame):
+    global bots
+    # we get signal!
+    print "[DEBUG] WE GET SIGNAL!"
+    for network in bots:
+        if connection["thread"].is_alive():
+            continue
+
+        new_connection = {}
+        new_connection["thread"] = Thread(target=Bot, args=(network, configuration, new_connection))
+        new_connection["object"] = None
+        new_connection["thread"].daemon = True
+        new_connection["thread"].start()
+        bots[network] = new_connection
+
+
+
 if __name__ == "__main__":
     # since there is no good logging and/or way of talking to the
     # bot this is set to not ready as it shouldn't be used
@@ -104,21 +121,6 @@ if __name__ == "__main__":
             sys.exit()
 
     bots = {}
-
-    def restart_connections(sig, frame):
-        global bots
-        # we get signal!
-        print "[DEBUG] WE GET SIGNAL!"
-        for network in bots:
-            if connection["thread"].is_alive():
-                continue
-
-            new_connection = {}
-            new_connection["thread"] = Thread(target=Bot, args=(network, configuration, new_connection))
-            new_connection["object"] = None
-            new_connection["thread"].daemon = True
-            new_connection["thread"].start()
-            bots[network] = new_connection
 
     for network in configuration["networks"]:
         if not "active" in configuration["networks"][network].keys() or (
