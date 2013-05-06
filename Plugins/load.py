@@ -50,15 +50,15 @@ def main(connection):
     name = find_name(Info.args)
     
     if "-a" in Info.args and "-f" in Info.args:
-        connection.plugins.load_plugins(force=True)
-        connection.core.load_plugins(force=True)
         connection.libraries.load_plugins(force=True) 
+        connection.core.load_plugins(force=True)
+        connection.plugins.load_plugins(force=True)
         Channel.send("Okay, everything should have re-loaded. Please check the term for errors")
 
     elif "-a" in Info.args:
-        connection.plugins.load_plugins(force=True)
         connection.core.load_plugins(force=True)
         connection.libraries.load_plugins(force=True)
+        connection.plugins.load_plugins(force=True)
         Channel.send("Okay, everything that needed to be re-loaded should have been. Please check the term for errors")
 
     elif "-c" in Info.args:

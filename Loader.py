@@ -73,7 +73,7 @@ class Loader(object):
 
         # We don't want to reload if we don't need to
         if not (force or self.is_new(name, plugin)):
-            return self._plugins[name]
+            return self._plugins[name]["plugin"]
 
         self.deconstruct_plugin(name)
         plugin = load_source(name, plugin)
