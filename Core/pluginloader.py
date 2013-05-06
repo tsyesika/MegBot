@@ -26,7 +26,7 @@ import imp
 import os
 import traceback
 
-def main(connection, plugin=None):
+def main(connection, plugin=None, force=False):
     """
     This will load plugins, if plugin is left as the default (None) then
     it will look in Plugins/ (or what's specified in the config under
@@ -34,44 +34,6 @@ def main(connection, plugin=None):
     This will also add the Server, Helper and Web instances to the bots
     """
     if plugin:
-        if plugin in connection.plugins and "unload" in dir(connection.plugins[plugin][0]):
-            connection.plugins[plugin][0].unload(connection)
-        plugin_path = connection.config[u"paths"][u"plugin"] + plugin + ".py"
-        if not os.path.isfile(plugin_path):
-            return (False, "Can't find plugin")
-        try:
-            mtime = os.stat(plugin_path).st_mtime
-            
-            # check if it's the same copy?
-            if plugin in connection.plugins and connection.plugins[plugin][1] == mtime:
-                return (False, "Plugin already loaded.")
-
-            # load the plugin
-            loaded_plugin = imp.load_source(plugin, plugin_path)
-            connection.plugins[plugin] = (loaded_plugin, mtime)
-            connection.Server = connection.server
-            if "init" in dir(connection.plugins[plugin][0]):
-                connection.plugins[plugin][0].init(connection)
-            return (True, "")
-        except Exception:
-            return (False, "Oh no, something went wrong,", traceback.format_exc())
-
+        connection.plugins.load_plugin(name=plugin, force=force) 
     else:
-        for plugfi in glob.glob(connection.config[u"paths"][u"plugin"] + "*.py"):
-            name = os.path.splitext(os.path.basename(plugfi))[0]
-            if name == '__init__':
-                continue
-            result = main(connection, name)
-            if not result[0]:
-                if len(result) == 3:
-                    print "[ErrorLine] Plugin load failed."
-                    print result[2]
-                continue
-
-            plugin = connection.plugins[name][0]
-            plugin.Server = connection.server
-            plugin.Helper = connection.libraries["IRCObjects"].L_Helper()
-            plugin.Web = connection.libraries["IRCObjects"].L_Web(connection)
-            plugin.Format = connection.libraries["IRCObjects"].L_Format
-            if "init" in dir(connection.plugins[name]):
-                connection.plugins[name][0].init(connection)
+        connection.plguins.load_plugins(force=force) 

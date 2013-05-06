@@ -56,11 +56,21 @@ class Loader(object):
 
         return True
 
-    def load_plugin(self, name, plugin, force=False):
+    def get_path(self, name):
+        """ Gets a plugin from it's name """
+        if not self._path:
+            raise LoaderError("Path must be set to deduce it from a name")
+        
+        return "%s%s" % (self._path, name)
+
+    def load_plugin(self, name, plugin="", force=False):
         """ Loads a specific plugin from a path """
         if not self._path:
             raise LoaderError("Path not defined")
         
+        if not plugin:
+            plugin = self.get_path(name)
+
         # We don't want to reload if we don't need to
         if not (force or self.is_new(name, plugin)):
             return self._plugins[name]
@@ -109,13 +119,13 @@ class Loader(object):
         self._plugins[name].delete(self.connection)
         return True
 
-    def load_plugins(self):
+    def load_plugins(self, force=False):
         """ Will load ALL the plugins in the path """
         plugins = self.get_plugins()
         for plugin in plugins:
             name = self.get_name(plugin)
             self._plugins[name] = {
-                "plugin":self.load_plugin(name, plugin),
+                "plugin":self.load_plugin(name, plugin=plugin, force=force),
                 "version":self.plugin_version(plugin),
             }
         
@@ -175,9 +185,9 @@ class Loader(object):
 class CoreLoader(Loader):
     _prefix = "Core"
 
-    def load_plugin(self, name, plugin):
+    def load_plugin(self, name, plugin, force=False):
         """ Handles legacy - should be removed at some point """
-        plugin = super(CoreLoader, self).load_plugin(name, plugin)
+        plugin = super(CoreLoader, self).load_plugin(name, plugin, force=force)
 
         # remove the Core prefix
         fmtname = name[4:]
@@ -192,8 +202,8 @@ class CoreLoader(Loader):
 
 class PluginsLoader(Loader):
     
-    def load_plugin(self, name, plugin):
-        plugin = super(PluginsLoader, self).load_plugin(name, plugin)
+    def load_plugin(self, name, plugin, force=False):
+        plugin = super(PluginsLoader, self).load_plugin(name, plugin, force=force)
 
         plugin.Web = self.connection.libraries["IRCObjects"].L_Web(self.connection)
         plugin.Helper = self.connection.libraries["IRCObjects"].L_Helper()
