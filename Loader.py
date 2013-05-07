@@ -36,6 +36,30 @@ class Loader(object):
         """ Initialises the Loader """
         self.connection = connection
 
+    def loadable(self, name):
+        """ checks if it's loadable """
+        # first check network specific
+        if "whitelist" in self.connection.settings:
+            if name in self.connection.settings["whitelist"]:
+                return True
+            else:
+                return False
+
+        if "blacklist" in self.connection.settings and name in self.connection.settings["blacklist"]:
+            return False
+
+        # okay now for global stuff
+        if "whitelist" in self.connection.settings:
+            if name in self.connection.config["whitelist"]:
+                return True
+            else:
+                return False
+
+        if "blacklist" in self.connection.config and name in self.connection.config["blacklist"]:
+            return False
+
+        return True
+
     def plugin_version(self, path):
         """ This will take a path and find a version identifier """
         # We'll use the modifier time on the file
@@ -68,6 +92,9 @@ class Loader(object):
         if not self._path:
             raise LoaderError("Path not defined")
         
+        if not self.loadable(name):
+            return None       
+ 
         if not plugin:
             plugin = self.get_path(name)
 
@@ -90,7 +117,7 @@ class Loader(object):
             # no constructor exists
             return False
 
-        if not type(plugin.init)in [types.FunctionType, types.MethodType]:
+        if not type(plugin.init) in [types.FunctionType, types.MethodType]:
             return False
 
         # we have a constructor of the right type
@@ -124,6 +151,10 @@ class Loader(object):
         plugins = self.get_plugins()
         for plugin in plugins:
             name = self.get_name(plugin)
+
+            if not self.loadable(name):
+                continue
+
             self._plugins[name] = {
                 "plugin":self.load_plugin(name, plugin=plugin, force=force),
                 "version":self.plugin_version(plugin),

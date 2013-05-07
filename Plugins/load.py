@@ -61,6 +61,42 @@ def main(connection):
         connection.plugins.load_plugins(force=True)
         Channel.send("Okay, everything that needed to be re-loaded should have been. Please check the term for errors")
 
+    elif "-b" in Info.args and "-n" in Info.args:
+        # blacklist plugin for a specific network
+        if "blacklist" in connection.settings:
+            connection.settings["blacklist"].append(name)
+        else:
+            connection.settings["blacklist"] = [name]
+        
+        Channel.send(String("%s been added to the blacklist for %s network", name, connection.name))
+
+    elif "-b" in Info.args:
+        # blacklist for all networks
+        if "blacklist" in connection.config:
+            connection.config["blacklist"].append(name)
+        else:
+            connection.config["blacklist"] = [name]
+    
+        Channel.send(String("%s has been added to the global blacklist", name))
+
+    elif "-w" in Info.args and "-n" in Info.args:
+        # adds to network specific whitelist
+        if "whitelist" in connection.settings:
+            connection.settings["whitelist"].append(name)
+        else:
+            connection.settings["whitelist"] = [name]
+
+        Channel.send(String("%s has been added to the whitelist for %s network", name, connection.name))
+
+    elif "-w" in Info.args:
+        # adds to whitelist for all networks
+        if "whitelist" in connection.config:
+            connection.config["whitelist"].append(name)
+        else:
+            connection.config["whitelist"] = [name]
+
+        Channel.send(String("%s has been added to the global whitelist", name, connection.name))
+
     elif "-c" in Info.args:
         if "-f" in Info.args:
             force = True

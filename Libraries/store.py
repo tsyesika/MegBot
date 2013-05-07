@@ -207,11 +207,15 @@ class Store(object):
             return self.data.viewvalues()
         else:
             raise AttributeError
-    def save(self, pretty=False):
+    
+    def save(self, pretty=False, data={}):
+        if not data:
+            data = self.data
+
         if pretty:
-            foutd = json.dumps(self.data, sort_keys=True, indent=4, separators=(',', ': '))
+            foutd = json.dumps(data, sort_keys=False, indent=4, separators=(',', ': '))
         else:
-            foutd = json.dumps(self.data)
+            foutd = json.dumps(data)
         if os.path.isfile(self.fpath):
             os.remove(self.fpath)
         self._sfile = open(self.fpath, "w")

@@ -44,8 +44,7 @@ class Configuration(Store):
 
         self.data = data
         for item in self.data:
-            item_type = type(item)
-            if item_type == DictType or item_type == ListType:
+            if type(item) in [DictType, ListType]:
                 # make it a ConfigItem
                 self.data[item] = ConfigItem(self, self.data[item])
 
@@ -61,17 +60,30 @@ class Configuration(Store):
         # saving it back to the config.
         self.save(True)
 
+    def save(self, pretty=False):
+        
+        saveable = {}
+        for item in self.data.keys():
+            if type(item) == type(self.mockConfigItem):
+                saveable[item] = self.data[item].__dict__()
+            else:
+                saveable[item] = self.data[item]
+
+        super(Configuration, self).save(pretty, data=saveable)
+
 class ConfigItem(Store):
     def __init__(self, parent, item):
         self.data = item
         for item in self.data:
-            item_type = type(item)
-            if item_type == DictType or item_type == ListType:
+            if type(item) in [ListType, DictType]:
                 # make it a ConfigItem
                 self.data[item] = ConfigItem(self, self.data[item])
 
     def __setitem__(self, key, value):
         self.data[key] = value
         self.parent.save(True)
+
+    def __dict__(self):
+        return self.data
 
 configuration = Configuration()
