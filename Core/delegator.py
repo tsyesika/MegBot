@@ -67,7 +67,7 @@ def main(connection, command):
     # Okay so at this point we can say they are trying to call a plugin.
     # first thing's first is we need to check the plugin actually exists
 
-    if command.plugin_name not in connection.plugins:
+    if command.plugin_name not in connection.plugin:
         return
 
     # last thing we need to do is delegate off to the executor core plugin
