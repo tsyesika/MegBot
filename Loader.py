@@ -231,10 +231,10 @@ class CoreLoader(Loader):
             setattr(self.connection, fmtname, plugin.Hooker())
         return plugin
 
-class PluginsLoader(Loader):
+class PluginLoader(Loader):
     
     def load_plugin(self, name, plugin, force=False):
-        plugin = super(PluginsLoader, self).load_plugin(name, plugin, force=force)
+        plugin = super(PluginLoader, self).load_plugin(name, plugin, force=force)
 
         plugin.Web = self.connection.libraries["IRCObjects"].L_Web(self.connection)
         plugin.Helper = self.connection.libraries["IRCObjects"].L_Helper()
