@@ -65,7 +65,7 @@ class Configuration(Store):
         saveable = {}
         for item in self.data.keys():
             if type(self.data[item]) == type(self.mockConfigItem):
-                saveable[item] = self.data[item].__dict__()
+                saveable[item] = self.data[item].raw()
             else:
                 saveable[item] = self.data[item]
 
@@ -84,7 +84,7 @@ class ConfigItem(Store):
         self.data[key] = value
         self.parent.save(True)
 
-    def __dict__(self):
+    def raw(self):
         if type(self.data) == ListType:
             saveable = []
             for key in self.data:
@@ -96,7 +96,7 @@ class ConfigItem(Store):
             saveable = {}
             for key in self.data.keys():
                 if type(self.data[key]) == type(self.parent.mockConfigItem):
-                    saveable[key] = self.data[key].__dict__()
+                    saveable[key] = self.data[key].raw()
                 else:
                     saveable[key] = self.data[key]
         return saveable
