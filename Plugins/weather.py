@@ -119,15 +119,16 @@ def main(connection):
         Channel.send(u"Incomplete weather data recieved for %s (%s), please contact weather station", place, woeid)
         return
 
-    # Okay now we need to convert F to C & K
+    # Okay now we need to convert Farenheit to Celsius, Kelvin and Rankine
     celsius = int((float(condition.get("temp")) - 32) / (9 / 5.) + .5)
     kelvin = celsius + 273
+    rankine = int(float(condition.get("temp")) + 459.67)
 
     # Convert wind speed from mph to kmph
     kmph = int(int(wind.get("speed")) * 1.60934 + .5)
 
     # Send it all to the channel
-    Channel.send("[%s] Condition: %s | Temp: %sC/%sF/%sK | Humidity: %s%% | Wind Speed %smph/%skmph %s",
-     location, condition.get("text"), celsius, condition.get("temp"), kelvin, atmos.get("humidity"), wind.get("speed"), kmph, different)
+    Channel.send("[%s] Condition: %s | Temp: %sC/%sF/%sK/%sR | Humidity: %s%% | Wind Speed %smph/%skmph %s",
+     location, condition.get("text"), celsius, condition.get("temp"), kelvin, rankine, atmos.get("humidity"), wind.get("speed"), kmph, different)
 
 help = u"Uses Yahoo's weather API to give you the weather for the location specified."
