@@ -53,6 +53,10 @@ def on_PRIVMSG(connection, info):
         seen = store.Store("Seen")
     except IOError:
         seen = store.Store("Seen", {})
+
+    if not isinstance(info.message, unicode):
+        info.message = info.message.decode("utf-8", "replace")
+
     # there's got to be a better way fo doing this... it looks so ugly :(
     if connection.name in seen:
         if info.channel in seen[connection.name]:
