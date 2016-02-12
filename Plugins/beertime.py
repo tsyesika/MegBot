@@ -27,9 +27,8 @@ BEERTIME = re.compile(r"^[^!].*(beer\s*time)", re.IGNORECASE|re.UNICODE)
 eventID = 'beerEvent'
 
 def on_PRIVMSG(connection, info):
-    channel = connection.channels[info.channel]
     if BEERTIME.search(info.message):
-        channel.send(
+        info.channel.send(
             "When you're a {botname}, it's always beertime.".format(
             botname=connection.settings["nick"])
         )

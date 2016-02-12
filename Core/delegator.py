@@ -43,7 +43,7 @@ def main(connection, command):
         return
 
     # can we make this better?
-    command = connection.libraries["IRCObjects"].Info(command)
+    command = connection.libraries["IRCObjects"].Info(command, connection)
 
     if "PING" == command.action:
         # Lets hand off to ping in case it's a PING message.

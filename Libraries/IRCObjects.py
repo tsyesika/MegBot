@@ -43,7 +43,7 @@ class Standard(object):
                     connection.hooker.register_hook(method, eval("self.%s" % method))
 
 class Info(Standard):
-    def __init__(self, line=None):
+    def __init__(self, line=None, connection=None):
 
         if line == None:
             # Make an empty Info.
@@ -55,21 +55,22 @@ class Info(Standard):
             self.action = u""
             self.raw = u""
             self.message = u""
-            self.channel = u""
+            self.channel_name = u""
             self.plugin_name = u""
             self.trigger = u""
             self.args = []
             return
 
+        self.connection = connection
         # Lets pull things out.
         self.raw = line
         self.parsed = self.parseIRC(line)
         
         if self.parsed and len(self.parsed) == 6:
-            self.nickmask, self.action, self.channel, self.trigger, self.plugin_name, self.args = self.parsed
+            self.nickmask, self.action, self.channel_name, self.trigger, self.plugin_name, self.args = self.parsed
         elif self.parsed:
             self.nickmask, self.action, self.args = self.parsed
-            self.channel, self.trigger, self.plugin_name = (u"", u"", u"")
+            self.channel_name, self.trigger, self.plugin_name = (u"", u"", u"")
         else:
             return self.__init__(None)
 
@@ -132,6 +133,10 @@ class Info(Standard):
             return (hostmask, message[0], message[1], trigger, plugin_name, args[1:])
         else:
             return (hostmask, message[0], args)
+
+        @property
+        def channel(self):
+            return self.connection.channels[self.channel_name]
 
 class L_Helper(Standard):
     def __init__(self):
