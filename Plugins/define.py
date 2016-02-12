@@ -20,9 +20,9 @@ from urllib2 import urlopen
 import re
 import json
 
-def main(connection):
+def main(connection, info):
     if not Info.args:
-        Channel.send("Please supply the word you want to be defined.")
+        info.channel.send("Please supply the word you want to be defined.")
         return
 
     query_original = " ".join(Info.args)
@@ -34,9 +34,9 @@ def main(connection):
     output = json.loads(request.read())
 
     if not 'Definition' in output or output['Definition'] == '':
-        Channel.send("Couldn't find a definition for %s", query_original)
+        info.channel.send("Couldn't find a definition for %s", query_original)
     else:
-        Channel.send(u"[%s] %s",
+        info.channel.send(u"[%s] %s",
             Format.Bold(query_original), 
             output['Definition']
         )

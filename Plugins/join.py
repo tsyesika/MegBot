@@ -15,8 +15,8 @@
 #   along with MegBot.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-def main(connection):
-    if not Info.args:
+def main(connection, info):
+    if not info.args:
         # Being called by bot.
         return
     if "Channel" in dir():

@@ -59,10 +59,6 @@ def call(connection, command, plugin_name):
     # Lets get the plugin we're going to deal with.
     plugin = connection.plugin[plugin_name]
 
-
-    # We need to add the Info and Channel libraries to the plugin.
-    plugin.Info = command
-    plugin.Channel = connection.channels[command.channel]
     try:
         config = connection.config[u"plugin_options"][plugin_name]
     except KeyError:
@@ -73,7 +69,7 @@ def call(connection, command, plugin_name):
 
     # Now lets make a thread for the plugin to run in.
     thread = KillableThread(target=plugin.main,
-                              args=(connection,)
+                              args=(command, connection)
                              )
 
     # Start the plugin

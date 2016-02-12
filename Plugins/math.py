@@ -134,7 +134,7 @@ def infix(equation):
     """ Handles infix notation """
     Channel.send(u"Sorry, we don't currently support infix notation.")
 
-def main(conneciton):
+def main(conneciton, info):
     """ Calculates the answer to an equation """
     global base
     equation = []

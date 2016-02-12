@@ -15,11 +15,11 @@
 #   along with MegBot.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-def main(connection):
-    if not Info.args:
-        Server.part(Info.channel)
+def main(connection, info):
+    if not info.args:
+        Server.part(info.channel)
         return
-    Server.part(Info.args[0])
-    Channel.send(u"Parted from %s.", Info.args[0])
+    Server.part(info.args[0])
+    info.channel.send(u"Parted from %s.", info.args[0])
 
 help = u"Parts from a specified channel"

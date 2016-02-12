@@ -18,9 +18,9 @@
 import urllib2, re, traceback
 from urllib import quote
 
-def main(connection):
-    if not Info.args:
-        Channel.send(u"Please supply the word you want to be defined.")
+def main(connection, info):
+    if not info.args:
+        info.channel.send(u"Please supply the word you want to be defined.")
         return
     urbanterm = quote(' '.join(Info.args))
     google = urllib2.Request("http://www.urbandictionary.com/define.php?term=%s" % urbanterm)
@@ -28,16 +28,16 @@ def main(connection):
     try:
         google = urllib2.urlopen(google)
     except Exception:
-        Channel.send(u"Cannot access urbandictionary.com")
+        info.channel.send(u"Cannot access urbandictionary.com")
         return
     source = google.read()
     try:
         name = String(re.findall("<td class='word'>\n<span>\n(.+?)\n</span>", source)[0])
         definition = String(re.findall("<div class=\"definition\">(.+?)</div><div", source)[0])
-        definition = u"%s: [%s] - %s" % (Info.nick, Format.Bold(name), Helper.ConvertHTMLReversed(definition))
+        definition = u"%s: [%s] - %s" % (info.nick, Format.Bold(name), Helper.ConvertHTMLReversed(definition))
     except Exception:
         definition = u"Sorry, can't find a definiton"
         traceback.print_exc()
-    Channel.send(Helper.ConvertHTMLReversed(Helper.StripHTML(definition)))
+    info.channel.send(Helper.ConvertHTMLReversed(Helper.StripHTML(definition)))
 
 help = u"Tries to pull a definition from urbandictionary.com"

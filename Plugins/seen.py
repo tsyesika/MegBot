@@ -18,16 +18,16 @@
 import time
 import Libraries.store as store
 
-def main(connection):
+def main(connection, info):
     """
     Looks for the last time the user spoke and reports it.
     """
-    if not Info.args:
-        Channel.send(u"Please specify a user")
+    if not info.args:
+        info.channel.send(u"Please specify a user")
         return
 
-    if Info.args[0] == connection.settings["nick"]:
-        Channel.send(u"No I haven't seen myself, I'm all 1s and 0s")
+    if info.args[0] == connection.settings["nick"]:
+        info.channel.send(u"No I haven't seen myself, I'm all 1s and 0s")
         return
 
     try:
@@ -36,14 +36,14 @@ def main(connection):
         seen = store.Store("Seen", {})
 
     try:
-        record = seen[connection.name][Info.channel][unicode(Info.args[0])]
-        Channel.send(u"%s said \"%s\" %s", 
-            Info.args[0], 
+        record = seen[connection.name][Info.channel][unicode(info.args[0])]
+        info.channel.send(u"%s said \"%s\" %s", 
+            info.args[0], 
             record["msg"].strip(), 
             Helper.HumanTime(Helper.convertToTime(record["time"])).lower()
         )
     except KeyError:
-        Channel.send("Haven't seen %s." % Info.args[0])
+        info.channel.send("Haven't seen %s." % Info.args[0])
 
 def on_PRIVMSG(connection, info):
     """

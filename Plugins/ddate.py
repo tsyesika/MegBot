@@ -37,7 +37,7 @@ def day_num(day):
     else:
         return str(day) + 'th'
 
-def main(connection):
+def main(connection, info):
     today = date.today()
     is_leap_year = calendar.isleap(today.year)
     day_of_year = today.timetuple().tm_yday
@@ -63,7 +63,7 @@ def main(connection):
         output = (output % ndate) + " Celebrate %s!" % SEASONHOLIDAYS[season]
     else:
         output = output  % ndate
-    Channel.send(output)
+    info.channel.send(output)
 
 
 help = u"Discordian Date, only return current date for now"

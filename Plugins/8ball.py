@@ -17,10 +17,10 @@
 
 import random
 
-def main(connection):
+def main(connection, info):
     if not Info.args:
-        Channel.action(String("slaps %s" % Info.nick))
+        info.channel.action(String("slaps %s" % Info.nick))
     else:
-        Channel.send(String(random.choice(Config["replies"])))
+        info.channel.send(String(random.choice(Config["replies"])))
 
 help = u"Randomly chooses an option to a question you ask."

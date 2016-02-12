@@ -21,7 +21,7 @@ import urllib2, time
 import xml.etree.ElementTree as etree
 import Libraries.store as store
 
-def main(connection):
+def main(connection, info):
     """
     Uses the Yahoo API with the (so far) undocumented Weoid API MegWorld provides.
     This will check the spelling of the entered place, look up it's Weoid and then the weather for said place.
@@ -32,8 +32,8 @@ def main(connection):
     Todo:
     - Speed improvements? (possibly add caching?)
     """
-    if not Info.args:
-        Channel.send(u"Please specify a place")
+    if not info.args:
+        info.channel.send(u"Please specify a place")
         return
 
     # Checks the spelling of said place.
@@ -53,7 +53,7 @@ def main(connection):
     woeid = etree.fromstring(woeid.read())
 
     if int(woeid.attrib["{http://www.yahooapis.com/v1/base.rng}total"]) == 0:
-        Channel.send(u"Sorry, couldn't find that place.")
+        info.channel.send(u"Sorry, couldn't find that place.")
         return
 
     woeid = woeid.find('{http://where.yahooapis.com/v1/schema.rng}place/{http://where.yahooapis.com/v1/schema.rng}woeid').text
@@ -116,7 +116,7 @@ def main(connection):
     # If any of these haven't been set, we have incomplete data
     if None in [location, condition, wind, atmos]:
         place = " ".join(Info.args)
-        Channel.send(u"Incomplete weather data recieved for %s (%s), please contact weather station", place, woeid)
+        info.channel.send(u"Incomplete weather data recieved for %s (%s), please contact weather station", place, woeid)
         return
 
     # Okay now we need to convert Farenheit to Celsius, Kelvin and Rankine
@@ -128,7 +128,7 @@ def main(connection):
     kmph = int(int(wind.get("speed")) * 1.60934 + .5)
 
     # Send it all to the channel
-    Channel.send("[%s] Condition: %s | Temp: %sC/%sF/%sK/%sR | Humidity: %s%% | Wind Speed %smph/%skmph %s",
+    info.channel.send("[%s] Condition: %s | Temp: %sC/%sF/%sK/%sR | Humidity: %s%% | Wind Speed %smph/%skmph %s",
      location, condition.get("text"), celsius, condition.get("temp"), kelvin, rankine, atmos.get("humidity"), wind.get("speed"), kmph, different)
 
 help = u"Uses Yahoo's weather API to give you the weather for the location specified."

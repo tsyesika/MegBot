@@ -22,16 +22,16 @@ SUPPORTED_LANGS = ["en", "de", "cy", "af", "sq", "ar", "hy", "az", "eu", "be", "
             "pl", "pt", "ro", "ru", "sr", "sk", "sl", "es", "sw", "sv", "ta", "te", "th", "tr", "uk", "ur", "vi", "yi"]
 
 # This is the default language if no language is specified (languages which can be default languages are in SUPPORTED_LANGS)
-def main(connection):
+def main(connection, info):
     if not Info.args:
-        Channel.send(u"Please supply lang|lang <text to translate> or languages")
+        info.channel.send(u"Please supply lang|lang <text to translate> or languages")
         return
     if Info.args[0] == "languages":
         pass
     else:
         if Info.args[0].find("|")!=-1:
             #pipe used
-            langpair = (Info.args[0].split("|")[0], Info.args[0].split("|")[1])
+            langpair = (info.args[0].split("|")[0], info.args[0].split("|")[1])
             ltranslate = "+".join(Info.args[1:])
         else:
             if Info.args[0] in SUPPORTED_LANGS:

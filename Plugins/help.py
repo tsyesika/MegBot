@@ -19,8 +19,8 @@ from types import *
 
 """ Displays a help message or a list of available commands """
 
-def main(connection):
-    if not Info.args:
+def main(connection, info):
+    if not info.args:
         # Generic list of plugins.
         cout = ""
         amount = len(connection.plugins.keys())-1
@@ -32,9 +32,9 @@ def main(connection):
             else:
                 cout += ", " + plugin_name
         if done:
-            Channel.send(u"%s: %s", Info.nick, cout[2:])
+            info.channel.send(u"%s: %s", Info.nick, cout[2:])
         else:
-            Channel.send(u"%s: It seems no plugins are loaded, please speak to the bot admin.", Info.nick)
+            info.channel.send(u"%s: It seems no plugins are loaded, please speak to the bot admin.", Info.nick)
     else:
         plugin = Info.args[0]
         if plugin in connection.plugins.keys():
@@ -44,10 +44,10 @@ def main(connection):
                     connection.plugins[plugin].help(connection, Info)
                 elif type(connection.plugins[plugin].help) in StringTypes:
                     # It's a string
-                    Channel.send(u"%s: %s", Info.nick, connection.plugins[plugin].help)
+                    info.channel.send(u"%s: %s", info.nick, connection.plugins[plugin].help)
             else:
-                Channel.send(u"%s: Can't find any help for %s.", Info.nick, plugin)
+                info.channel.send(u"%s: Can't find any help for %s.", info.nick, plugin)
         else:
-            Channel.send(u"%s: Can't find plugin %s.", Info.nick, plugin)
+            info.channel.send(u"%s: Can't find plugin %s.", info.nick, plugin)
 
 help = u"Displays a list of plugins or if a plugin is specified tries to get the help for that plugin"
