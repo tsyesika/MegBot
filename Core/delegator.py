@@ -43,31 +43,31 @@ def main(connection, command):
         return
 
     # can we make this better?
-    command = connection.libraries["IRCObjects"].Info(command, connection)
+    info = connection.libraries["IRCObjects"].Info(command, connection)
 
-    if "PING" == command.action:
+    if info.action == "PING":
         # Lets hand off to ping in case it's a PING message.
-        connection.core["Coreping"].main(connection, command)
+        connection.core["Coreping"].main(connection, info)
 
     # Okay, we'll now see if any hooks wish to be called on it. - old system
-    connection.hooker.hook(connection, command)
+    connection.hooker.hook(connection, info)
 
 
     # Make an event (new events/hook system)
-    event = connection.core["Corehandler"].IRCEvent(command)
+    event = connection.core["Corehandler"].IRCEvent(info)
     connection.handler.event(event)
 
-    if not command.message:
+    if not info.message:
         return
 
     trigger = connection.settings["trigger"]
-    if command.trigger != trigger:
+    if info.trigger != trigger:
         return
 
     # Okay so at this point we can say they are trying to call a plugin.
     # first thing's first is we need to check the plugin actually exists
 
-    if command.plugin_name not in connection.plugin:
+    if info.plugin_name not in info.plugin:
         return
 
     # last thing we need to do is delegate off to the executor core plugin
@@ -75,4 +75,4 @@ def main(connection, command):
     ##
     # Remove .split() when #36 is done
     ##
-    connection.core["Coreexecutor"].main(connection, command, command.plugin_name)
+    connection.core["Coreexecutor"].main(connection, info, info.plugin_name)
