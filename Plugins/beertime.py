@@ -22,7 +22,7 @@
 import re
 
 
-BEERTIME = re.compile(r"beertime|beer time", re.IGNORECASE|re.UNICODE)
+BEERTIME = re.compile(r"^[^!].*(beer\s*time)", re.IGNORECASE|re.UNICODE)
 
 eventID = 'beerEvent'
 
