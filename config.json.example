@@ -19,6 +19,7 @@
             "trigger": ","
         }
     },
+	"blacklist": ["load", "join", "part"],
     "paths": {
         "core": "Core/",
         "data": "Data/",
