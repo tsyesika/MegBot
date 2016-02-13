@@ -32,16 +32,16 @@ def main(connection, info):
             else:
                 cout += ", " + plugin_name
         if done:
-            info.channel.send(u"%s: %s", Info.nick, cout[2:])
+            info.channel.send(u"%s: %s", info.nick, cout[2:])
         else:
-            info.channel.send(u"%s: It seems no plugins are loaded, please speak to the bot admin.", Info.nick)
+            info.channel.send(u"%s: It seems no plugins are loaded, please speak to the bot admin.", info.nick)
     else:
-        plugin = Info.args[0]
+        plugin = info.args[0]
         if plugin in connection.plugins.keys():
             if "help" in dir(connection.plugins[plugin]):
                 if type(connection.plugins[plugin].help) in [FunctionType, MethodType, UnboundMethodType]:
                     # It's a function
-                    connection.plugins[plugin].help(connection, Info)
+                    connection.plugins[plugin].help(connection, info)
                 elif type(connection.plugins[plugin].help) in StringTypes:
                     # It's a string
                     info.channel.send(u"%s: %s", info.nick, connection.plugins[plugin].help)

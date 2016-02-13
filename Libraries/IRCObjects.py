@@ -44,6 +44,7 @@ class Standard(object):
 
 class Info(Standard):
     def __init__(self, line=None, connection=None):
+        self.connection = connection
 
         if line == None:
             # Make an empty Info.
@@ -61,7 +62,6 @@ class Info(Standard):
             self.args = []
             return
 
-        self.connection = connection
         # Lets pull things out.
         self.raw = line
         self.parsed = self.parseIRC(line)
@@ -134,8 +134,11 @@ class Info(Standard):
         else:
             return (hostmask, message[0], args)
 
-        @property
-        def channel(self):
+    @property
+    def channel(self):
+        if self.connection is None:
+            return None
+        else:
             return self.connection.channels[self.channel_name]
 
 class L_Helper(Standard):

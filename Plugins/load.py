@@ -30,7 +30,7 @@ def find_name(args):
         return args[0]
     return find_name(args[1:])
 
-def main(connection):
+def main(connection, info):
     """
     Handles plugin reloading for Core, Libraries, Config and normal user plugins.
     This will handle flags within the IRC. If also the libraries are being reloaded the
@@ -38,7 +38,7 @@ def main(connection):
 
     Once an auth system is inplace the http:// loading needs adding & pastebin loading.
     """
-    if not Info.args:
+    if not info.args:
         Channel.send("You must give a plugin name")
         return
     
@@ -47,21 +47,21 @@ def main(connection):
     # -l = library
     # -C = config
 
-    name = find_name(Info.args)
+    name = find_name(info.args)
     
-    if "-a" in Info.args and "-f" in Info.args:
+    if "-a" in info.args and "-f" in info.args:
         connection.libraries.load_plugins(force=True) 
         connection.core.load_plugins(force=True)
         connection.plugins.load_plugins(force=True)
         Channel.send("Okay, everything should have re-loaded. Please check the term for errors")
 
-    elif "-a" in Info.args:
+    elif "-a" in info.args:
         connection.core.load_plugins(force=True)
         connection.libraries.load_plugins(force=True)
         connection.plugins.load_plugins(force=True)
         Channel.send("Okay, everything that needed to be re-loaded should have been. Please check the term for errors")
 
-    elif "-b" in Info.args and "-n" in Info.args:
+    elif "-b" in info.args and "-n" in info.args:
         # blacklist plugin for a specific network
         if "blacklist" in connection.settings:
             connection.settings["blacklist"].append(name)
@@ -70,7 +70,7 @@ def main(connection):
         
         Channel.send(String("%s been added to the blacklist for %s network", name, connection.name))
 
-    elif "-b" in Info.args:
+    elif "-b" in info.args:
         # blacklist for all networks
         if "blacklist" in connection.config:
             connection.config["blacklist"].append(name)
@@ -79,7 +79,7 @@ def main(connection):
     
         Channel.send(String("%s has been added to the global blacklist", name))
 
-    elif "-w" in Info.args and "-n" in Info.args:
+    elif "-w" in info.args and "-n" in info.args:
         # adds to network specific whitelist
         if "whitelist" in connection.settings:
             connection.settings["whitelist"].append(name)
@@ -88,7 +88,7 @@ def main(connection):
 
         Channel.send(String("%s has been added to the whitelist for %s network", name, connection.name))
 
-    elif "-w" in Info.args:
+    elif "-w" in info.args:
         # adds to whitelist for all networks
         if "whitelist" in connection.config:
             connection.config["whitelist"].append(name)
@@ -97,8 +97,8 @@ def main(connection):
 
         Channel.send(String("%s has been added to the global whitelist", name, connection.name))
 
-    elif "-c" in Info.args:
-        if "-f" in Info.args:
+    elif "-c" in info.args:
+        if "-f" in info.args:
             force = True
         else:
             force = False
@@ -110,8 +110,8 @@ def main(connection):
             connection.core.load_plugins(force=force)
             Channel.send("The core plugins should have re-loaded now, please check the term for errors")
 
-    elif "-l" in Info.args:
-        if "-f" in Info.args:
+    elif "-l" in info.args:
+        if "-f" in info.args:
             force = True
         else:
             force = False
@@ -123,7 +123,7 @@ def main(connection):
             Channel.send("The libraries should have been re-loaded now, please check the term for errors")
             connection.libraries.load_plugins(force=force)
 
-    elif "-C" in Info.args:
+    elif "-C" in info.args:
         # okay - config
         if os.path.isfile('config.json'):
             try:

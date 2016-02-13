@@ -21,12 +21,12 @@ import re
 import json
 
 def main(connection, info):
-    if not Info.args:
+    if not info.args:
         info.channel.send("Please supply the word you want to be defined.")
         return
 
-    query_original = " ".join(Info.args)
-    query_string = "+".join(Info.args)
+    query_original = " ".join(info.args)
+    query_string = "+".join(info.args)
 
     url = "http://api.duckduckgo.com/?q=%s&format=json" % query_string
     request = urlopen(url)

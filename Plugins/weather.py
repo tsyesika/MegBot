@@ -37,11 +37,11 @@ def main(connection, info):
         return
 
     # Checks the spelling of said place.
-    new_spelling = Web.SpellCheck(" ".join(Info.args))
+    new_spelling = Web.SpellCheck(" ".join(info.args))
     different = False
-    if new_spelling != " ".join(Info.args):
+    if new_spelling != " ".join(info.args):
         # They're different (lets add (corrected from onto it))
-        different = u"(Changed from: %s)" % " ".join(Info.args)
+        different = u"(Changed from: %s)" % " ".join(info.args)
     else:
         different = u""
 
@@ -115,7 +115,7 @@ def main(connection, info):
 
     # If any of these haven't been set, we have incomplete data
     if None in [location, condition, wind, atmos]:
-        place = " ".join(Info.args)
+        place = " ".join(info.args)
         info.channel.send(u"Incomplete weather data recieved for %s (%s), please contact weather station", place, woeid)
         return
 

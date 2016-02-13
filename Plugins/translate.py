@@ -23,23 +23,23 @@ SUPPORTED_LANGS = ["en", "de", "cy", "af", "sq", "ar", "hy", "az", "eu", "be", "
 
 # This is the default language if no language is specified (languages which can be default languages are in SUPPORTED_LANGS)
 def main(connection, info):
-    if not Info.args:
+    if not info.args:
         info.channel.send(u"Please supply lang|lang <text to translate> or languages")
         return
-    if Info.args[0] == "languages":
+    if info.args[0] == "languages":
         pass
     else:
-        if Info.args[0].find("|")!=-1:
+        if info.args[0].find("|")!=-1:
             #pipe used
             langpair = (info.args[0].split("|")[0], info.args[0].split("|")[1])
-            ltranslate = "+".join(Info.args[1:])
+            ltranslate = "+".join(info.args[1:])
         else:
-            if Info.args[0] in SUPPORTED_LANGS:
-                langpair = ("auto", Info.args[0])
-                ltranslate = "+".join(Info.args[1:])
+            if info.args[0] in SUPPORTED_LANGS:
+                langpair = ("auto", info.args[0])
+                ltranslate = "+".join(info.args[1:])
             else:
                 langpair = ("auto", Config["default_language"])
-                ltranslate = "+".join(Info.args)
+                ltranslate = "+".join(info.args)
         try:
             # Bug detection faulty
             google = urllib2.Request("http://translate.google.com/m?sl=%s&tl=%s&ie=UTF-8&prev=_m&q=%s" % (langpair[0], langpair[1], ltranslate))
@@ -49,10 +49,10 @@ def main(connection, info):
             langtran = re.findall("lass=\"s1\">(.+?)</a>.*>&gt;</a><a href=\"http://translate.google.com/m.*\" class=\"s1\">(.+?)</a></div><br><div dir=\"ltr\" class=\"t0\">", source)[0]
             result = re.findall("=\"ltr\" class=\"t0\">(.+?)</div>", source)[0]
 
-            output = u"%s: %s[%s to %s]%s %s" % (Info.nick, Format.bold, langtran[0], langtran[1], Format.bold, result)
+            output = u"%s: %s[%s to %s]%s %s" % (info.nick, Format.bold, langtran[0], langtran[1], Format.bold, result)
             output = Helper.StripHTML(output)
             output = Helper.ConvertHTMLReversed(output)
-            Channel.send(output)
+            info.channel.send(output)
 
         except Exception:
             traceback.print_exc()

@@ -18,8 +18,8 @@
 import random
 
 def main(connection, info):
-    if not Info.args:
-        info.channel.action(String("slaps %s" % Info.nick))
+    if not info.args:
+        info.channel.action(String("slaps %s" % info.nick))
     else:
         info.channel.send(String(random.choice(Config["replies"])))
 

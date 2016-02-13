@@ -104,6 +104,7 @@ class IRCEvent(Event):
         ## need to check for all the attributes on Info object.
         remote = event.item
         citems = []
+
         for item in dir(self.item):
             if item.startswith("__"):
                 # pass on magical methods/attributes

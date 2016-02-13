@@ -23,19 +23,19 @@ DEFINITIONS = {
     "U":"unisex"
 }
 
-def main(connection):
+def main(connection, info):
     # Find name
-    if not Info.args:
+    if not info.args:
         Channel.send("Please specify a name.")
         return
 
-    name = Info.args[0]
+    name = info.args[0]
 
     reply = urllib2.urlopen("http://api.megworld.co.uk/Name-Gender/gender.php?name=%s" % name)
     reply = reply.read()
     if reply in DEFINITIONS.keys():
-        Channel.send("%s is %s" % (name, DEFINITIONS[reply]))
+        info.channel.send("%s is %s" % (name, DEFINITIONS[reply]))
     else:
-        Channel.send("Sorry we don't know %s, please check later for it" % name)
+        info.channel.send("Sorry we don't know %s, please check later for it" % name)
 
 help = "Uses MegWorld's API to try and work out the gender from a given real name"

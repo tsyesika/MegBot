@@ -45,16 +45,16 @@ def prep_data(data):
     
     return name, cid, status, dent_time
 
-def main(connection):
-    if not Info.args:
-        nick = Info.nick
+def main(connection, info):
+    if not info.args:
+        nick = info.nick
     else:
-        nick = Info.args[-1]
+        nick = info.args[-1]
     try:
         data = urllib2.urlopen("http://identi.ca/api/statuses/user_timeline.json?screen_name=%s" % nick)
         data = data.read()
         data = json.loads(data)
-        if data and not ("-g" in Info.args or "-group" in Info.args):
+        if data and not ("-g" in info.args or "-group" in info.args):
             # this is from the http://status.net/wiki/Twitter-compatible_API
             name, cid, status, dent_time = prep_data(data)
         else:
@@ -70,6 +70,6 @@ def main(connection):
         traceback.print_exc()
         Channel.send(u"An error has occured")
         return
-    Channel.send(u"[%s] %s - %s %s ago - %s http://www.identi.ca/notice/%s", Format.Bold(name), status, Format.Bold("Approx:"), dent_time, Format.Bold("Link:"), cid)
+    info.channel.send(u"[%s] %s - %s %s ago - %s http://www.identi.ca/notice/%s", Format.Bold(name), status, Format.Bold("Approx:"), dent_time, Format.Bold("Link:"), cid)
 
 help = u"Gets the last dent from a specific user/group (or tries your nickname if non is given) from identi.ca (for group support use -g or -group)"

@@ -36,14 +36,14 @@ def main(connection, info):
         seen = store.Store("Seen", {})
 
     try:
-        record = seen[connection.name][Info.channel][unicode(info.args[0])]
+        record = seen[connection.name][info.channel_name][unicode(info.args[0])]
         info.channel.send(u"%s said \"%s\" %s", 
             info.args[0], 
             record["msg"].strip(), 
             Helper.HumanTime(Helper.convertToTime(record["time"])).lower()
         )
     except KeyError:
-        info.channel.send("Haven't seen %s." % Info.args[0])
+        info.channel.send("Haven't seen %s." % info.args[0])
 
 def on_PRIVMSG(connection, info):
     """
@@ -59,14 +59,14 @@ def on_PRIVMSG(connection, info):
 
     # there's got to be a better way fo doing this... it looks so ugly :(
     if connection.name in seen:
-        if info.channel in seen[connection.name]:
-            seen[connection.name][info.channel][info.nick] = {"msg":info.message, "time":time.time()}
+        if info.channel_name in seen[connection.name]:
+            seen[connection.name][info.channel_name][info.nick] = {"msg":info.message, "time":time.time()}
         else:
             #new channel
-            seen[connection.name][info.channel] = {info.nick: {"msg":info.message, "time":time.time()}}
+            seen[connection.name][info.channel_name] = {info.nick: {"msg":info.message, "time":time.time()}}
     else:
         #new connection etc.
-        seen[connection.name] = {info.channel: {info.nick: {"msg":info.message, "time":time.time()}}}
+        seen[connection.name] = {info.channel_name: {info.nick: {"msg":info.message, "time":time.time()}}}
     seen.save()
 
 

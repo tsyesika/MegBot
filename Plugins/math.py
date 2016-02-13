@@ -138,7 +138,7 @@ def main(conneciton, info):
     """ Calculates the answer to an equation """
     global base
     equation = []
-    for item in Info.args:
+    for item in info.args:
         if not item:
             continue
         # okay it could be a number of things actually,

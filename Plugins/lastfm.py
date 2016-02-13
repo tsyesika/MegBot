@@ -17,11 +17,11 @@
 
 import urllib2, json
 
-def main(connection):
-    if not Info.args:
-        user = Info.nick
+def main(connection, info):
+    if not info.args:
+        user = info.nick
     else:
-        user = Info.args[0]
+        user = info.args[0]
     try:
         #this key needs changing
         api_key = 'b25b959554ed76058ac220b7b2e0a026'
@@ -33,6 +33,6 @@ def main(connection):
         print song[u'artist'][u'name']
         Channel.send(u"%s is/was listening to: %s - %s", user, song[u'name'].encode('utf-8'), song[u'artist'][u'name'].encode('utf-8'))
     except Exception:
-        Channel.send(u"Sorry there was an error, check your username?")
+        info.channel.send(u"Sorry there was an error, check your username?")
 
 help = u"Gets the last scrobbled song from a specified user (if no one was specifies it tries your nick) from last.fm"

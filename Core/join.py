@@ -35,7 +35,7 @@ def main(connection, channel):
 def on_JOIN(connection, command, hooked=True):
     """ Called when a channel is joined """
     if hooked:
-        channel = command.channel
+        channel = command.channel_name
     else:
         channel = command
 

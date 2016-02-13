@@ -52,7 +52,7 @@ def call(connection, command, plugin_name):
 
     # This checks that megbot is actually in the channel first.
     # If it isn't we'll just return out.
-    if not command.channel in connection.channels:
+    if not command.channel_name in connection.channels:
         return
 
     # Turn line back into a string so we have something hash
@@ -69,7 +69,7 @@ def call(connection, command, plugin_name):
 
     # Now lets make a thread for the plugin to run in.
     thread = KillableThread(target=plugin.main,
-                              args=(command, connection)
+                              args=(connection, command)
                              )
 
     # Start the plugin
