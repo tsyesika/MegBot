@@ -1,6 +1,9 @@
 *.py[co]
 *~
 *.swp
+build
+dist
+*.egg*
 databases/*
 config.py
 config.json

@@ -13,7 +13,6 @@ NB: This readme will be subject to change throughout this releases development
 
 == Using ==
 
-- Make sure you have python 2.6+ installed (could work on lower, won't work on 3.x)
-- edit config (to your network)
-- run `chmod +x MegBot`
-- Run `./MegBot`
+- Make sure you're running Python 2.7
+- Run `python setup.py install`
+- Then run `megbot`

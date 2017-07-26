@@ -19,7 +19,6 @@
 import sys
 import os
 
-from signal import SIGHUP, SIGTSTP, signal
 from threading import Thread
 from time import sleep
 import traceback
@@ -83,24 +82,7 @@ class Bot(object):
                     self.thread,
                     False)
 
-def restart_connections(sig, frame):
-    global bots
-    # we get signal!
-    print "[DEBUG] WE GET SIGNAL!"
-    for network in bots:
-        if connection["thread"].is_alive():
-            continue
-
-        new_connection = {}
-        new_connection["thread"] = Thread(target=Bot, args=(network, configuration, new_connection))
-        new_connection["object"] = None
-        new_connection["thread"].daemon = True
-        new_connection["thread"].start()
-        bots[network] = new_connection
-
-
-
-if __name__ == "__main__":
+def main():
     # since there is no good logging and/or way of talking to the
     # bot this is set to not ready as it shouldn't be used
     DaemonNotReady = True
@@ -131,9 +113,6 @@ if __name__ == "__main__":
             connection["thread"].daemon = True
             connection["thread"].start()
             bots[network] = connection
-
-    signal(SIGHUP, restart_connections)
-    signal(SIGTSTP, restart_connections)
 
     try:
         while True:
