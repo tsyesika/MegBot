@@ -232,16 +232,7 @@ class CoreLoader(Loader):
         return plugin
 
 class PluginLoader(Loader):
-    
-    def load_plugin(self, name, plugin, force=False):
-        plugin = super(PluginLoader, self).load_plugin(name, plugin, force=force)
-
-        plugin.Web = self.connection.libraries["IRCObjects"].L_Web(self.connection)
-        plugin.Helper = self.connection.libraries["IRCObjects"].L_Helper()
-        plugin.Format = self.connection.libraries["IRCObjects"].L_Format()
-        plugin.String = self.connection.libraries["String"].String 
-
-        return plugin
+    pass
 
 class LibraryLoader(Loader):
 
@@ -254,7 +245,7 @@ class LibraryLoader(Loader):
         sys.path.append(path)
 
 
-class Master_Loader(object):
+class MasterLoader(object):
     def __init__(self, connection, paths):
         """ This will make loaders on connection for paths """
         ## look for a way around this

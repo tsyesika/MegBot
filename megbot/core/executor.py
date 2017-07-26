@@ -68,9 +68,13 @@ def call(connection, command, plugin_name):
         plugin.Config.update(config)
 
     # Now lets make a thread for the plugin to run in.
-    thread = KillableThread(target=plugin.main,
-                              args=(connection, command)
-                             )
+    try:
+        thread = KillableThread(target=plugin.main,
+                                  args=(connection, command)
+                                 )
+    except Exception:
+        logging.exception("Could not start pluging %r", plugin)
+        return
 
     # Start the plugin
     thread.start()

@@ -1,6 +1,6 @@
 *.py[co]
 *~
 *.swp
-Databases/*
+databases/*
 config.py
 config.json

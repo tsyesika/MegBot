@@ -24,8 +24,8 @@ from threading import Thread
 from time import sleep
 import traceback
 
-from Configuration import configuration
-from Loader import Master_Loader
+from megbot.configuration import configuration
+from megbot.loader import MasterLoader
 
 class Bot(object):
     def __init__(self, name, config, thread, run=True):
@@ -42,12 +42,12 @@ class Bot(object):
         self.alive = True
 
         # load loaders - yeh i know.
-        Master_Loader(self, self.config[u"paths"]) # returns None.
+        MasterLoader(self, self.config[u"paths"]) # returns None.
 
         self.core["Coreconnect"].main(self)
 
         if run:
-            self.server = self.libraries["IRCObjects"].L_Server(self)
+            self.server = self.libraries["IRCObjects"].Server(self)
             self.server.__setuphooks__(self)
             self.run()
 

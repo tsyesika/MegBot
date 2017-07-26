@@ -9,7 +9,7 @@ from types import *
 class Store(object):
     def __init__(self, name, data=None):
         # This is to prevent circular deps in imports
-        from Configuration import configuration as config
+        from megbot.configuration import configuration as config
 
         self.fpath = config["paths"]["databases"]
         if self.fpath[-1] != "/":

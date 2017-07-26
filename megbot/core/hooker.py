@@ -61,15 +61,15 @@ class Hooker(object):
 
     def __init__(self):
         self.register_hook('on_376', load_source("on_376",
-                                                 "Core/on_376.py").main)
+                                                 "megbot/core/on_376.py").main)
         self.register_hook('on_422', load_source("on_376",
-                                                 "Core/on_376.py").main)
+                                                 "megbot/core/on_376.py").main)
         self.register_hook('on_QUIT', load_source("on_QUIT",
-                                                  "Core/on_QUIT.py").main)
+                                                  "megbot/core/on_QUIT.py").main)
         self.register_hook('on_JOIN', load_source("on_QUIT",
-                                                  "Core/join.py").on_JOIN)
+                                                  "megbot/core/join.py").on_JOIN)
         self.register_hook('on_396', load_source("on_396",
-                                          "Core/on_396.py").main)
+                                          "megbot/core/on_396.py").main)
     
     def hook(self, bot, command):
         """Hooks plugins, etc..."""

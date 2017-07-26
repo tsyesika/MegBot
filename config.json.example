@@ -19,14 +19,13 @@
             "trigger": ","
         }
     },
-	"blacklist": ["load", "join", "part"],
+	"blacklist": ["join", "part"],
     "paths": {
-        "core": "Core/",
-        "data": "Data/",
-        "databases": "Databases/",
-        "libraries": "Libraries/",
-        "logs": "Logging/",
-        "plugin": "Plugins/"
+        "core": "megbot/core/",
+        "data": "megbot/data/",
+        "databases": "databases/",
+        "libraries": "megbot/libraries/",
+        "plugin": "megbot/plugins/"
     },
     "ctcp_options": {
         "version": "MegBot 0.6 http://github.com/xray7224/MegBot"

@@ -19,17 +19,19 @@
 #   along with MegBot.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-import sys
-import os
-import json
-from Libraries.store import Store
 from types import *
+import json
+import os
+import sys
+
+from megbot.libraries.store import Store
+
+CONFIG_FILE = "config.json"
 
 class Configuration(Store):
-    FILE = "config.json"
 
     def __init__(self):
-        self.fpath = self.FILE
+        self.fpath = os.path.join(os.getcwd(), CONFIG_FILE)
         self.mockConfigItem = ConfigItem(self, {})
         self._type = DictType
 

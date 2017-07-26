@@ -16,12 +16,13 @@
 ##
 
 import time
-import Libraries.store as store
 
 def main(connection, info):
     """
     Looks for the last time the user spoke and reports it.
     """
+    store = connection.libraries["store"]
+    Helper = connection.libraries["IRCObjects"].Helper()
     if not info.args:
         info.channel.send(u"Please specify a user")
         return
@@ -49,6 +50,7 @@ def on_PRIVMSG(connection, info):
     """
     Logs this speach.
     """
+    store = connection.libraries["store"]
     try:
         seen = store.Store("Seen")
     except IOError:

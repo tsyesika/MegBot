@@ -40,7 +40,7 @@ def on_JOIN(connection, command, hooked=True):
         channel = command
 
     if connection.libraries:
-        channel_inst = connection.libraries["IRCObjects"].L_Channel(connection,
+        channel_inst = connection.libraries["IRCObjects"].Channel(connection,
                                                                     channel)
         if not channel in connection.channels:
             connection.channels[channel] = {}

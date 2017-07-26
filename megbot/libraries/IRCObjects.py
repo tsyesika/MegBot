@@ -141,7 +141,7 @@ class Info(Standard):
         else:
             return self.connection.channels[self.channel_name]
 
-class L_Helper(Standard):
+class Helper(Standard):
     def __init__(self):
         self.HTMLTagRe = re.compile(r'<[^<]+?>')
         self.HTMLParser = HTMLParser.HTMLParser()
@@ -227,7 +227,7 @@ class L_Helper(Standard):
         return datetime.fromtimestamp(ts)
 
 
-class L_Web(Standard):
+class Web(Standard):
     def __init__(self, connection):
         self.title = ""
 
@@ -262,13 +262,13 @@ class L_Web(Standard):
             correction = word
         return correction
 
-class L_Format(Standard):
+class Format(Standard):
     """mIRC style formatting"""
-    bold = chr(2)
-    underline = chr(37)
-    stress = chr(26)
-    colour = chr(3)
-    reset = chr(17)
+    bold_marker = chr(2)
+    underline_marker = chr(37)
+    stress_marker = chr(26)
+    colour_marker = chr(3)
+    reset_marker = chr(17)
     colours = {
         "white":"00",
         "black":"01",
@@ -289,40 +289,40 @@ class L_Format(Standard):
         }
 
     @staticmethod
-    def _format(input, code):
-        return "%s%s%s" % (code, input, code)
+    def _format(text, marker):
+        return "%s%s%s" % (marker, text, marker)
 
     @staticmethod
-    def Bold(input):
+    def bold(text):
         """Makes text bold"""
-        return L_Format._format(input, L_Format.bold)
+        return Format._format(text, Format.bold_marker)
 
     @staticmethod
-    def Stress(input):
+    def stress(text):
         """Makes text stressed or italic (depending on the client)"""
-        return L_Format._format(input, L_Format.stress)
+        return Format._format(text, Format.stress_marker)
 
     @staticmethod
-    def Underline(input):
+    def underline(text):
         """Makes text underlined"""
-        return L_Format._format(input, L_Format.underline)
+        return Format._format(text, Format.underline_marker)
 
     @staticmethod
-    def Colour(input, fcolour, bcolour=None):
+    def colour(text, fcolour, bcolour=None):
         """Makes text coloured"""
         if bcolour == None:
             colour = fcolour
         else:
             colour = "%s,%s" % (fcolour, bcolour)
 
-        return "%s%s%s%s" % (L_Format.colour, colour, input, L_Format.reset)
+        return "%s%s%s%s" % (Format.colour_marker, colour, text, Format.reset_marker)
 
     @staticmethod
-    def Reset(input):
+    def reset(text):
         """Resets formatting"""
-        return "%s%s" % (input, L_Format.reset)
+        return "%s%s" % (text, Format.reset_marker)
 
-class L_Channel(Standard):
+class Channel(Standard):
     def __init__(self, connection, name):
         self.connection = connection # Connection of bot, instance.
         self.name = name
@@ -335,7 +335,7 @@ class L_Channel(Standard):
         self.nicks = []
         for person in self.nicks:
             if person[0] in ["&", "~", "@"]:
-                self.ops.append(erson[1:])
+                self.ops.append(person[1:])
             elif person[0] == "%":
                 self.halfops.append(person[1:])
             elif person[0] == "+":
@@ -511,7 +511,7 @@ class L_Channel(Standard):
             return
         self.topic = message
 
-class L_Server(Standard):
+class Server(Standard):
     def __init__(self, connection):
         self.connection = connection
         self.channels = self.connection.channels
