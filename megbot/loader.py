@@ -164,7 +164,7 @@ class Loader(object):
 
     def get_plugins(self):
         """ Gets all the plugins in the path """
-        return glob.glob("%s/*.py" % self._path)
+        return [pth for pth in glob.glob("%s/*.py" % self._path) if not pth.endswith("__init__.py")]
     
     def get_name(self, plugin):
         """ Gets a name from a file name """

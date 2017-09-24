@@ -20,31 +20,29 @@ from types import *
 """ Displays a help message or a list of available commands """
 
 def main(connection, info):
+    # Older versions of megbot had an easy to use list of plugins. Recreate it here
+    plugins = {}
+    for plgn in connection.plugin.get_plugins():
+        name = connection.plugin.get_name(plgn)
+        if name in connection.plugin._plugins:
+            plugins[name] = connection.plugin._plugins[name]["plugin"]
+
     if not info.args:
         # Generic list of plugins.
-        cout = ""
-        amount = len(connection.plugins.keys())-1
-        done = False
-        for i, plugin_name in enumerate(connection.plugins.keys()):
-            done = True
-            if i == amount:
-                cout += " & " + plugin_name
-            else:
-                cout += ", " + plugin_name
-        if done:
-            info.channel.send(u"%s: %s", info.nick, cout[2:])
+        if plugins:
+            info.channel.send(u"%s: %s", info.nick, ", ".join(plugins.keys()))
         else:
             info.channel.send(u"%s: It seems no plugins are loaded, please speak to the bot admin.", info.nick)
     else:
         plugin = info.args[0]
-        if plugin in connection.plugins.keys():
-            if "help" in dir(connection.plugins[plugin]):
-                if type(connection.plugins[plugin].help) in [FunctionType, MethodType, UnboundMethodType]:
+        if plugin in plugins.keys():
+            if "help" in dir(plugins[plugin]):
+                if type(plugins[plugin].help) in [FunctionType, MethodType, UnboundMethodType]:
                     # It's a function
-                    connection.plugins[plugin].help(connection, info)
-                elif type(connection.plugins[plugin].help) in StringTypes:
+                    plugins[plugin].help(connection, info)
+                elif type(plugins[plugin].help) in StringTypes:
                     # It's a string
-                    info.channel.send(u"%s: %s", info.nick, connection.plugins[plugin].help)
+                    info.channel.send(u"%s: %s", info.nick, plugins[plugin].help)
             else:
                 info.channel.send(u"%s: Can't find any help for %s.", info.nick, plugin)
         else:
