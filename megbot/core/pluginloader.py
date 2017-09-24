@@ -31,7 +31,6 @@ def main(connection, plugin=None, force=False):
     This will load plugins, if plugin is left as the default (None) then
     it will look in Plugins/ (or what's specified in the config under
     the dict path). if it's specified it will only load that specific plugin.
-    This will also add the Server, Helper and Web instances to the bots
     """
     if plugin:
         connection.plugins.load_plugin(name=plugin, force=force) 
