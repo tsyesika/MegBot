@@ -16,10 +16,7 @@
 ##
 
 def main(connection, info):
-    if not info.args:
-        Server.part(info.channel)
-        return
-    Server.part(info.args[0])
+    connection.server.part(info.args[0])
     info.channel.send(u"Parted from %s.", info.args[0])
 
 help = u"Parts from a specified channel"
