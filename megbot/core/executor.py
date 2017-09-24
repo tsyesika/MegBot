@@ -59,13 +59,9 @@ def call(connection, command, plugin_name):
     # Lets get the plugin we're going to deal with.
     plugin = connection.plugin[plugin_name]
 
-    try:
-        config = connection.config[u"plugin_options"][plugin_name]
-    except KeyError:
-        config = {}
-    finally:
-        plugin.Config = connection.config[u"plugin_options"]["__DEFAULTS__"]
-        plugin.Config.update(config)
+    config = {}
+    config.update(connection.config[u"plugin_options"]["__DEFAULTS__"])
+    config.update(connection.config[u"plugin_options"].get(plugin_name, {}))
 
     # Now lets make a thread for the plugin to run in.
     try:
@@ -79,7 +75,7 @@ def call(connection, command, plugin_name):
     # Start the plugin
     thread.start()
 
-    timer = connection.core["Corehandler"].TimedEvent(plugin.Config["timeout"],
+    timer = connection.core["Corehandler"].TimedEvent(config["timeout"],
                                                         thread.kill_meh,
                                                         command.message)
 

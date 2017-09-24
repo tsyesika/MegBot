@@ -18,9 +18,10 @@
 import random
 
 def main(connection, info):
+    replies = connection.config["plugin_options"]["8ball"]["replies"]
     if not info.args:
         info.channel.action("slaps %s" % info.nick)
     else:
-        info.channel.send(random.choice(Config["replies"]))
+        info.channel.send(random.choice(replies))
 
 help = u"Randomly chooses an option to a question you ask."
