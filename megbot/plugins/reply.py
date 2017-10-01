@@ -25,6 +25,7 @@ CHATTINESS = 30  # where 100 would be reply all the time
 
 _cache = {}
 
+_what_you_said = {}
 
 class Reply(object):
     valid_options = ["reply", "chance"]
@@ -99,6 +100,17 @@ def on_PRIVMSG(connection, info):
         msg = reply.sub(info)
         if msg is not None:
             info.channel.send(msg)
+            key = "{}#{}".format(connection.name, info.channel_name)
+            _what_you_said[key] = reply
+
+
+def on_what_now(connection, info):
+    key = "{}#{}".format(connection.name, info.channel_name)
+    if key in _what_you_said:
+        msg = u"{}: reply was based on {}".format(info.nick, _what_you_said[key].serialize()[0])
+        info.channel.send(msg)
+    else:
+        info.channel.send(u"I didn't say anything")
 
 
 def init(connection):
@@ -119,6 +131,13 @@ def init(connection):
     # this will peform an event on privmsg.
     info.action = "PRIVMSG"
     event = connection.core["Corehandler"].IRCEvent(info, on_PRIVMSG, EVENT_ID)
+    connection.handler.register_event(event)
+
+    info = connection.libraries["IRCObjects"].Info()
+    info.action = "PRIVMSG"
+    info.plugin_name = "what"
+    info.args = ["was", "that?"]
+    event = connection.core["Corehandler"].IRCEvent(info, on_what_now, EVENT_ID)
     connection.handler.register_event(event)
 
 
