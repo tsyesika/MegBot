@@ -36,6 +36,8 @@ def main(connection, command, plugin):
     <x> numver of seconds to prevent lockup due to
     plugins executing and excess RAM useage and CPU time.
     """
+    if not hasattr(plugin, "main"):
+        return
 
     if "running_plugins" not in dir(connection):
         connection.running_plugins = {}
