@@ -38,9 +38,6 @@ def main(connection, command, plugin):
     <x> numver of seconds to prevent lockup due to
     plugins executing and excess RAM useage and CPU time.
     """
-    if not hasattr(plugin, "main"):
-        return
-
     if "running_plugins" not in dir(connection):
         connection.running_plugins = {}
     else:
@@ -62,6 +59,9 @@ def call(connection, command, plugin_name):
     # Turn line back into a string so we have something hash
     # Lets get the plugin we're going to deal with.
     plugin = connection.plugin[plugin_name]
+
+    if not hasattr(plugin, "main"):
+        return
 
     config = {}
     config.update(connection.config[u"plugin_options"]["__DEFAULTS__"])
