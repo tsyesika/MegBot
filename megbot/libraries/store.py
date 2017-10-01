@@ -69,6 +69,10 @@ class Store(object):
         else:
             raise AttributeError
 
+    def __iter__(self):
+        for x in self.data:
+            yield x
+
     def append(self, value):
         if self._type == ListType:
             return self.data.append(value)

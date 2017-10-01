@@ -29,7 +29,7 @@ def main(connection, info):
         return
 
     nick = info.args[0]
-    msg = {"teller": info.nick, "msg": " ".join(info.args[1:])}
+    msg = {"teller": info.nick, "msg": u" ".join(info.args[1:])}
 
     if nick == connection.settings["nick"]:
         info.channel.send(u"I can't tell myself anything, I'm all 1s and 0s")
@@ -40,9 +40,6 @@ def main(connection, info):
         tell = store.Store(db_name)
     except IOError:
         tell = store.Store(db_name, {})
-
-    if not isinstance(info.message, unicode):
-        info.message = info.message.decode("utf-8", "replace")
 
     if info.channel_name in tell:
         if nick in tell[info.channel_name]:
