@@ -49,6 +49,8 @@ def main(connection, info):
     else:
         tell[info.channel_name] = {nick: [msg]}
 
+    tell.save()
+
 
 def on_PRIVMSG(connection, info):
     store = connection.libraries["store"]
