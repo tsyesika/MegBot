@@ -7,3 +7,4 @@ dist
 databases/*
 config.py
 config.json
+env
