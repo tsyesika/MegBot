@@ -26,6 +26,7 @@ import traceback
 from megbot.configuration import configuration
 from megbot.loader import MasterLoader
 
+
 class Bot(object):
     def __init__(self, name, config, thread, run=True):
         """Initalises bot"""
@@ -77,10 +78,15 @@ class Bot(object):
                 self.sock.close()
             except Exception:
                 pass
-            self.__init__(self.name,
-                    self.config,
-                    self.thread,
-                    False)
+            if self.alive:
+                self.__init__(self.name,
+                        self.config,
+                        self.thread,
+                        False)
+
+    def quit(self):
+        self.core["Coreraw"].main(self, "QUIT")
+
 
 def main():
     # since there is no good logging and/or way of talking to the
@@ -119,4 +125,9 @@ def main():
             sleep(2)
     except KeyboardInterrupt:
         print "\nCtrl-C been hit, run for your lives!"
-        sys.exit()
+        for network, bot in bots.items():
+            if bot["object"]:
+                bot["object"].alive = False
+                if bot["object"].running:
+                    bot["object"].quit()
+                bot["thread"].join()
