@@ -467,7 +467,7 @@ class Channel(Standard):
                 func(m)
 
 
-    def on_TOPIC(self, connection):
+    def on_TOPIC(self, connection, command):
         new_topic = command.message
         self.topic = new_topic
 

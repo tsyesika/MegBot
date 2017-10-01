@@ -23,6 +23,8 @@
 """
 
 from threading import Thread
+import logging
+
 
 class KillableThread(Thread):
     def kill_meh(self):
