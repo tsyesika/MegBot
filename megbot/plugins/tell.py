@@ -50,6 +50,7 @@ def main(connection, info):
         tell[info.channel_name] = {nick: [msg]}
 
     tell.save()
+    info.channel.send(u"Got it.")
 
 
 def on_PRIVMSG(connection, info):
