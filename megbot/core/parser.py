@@ -45,15 +45,12 @@ Todo: handle in the unlikely situation the socket at our end is closed which
 
 def decode(message, encodings=["utf-8"]):
     """ Decodes message from server """
-    decoded = False
     for encoding in encodings:
         try:
-            encoding.decode(encoding)
-            decoded = True
+            return message.decode(encoding)
         except:
             pass
-
-    if not decoded:
+    else:
         raise Exception("Can't decode '%s', encoding's tried: %s" % (message, encodings))
 
     return message
