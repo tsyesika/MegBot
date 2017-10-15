@@ -104,9 +104,9 @@ class Info(Standard):
         return nickname, ident, host
 
     def parseIRC(self, message):
-        """ Parses out IRC message (in accordance with RFC """
+        """ Parses out IRC message """
         if not message:
-            # empty message, sod off.
+            # empty message
             return ()
 
         if ":" == message[0]:
