@@ -86,6 +86,7 @@ def main(connection, info):
         reply_obj = Reply(msg, info.channel_name)
     except Exception:
         info.channel.send(u"I understand... not")
+        return
 
     db_name = DATABASE_STR.format(connection.name)
     replies = store.Store(db_name)
