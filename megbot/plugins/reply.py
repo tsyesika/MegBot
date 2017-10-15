@@ -44,7 +44,7 @@ class Reply(object):
         for opt in msg_split[1:]:
             key, value = opt.split(">")
             if key not in self.valid_options:
-                raise Exception("{} is not a valid option".format(key))
+                raise Exception(u"{} is not a valid option".format(key))
             options[key] = value
 
         if "reply" not in options:
@@ -57,9 +57,9 @@ class Reply(object):
     def serialize(self):
         output = [self.regex]
         for k, v in self.options.items():
-            output.append("<{}>{}".format(k, v))
+            output.append(u"<{}>{}".format(k, v))
 
-        return "".join(output), self.channel
+        return u"".join(output), self.channel
 
     def sub(self, info):
         if info.channel_name != self.channel:
@@ -82,7 +82,7 @@ def main(connection, info):
     store = connection.libraries["store"]
 
     try:
-        msg = " ".join(info.args)
+        msg = u" ".join(info.args)
         reply_obj = Reply(msg, info.channel_name)
     except Exception:
         info.channel.send(u"I understand... not")

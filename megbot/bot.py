@@ -72,7 +72,7 @@ class Bot(object):
                     traceback.print_exc()
                     self.running = False
                     break
-                for line in data.split("\r\n"):
+                for line in data.split(u"\r\n"):
                     self.core["Coredelegator"].main(self, line)
             try:
                 self.sock.close()
