@@ -1,8 +1,9 @@
 from setuptools import setup, find_packages
 
+
 setup(
     description='An IRC bot for Megworld',
-    url='https://github.com/moggers87/salmon',
+    url='https://github.com/xray7224/MegBot',
     author='Jessica Tallon',
     maintainer='Matt Molyneaux',
     maintainer_email='moggers87+git@moggers87.co.uk',
@@ -21,4 +22,5 @@ setup(
         'console_scripts':
             ['megbot = megbot.bot:main'],
     },
+    test_suite='megbot.tests',
 )

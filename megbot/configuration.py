@@ -1,8 +1,4 @@
 ##
-# This is NOT the config, to get to that please look in config.py.example
-##
-
-##
 #   This file is part of MegBot.
 #
 #   MegBot is free software: you can redistribute it and/or modify
