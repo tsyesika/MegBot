@@ -66,11 +66,11 @@ class Info(Standard):
         self.raw = line
         self.parsed = self.parseIRC(line)
         
-        if self.parsed and len(self.parsed) == 6:
-            self.nickmask, self.action, self.channel_name, self.trigger, self.plugin_name, self.args = self.parsed
+        if self.parsed and len(self.parsed) == 7:
+            self.nickmask, self.action, self.channel_name, self.trigger, self.plugin_name, self.args, self.message = self.parsed
         elif self.parsed:
             self.nickmask, self.action, self.args = self.parsed
-            self.channel_name, self.trigger, self.plugin_name = (u"", u"", u"")
+            self.channel_name, self.trigger, self.plugin_name, self.message = (u"", u"", u"", u"")
         else:
             return self.__init__(None)
 
@@ -79,8 +79,6 @@ class Info(Standard):
             self.nick, self.ident, self.hostname = self.nickmask
         else:
             self.nick, self.ident, self.hostname = (u"", u"", u"")
-
-        self.message = "%s%s %s" % (self.trigger, self.plugin_name, " ".join(self.args))
 
     def parseHostMask(self, nickmask):
         """ Parses the nickmask """
@@ -114,23 +112,24 @@ class Info(Standard):
             hostmask, message = message.split(" ", 1)
             hostmask = self.parseHostMask(hostmask)
         else:
-            hostmask = ""
+            hostmask = u""
 
         if ":" in message and ":" != message[-1]:
             args = message.split(":", 1)[1]
             trigger = args[0]
             args = args.split(" ")
             plugin_name = args[0][1:]
-
+            full_message = u" ".join(args)
         else:
             args = []
-            trigger = ""
-            plugin_name = ""
+            trigger = u""
+            plugin_name = u""
+            full_message = u""
 
         message = message.split()
 
         if len(message) >= 3:
-            return (hostmask, message[0], message[1], trigger, plugin_name, args[1:])
+            return (hostmask, message[0], message[1], trigger, plugin_name, args[1:], full_message)
         else:
             return (hostmask, message[0], args)
 
