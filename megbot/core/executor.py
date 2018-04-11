@@ -30,7 +30,7 @@ class KillableThread(Thread):
     def kill_meh(self):
         """Raises an (hopefully) uncatchable SystemExit exceptoin"""
         if not self.is_alive():
-            raise SystemExit
+            raise SystemExit()
 
 def main(connection, command, plugin):
     """ This executes and manages plugin calls.
