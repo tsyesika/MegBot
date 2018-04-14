@@ -225,42 +225,6 @@ class Helper(Standard):
             ts = float(ts)
         return datetime.fromtimestamp(ts)
 
-
-class Web(Standard):
-    def __init__(self, connection):
-        self.title = ""
-
-    def WebSafeString(self, string):
-        """
-        Returns a web safe string to be put in urls (for GET requests).
-        """
-        return urllib.urlencode({"q":string})[2:]
-
-
-    def SpellCheck(self, word):
-        """ Uses googles spell checking capabilities
-        returns corrected word (if there is one)
-        word can be a string it'll be converted into websafe string.
-        Will return -1 is an error occured!
-        """
-        try:
-            g = urllib2.Request("http://google.com/search?q=%s" % self.WebSafeString(word))
-            g.add_header("User-agent", "Mozilla/5.0 (iPhone; U; CPU iPhone OS 3_0 like Mac OS X; en-us) AppleWebKit/528.18 (KHTML, like Gecko) Version/4.0 Mobile/7A341 Safari/528.16")
-            g = urllib2.urlopen(g)
-        except Exception:
-            return -1
-        d = g.read()
-        if d.find("Showing results for </span>")!=-1:
-            # Spelling correction :)
-            correction = re.findall("<span class=\"spell\">Showing results for </span><a href=\"(.+?);spell=1\" class=spell>(.+?)<br>", d)
-            if correction:
-                correction = self.StripHTML(correction[0][1])
-            else:
-                correction = word
-        else:
-            correction = word
-        return correction
-
 class Format(Standard):
     """mIRC style formatting"""
     bold_marker = chr(2)
