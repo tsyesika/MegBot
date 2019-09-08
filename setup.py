@@ -23,4 +23,5 @@ setup(
             ['megbot = megbot.bot:main'],
     },
     test_suite='megbot.tests',
+    tests_require=['mock'],
 )
