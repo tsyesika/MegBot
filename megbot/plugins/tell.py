@@ -72,7 +72,7 @@ def on_PRIVMSG(connection, info):
 def init(connection):
     info = connection.libraries["IRCObjects"].Info()
 
-    # this will peform an event on privmsg.
+    # if a user is in the tell database speaks, send them any stored messages.
     info.action = "PRIVMSG"
     event = connection.core["Corehandler"].IRCEvent(info, on_PRIVMSG, EVENT_ID)
     connection.handler.register_event(event)

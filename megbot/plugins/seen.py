@@ -76,7 +76,7 @@ def init(connection):
     eventID = 'seenEvent'
     info = connection.libraries["IRCObjects"].Info()
 
-    # this will peform an event on privmsg.
+    # update the database with when someone last spoke
     info.action = "PRIVMSG"
     event = connection.core["Corehandler"].IRCEvent(info, on_PRIVMSG, eventID)
     connection.handler.register_event(event)

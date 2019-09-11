@@ -37,7 +37,7 @@ def on_PRIVMSG(connection, info):
 def init(connection):
     info = connection.libraries["IRCObjects"].Info()
 
-    # this will peform an event on privmsg.
+    # listens for "beertime"
     info.action = "PRIVMSG"
     event = connection.core["Corehandler"].IRCEvent(info, on_PRIVMSG, eventID)
     connection.handler.register_event(event)
