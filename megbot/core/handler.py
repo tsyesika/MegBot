@@ -123,10 +123,11 @@ class IRCEvent(Event):
         self.postCheck(event)
         return self.cresult
 
+
 class Handler(object):
-    __events = {}
     def __init__(self, connection):
         self.connection = connection
+        self.__events = {}
         
     def register_event(self, event):
         """ registers an event """
